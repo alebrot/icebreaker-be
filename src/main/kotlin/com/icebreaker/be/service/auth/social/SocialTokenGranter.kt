@@ -6,7 +6,7 @@ import org.springframework.security.oauth2.provider.*
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices
 
-const val GRANT_TYPE = "student_card"
+const val GRANT_TYPE = "social"
 
 
 class SocialTokenGranter(private val socialService: SocialService,
@@ -20,8 +20,16 @@ class SocialTokenGranter(private val socialService: SocialService,
         val token = tokenRequest.requestParameters["access_token"]
                 ?: throw IllegalArgumentException("access_token not found")
 
-        val socialUser = socialService.getUser(token)
+        val socialTypeString = tokenRequest.requestParameters["network"]
+                ?: throw IllegalArgumentException("network not found")
 
+        val socialType = SocialType.valueOf(socialTypeString.toUpperCase())
+        if (socialType == SocialType.FACEBOOK) {
+        } else {
+            throw IllegalArgumentException("unsupported network $socialType")
+        }
+
+        val socialUser = socialService.getUser(token)
         val createUserDetails = userService.createUserDetails(socialUser)
 
         val socialAuthentication = SocialAuthentication(createUserDetails)

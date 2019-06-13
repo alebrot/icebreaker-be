@@ -58,8 +58,9 @@ class BeApplicationTests {
         headers.set("Access-Control-Allow-Headers", "x-requested-with, authorization")
 
         val map = LinkedMultiValueMap<String, String>()
-        map.add("grant_type", "student_card")
+        map.add("grant_type", "social")
         map.add("access_token", accessToken)
+        map.add("network", "facebook")
 //        map.add("client_id", "2314645505268736")
 //        map.add("client_secret", "7015abedf212a0063a03757725107f71")
 
