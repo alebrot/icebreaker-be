@@ -13,7 +13,9 @@ import org.springframework.http.HttpStatus
 internal class UserControllerDefaultTest : BeApplicationTests() {
     @Test
     fun getUserById() {
-        authenticate()
+//        authenticate()
+        authenticateSocial("EAAg5KGcfXAABAHYGtcvlQHSNaEmhyOwZAjl4991hynibTl6fZB7cR9QGpF76oefN8c4aTJZA0r1PZBIn1jpYqpqpU36EIBOiNndqxovzz5c7ZCUdZCloVZAEwVUZBPFUijoRBJm7vOoFqIVjVy3SgJ4HzqS4ZBesx3N9wLiaZCaf0MVKI9j45SGPYlruow4yfXwdgcy4IaHY2ZCJVjVnF1Buk4GRhIhfkTf58ew09gZAjGWw9QZDZD")
+
         val userId = 1
 
         val response = testRestTemplate.getForEntity(GET_USER_BY_ID.replace("{userId}", userId.toString()), GetUserByIdResponse::class.java)

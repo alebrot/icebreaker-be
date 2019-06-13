@@ -30,6 +30,10 @@ class BeApplicationTests {
 
     fun authenticate(email: String, password: String) {
         val token = getToken(email, password)
+        setBearer(token)
+    }
+
+    private fun setBearer(token: GetTokenResponse) {
         val arrayList = ArrayList<ClientHttpRequestInterceptor>()
         arrayList.add(ClientHttpRequestInterceptor { request, body, execution ->
             request.headers.add("Authorization", "Bearer ${token.accessToken}")
@@ -41,6 +45,33 @@ class BeApplicationTests {
     fun authenticate() {
         authenticate("email1@email.com", "password")
     }
+
+    fun authenticateSocial(accessToken: String) {
+        val token = getToken(accessToken)
+        setBearer(token)
+    }
+
+    private fun getToken(accessToken: String): GetTokenResponse {
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+        headers.set("Access-Control-Allow-Headers", "x-requested-with, authorization")
+
+        val map = LinkedMultiValueMap<String, String>()
+        map.add("grant_type", "student_card")
+        map.add("access_token", accessToken)
+//        map.add("client_id", "2314645505268736")
+//        map.add("client_secret", "7015abedf212a0063a03757725107f71")
+
+        val request = HttpEntity<MultiValueMap<String, String>>(map, headers)
+        val restTemplateWithBasic = testRestTemplate.withBasicAuth("spring-security-oauth2-read-write-client", "spring-security-oauth2-read-write-client-password1234")
+        val result = restTemplateWithBasic.postForEntity("/oauth/token", request, GetTokenResponse::class.java)
+        Assert.assertNotNull(result)
+        Assert.assertEquals(result.statusCode, HttpStatus.OK)
+        Assert.assertNotNull(result.body)
+        return result.body!!
+    }
+
 
     private fun getToken(email: String, password: String): GetTokenResponse {
 

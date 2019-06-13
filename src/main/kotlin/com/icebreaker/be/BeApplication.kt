@@ -1,6 +1,9 @@
 package com.icebreaker.be
 
+import com.icebreaker.be.service.auth.social.SocialTokenGranter
+import com.icebreaker.be.user.UserService
 import com.icebreaker.be.user.impl.UserServiceDefault
+import com.icebreaker.be.user.social.SocialService
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.FilterRegistrationBean
@@ -24,7 +27,9 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer
+import org.springframework.security.oauth2.provider.*
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler
+import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -97,7 +102,10 @@ class SecurityConfig(val userService: UserServiceDefault, val passwordEncoder: P
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class AuthServerOAuth2Config(val userDetailsService: UserDetailsService,
                              val dataSource: DataSource,
-                             val authenticationManager: AuthenticationManager) : AuthorizationServerConfigurerAdapter() {
+                             val authenticationManager: AuthenticationManager,
+                             val userService: UserService,
+                             val socialService: SocialService,
+                             val clientDetailsService: ClientDetailsService) : AuthorizationServerConfigurerAdapter() {
     @Bean
     fun oauthAccessDeniedHandler(): OAuth2AccessDeniedHandler {
         return OAuth2AccessDeniedHandler()
@@ -118,6 +126,18 @@ class AuthServerOAuth2Config(val userDetailsService: UserDetailsService,
         endpoints.tokenStore(JdbcTokenStore(dataSource))
                 .authenticationManager(authenticationManager)
                 .userDetailsService(userDetailsService)
+        endpoints.tokenGranter(tokenGranter(endpoints))
+    }
+
+    private fun tokenGranter(endpoints: AuthorizationServerEndpointsConfigurer): TokenGranter {
+        val granters = ArrayList<TokenGranter>(Arrays.asList(endpoints.tokenGranter))
+        granters.add(SocialTokenGranter(socialService, userService, endpoints.tokenServices, endpoints.clientDetailsService, endpoints.oAuth2RequestFactory))
+        return CompositeTokenGranter(granters)
+    }
+
+    @Bean
+    fun requestFactory(): OAuth2RequestFactory {
+        return DefaultOAuth2RequestFactory(clientDetailsService)
     }
 }
 
@@ -145,3 +165,5 @@ class CorsConfig {
         return BCryptPasswordEncoder(8)
     }
 }
+
+

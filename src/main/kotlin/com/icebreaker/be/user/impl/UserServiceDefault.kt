@@ -7,6 +7,7 @@ import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.fromEntity
 import com.icebreaker.be.user.UserService
+import com.icebreaker.be.user.social.impl.SocialUser
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -51,5 +52,15 @@ class UserServiceDefault(val userRepository: UserRepository,
         return userDetails
     }
 
+    @Transactional
+    override fun createUserDetails(socialUser: SocialUser): UserDetails {
+
+        val userEntity = userRepository.findByEmail(socialUser.email)
+                ?: throw UsernameNotFoundException("${socialUser.email} not found")
+        val user = User.fromEntity(userEntity)
+
+        val userDetails = UserDetailsDefault(user)
+        return userDetails
+    }
 }
 
