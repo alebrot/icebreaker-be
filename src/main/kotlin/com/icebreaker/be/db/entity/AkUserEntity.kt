@@ -23,9 +23,14 @@ class AkUserEntity {
     @get:Basic
     @get:Column(name = "EMAIL")
     lateinit var email: String
+
+    @get:Basic
+    @get:Column(name = "IMG_URL")
+    var imgUrl: String? = null
+
     @get:Basic
     @get:Column(name = "PASSWORD_HASH")
-    lateinit var passwordHash: String
+    var passwordHash: String? = null
 
     @get:Basic
     @get:Column(name = "ACCOUNT_EXPIRED")

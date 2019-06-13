@@ -14,7 +14,9 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
     @Test
     fun getUserById() {
 //        authenticate()
-        authenticateSocial("EAAg5KGcfXAABAHYGtcvlQHSNaEmhyOwZAjl4991hynibTl6fZB7cR9QGpF76oefN8c4aTJZA0r1PZBIn1jpYqpqpU36EIBOiNndqxovzz5c7ZCUdZCloVZAEwVUZBPFUijoRBJm7vOoFqIVjVy3SgJ4HzqS4ZBesx3N9wLiaZCaf0MVKI9j45SGPYlruow4yfXwdgcy4IaHY2ZCJVjVnF1Buk4GRhIhfkTf58ew09gZAjGWw9QZDZD")
+        authenticateSocial("EAAg5KGcfXAABAFRa6DaDbchx5VkIq7bDhnJwTZAdHSpjIrGZCzG11leyLMQKPAbt5mj3r2hni0LLGYUa3OaBZC6BxsvTlZCm4sPwM108EUQQz393YksQ64Xn4ZCFINIZCl730d6Hviz9icgsBY6aMq54gPDZCL1HRIXjoBZC5aolo7e2fNmPgq3kbIZBt91YXkbJhUip6DWoRE491XvKjYrcemcgA73RDCjMQpgNjCJUZAigZDZD")
+        Thread.sleep(100)
+        authenticateSocial("EAAg5KGcfXAABAFRa6DaDbchx5VkIq7bDhnJwTZAdHSpjIrGZCzG11leyLMQKPAbt5mj3r2hni0LLGYUa3OaBZC6BxsvTlZCm4sPwM108EUQQz393YksQ64Xn4ZCFINIZCl730d6Hviz9icgsBY6aMq54gPDZCL1HRIXjoBZC5aolo7e2fNmPgq3kbIZBt91YXkbJhUip6DWoRE491XvKjYrcemcgA73RDCjMQpgNjCJUZAigZDZD")
 
         val userId = 1
 

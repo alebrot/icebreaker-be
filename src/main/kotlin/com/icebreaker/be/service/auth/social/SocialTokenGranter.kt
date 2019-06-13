@@ -22,8 +22,7 @@ class SocialTokenGranter(private val socialService: SocialService,
 
         val socialUser = socialService.getUser(token)
 
-        val createUserDetails = userService.createUserDetails("email1@email.com")
-
+        val createUserDetails = userService.createUserDetails(socialUser)
 
         val socialAuthentication = SocialAuthentication(createUserDetails)
         socialAuthentication.isAuthenticated = true

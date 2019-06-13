@@ -50,7 +50,7 @@ class UserDetailsDefault(val user: User) : UserDetails {
      *
      * @return the password
      */
-    override fun getPassword(): String {
+    override fun getPassword(): String? {
         return user.passwordHash
     }
 
