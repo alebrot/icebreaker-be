@@ -6,10 +6,12 @@ import com.icebreaker.be.user.social.impl.SocialUser
 import org.springframework.data.geo.Distance
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 interface UserService {
     fun createUserDetails(username: String?): UserDetails
     fun createUser(email: String, password: String, firstName: String, lastName: String): User
     fun createUserDetails(socialUser: SocialUser): UserDetails
-    fun getUsersCloseToUser(user: User, distanceInMeters: Int):List<UserWithDistance>
+    fun getUsersCloseToUser(user: User, distanceInMeters: Int): List<UserWithDistance>
+    fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal): List<UserWithDistance>
 }

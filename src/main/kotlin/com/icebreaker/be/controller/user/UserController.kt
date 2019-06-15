@@ -2,6 +2,7 @@ package com.icebreaker.be.controller.user
 
 import com.icebreaker.be.controller.user.dto.*
 import org.springframework.web.bind.annotation.*
+import java.math.BigDecimal
 import javax.validation.Valid
 
 const val GET_USER_BY_ID = "/users/{userId}"
@@ -18,7 +19,9 @@ interface UserController {
     fun getUserMe(): GetUserMeResponse
 
     @GetMapping(GET_USER_ME_USERS)
-    fun getUserMeUsers(@RequestParam("distance") distance:Int): GetUserMeUsersResponse
+    fun getUserMeUsers(@RequestParam("distance") distance: Int,
+                       @RequestParam("latitude") latitude: BigDecimal?,
+                       @RequestParam("longitude") longitude: BigDecimal?): GetUserMeUsersResponse
 
     @GetMapping(GET_ADMIN_ME)
     fun getAdminMe(): GetAdminMeResponse
