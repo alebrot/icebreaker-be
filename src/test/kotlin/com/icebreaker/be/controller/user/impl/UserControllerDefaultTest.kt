@@ -1,16 +1,18 @@
 package com.icebreaker.be.controller.user.impl
 
 import com.icebreaker.be.BeApplicationTests
-import com.icebreaker.be.controller.user.CREATE_USER
-import com.icebreaker.be.controller.user.GET_ADMIN_ME
-import com.icebreaker.be.controller.user.GET_USER_BY_ID
-import com.icebreaker.be.controller.user.GET_USER_ME
+import com.icebreaker.be.controller.user.*
 import com.icebreaker.be.controller.user.dto.*
+import com.icebreaker.be.db.repository.SocialRepository
+import com.icebreaker.be.db.repository.UserPositionRepository
+import com.icebreaker.be.db.repository.UserRepository
 import org.junit.Assert
 import org.junit.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.transaction.annotation.Transactional
 
-internal class UserControllerDefaultTest : BeApplicationTests() {
+internal open class UserControllerDefaultTest : BeApplicationTests() {
     @Test
     fun getUserById() {
 //        authenticate()
@@ -64,4 +66,36 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
         authenticate(email, password)
     }
 
+    @Test
+    fun getUserMeUsers() {
+        authenticate()
+        val response = testRestTemplate.getForEntity("$GET_USER_ME_USERS?distance={distance}", GetUserMeUsersResponse::class.java, 100 )
+        Assert.assertNotNull(response)
+        Assert.assertEquals(response.statusCode, HttpStatus.OK)
+        Assert.assertNotNull(response.body)
+        Assert.assertNotNull(response.body!!.users)
+    }
+
+    @Autowired
+    lateinit var userPositionRepository: UserPositionRepository
+
+    @Autowired
+    lateinit var userRepository: UserRepository
+
+    @Test
+    fun fdfdyf() {
+        ssdsfsd()
+
+//        findByUserId.u
+    }
+
+    @Transactional
+    public open fun ssdsfsd() {
+        val findUsersCloseToUser = userRepository.findUsersCloseToUser(1, 1000)
+
+
+//        val findByUserId = userPositionRepository.findByUserId(1)
+//        val user = findByUserId?.user
+//        val authorities = user?.authorities
+    }
 }

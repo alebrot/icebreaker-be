@@ -9,11 +9,14 @@ import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -35,6 +38,9 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
 import java.util.*
+import javax.servlet.*
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 import javax.sql.DataSource
 
 @SpringBootApplication
@@ -83,6 +89,7 @@ class SecurityConfig(val userService: UserServiceDefault, val passwordEncoder: P
 
     override fun configure(http: HttpSecurity) {
         super.configure(http.csrf().disable())
+        http.authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/path/to/allow").permitAll()
 
     }
 
@@ -94,7 +101,6 @@ class SecurityConfig(val userService: UserServiceDefault, val passwordEncoder: P
     override fun authenticationManagerBean(): AuthenticationManager {
         return super.authenticationManagerBean()
     }
-
 }
 
 @Configuration
@@ -143,21 +149,60 @@ class AuthServerOAuth2Config(val userDetailsService: UserDetailsService,
 
 @Configuration
 class CorsConfig {
-    @Bean
-    fun corsFilterRegistrationBean(): FilterRegistrationBean<*> {
-        val source = UrlBasedCorsConfigurationSource()
-        val config = CorsConfiguration()
-        config.applyPermitDefaultValues()
-        config.allowCredentials = true
-        config.allowedOrigins = Arrays.asList("*")
-        config.allowedHeaders = Arrays.asList("*")
-        config.allowedMethods = Arrays.asList("*")
-        config.exposedHeaders = Arrays.asList("content-length")
-        config.maxAge = 3600L
-        source.registerCorsConfiguration("/**", config)
-        val bean = FilterRegistrationBean(CorsFilter(source))
-        bean.order = 0
-        return bean
+//    @Bean
+//    @Order(Ordered.HIGHEST_PRECEDENCE)
+//    fun corsFilterRegistrationBean(): FilterRegistrationBean<*> {
+//        val source = UrlBasedCorsConfigurationSource()
+//        val config = CorsConfiguration()
+//        config.applyPermitDefaultValues()
+//        config.allowCredentials = true
+//        config.allowedOrigins = Arrays.asList("*")
+//        config.allowedHeaders = Arrays.asList("*")
+//        config.allowedMethods = Arrays.asList("*")
+//        config.exposedHeaders = Arrays.asList("content-length")
+//        config.maxAge = 3600L
+//        source.registerCorsConfiguration("/**", config)
+//        val bean = FilterRegistrationBean(CorsFilter(source))
+////        bean.order = 0
+//        return bean
+//    }
+
+    @Configuration
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public class CORSFilter : Filter {
+
+        private var config: FilterConfig? = null;
+
+        public val CREDENTIALS_NAME = "Access-Control-Allow-Credentials";
+        public val ORIGIN_NAME = "Access-Control-Allow-Origin";
+        public val METHODS_NAME = "Access-Control-Allow-Methods";
+        public val HEADERS_NAME = "Access-Control-Allow-Headers";
+        public val MAX_AGE_NAME = "Access-Control-Max-Age";
+
+        override fun destroy() {
+
+        }
+
+
+        override fun doFilter(req: ServletRequest, resp: ServletResponse,
+                              chain: FilterChain) {
+            val response = resp as HttpServletResponse
+            val request = req as HttpServletRequest;
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+            response.setHeader("Access-Control-Max-Age", "3600");
+            response.setHeader("Access-Control-Allow-Headers", "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN");
+
+            if ("OPTIONS" == (request.method)) {
+                response.status = HttpServletResponse.SC_OK;
+            } else {
+                chain.doFilter(req, resp);
+            }
+        }
+
+        override fun init(filterConfig: FilterConfig) {
+            config = filterConfig;
+        }
     }
 
     @Bean

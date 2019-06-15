@@ -1,8 +1,11 @@
 CREATE SCHEMA IF NOT EXISTS PUBLIC;
-
+DROP TABLE IF EXISTS AK_SOCIAL;
+DROP TABLE IF EXISTS AK_POSITION;
+DROP TABLE IF EXISTS AK_NOTIFICATION;
 DROP TABLE IF EXISTS AK_USER_AUTHORITY;
 DROP TABLE IF EXISTS AK_USER;
 DROP TABLE IF EXISTS AK_AUTHORITY;
+
 
 CREATE TABLE AK_AUTHORITY
 (
@@ -11,11 +14,21 @@ CREATE TABLE AK_AUTHORITY
     CONSTRAINT AUTHORITY_NAME_U UNIQUE (NAME)
 );
 
+
+CREATE TABLE AK_POSITION
+(
+    ID         INT AUTO_INCREMENT PRIMARY KEY,
+    LAT        DECIMAL                             NOT NULL,
+    LON        DECIMAL                             NOT NULL,
+    CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UPDATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
 CREATE TABLE AK_USER
 (
     ID                  INT AUTO_INCREMENT PRIMARY KEY,
-    FIRST_NAME          TINYTEXT                            NOT NULL,
-    LAST_NAME           TINYTEXT                            NOT NULL,
+    FIRST_NAME          VARCHAR(255)                        NOT NULL,
+    LAST_NAME           VARCHAR(255)                        NOT NULL,
     EMAIL               VARCHAR(255)                        NOT NULL,
     PASSWORD_HASH       VARCHAR(255),
     IMG_URL             VARCHAR(255),
@@ -25,10 +38,24 @@ CREATE TABLE AK_USER
     ACCOUNT_LOCKED      BOOLEAN   DEFAULT FALSE,
     CREDENTIALS_EXPIRED BOOLEAN   DEFAULT FALSE,
     ENABLED             BOOLEAN   DEFAULT TRUE,
-
-    CONSTRAINT USER_EMAIL_U UNIQUE (EMAIL)
+    POSITION_ID         INT,
+    CONSTRAINT USER_EMAIL_U UNIQUE (EMAIL),
+    CONSTRAINT USER_ID_FK
+        FOREIGN KEY (POSITION_ID) REFERENCES AK_POSITION (ID)
+            ON
+                DELETE CASCADE
+            ON
+                UPDATE CASCADE,
 );
 
+-- SELECT (6371 * acos(
+--                 cos(radians(lat2))
+--                 * cos(radians(lat1))
+--                 * cos(radians(lng1) - radians(lng2))
+--             + sin(radians(lat2))
+--                     * sin(radians(lat1))
+--     )) as distance
+-- from your_table
 
 CREATE TABLE AK_SOCIAL
 (
@@ -147,5 +174,7 @@ create table oauth_approvals
     expiresAt      TIMESTAMP,
     lastModifiedAt TIMESTAMP
 );
+
+
 
 

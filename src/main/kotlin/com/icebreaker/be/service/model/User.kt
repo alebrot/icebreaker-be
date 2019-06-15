@@ -18,6 +18,8 @@ data class User(val id: Int,
     companion object
 }
 
+data class UserWithDistance(val distance: Int, val user: User)
+
 fun User.toDto(): UserDto {
     return UserDto(this.id, this.firstName, this.lastName)
 }

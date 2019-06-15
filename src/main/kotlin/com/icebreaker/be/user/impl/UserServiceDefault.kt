@@ -6,7 +6,9 @@ import com.icebreaker.be.db.entity.AkUserEntity
 import com.icebreaker.be.db.repository.AuthorityRepository
 import com.icebreaker.be.db.repository.SocialRepository
 import com.icebreaker.be.db.repository.UserRepository
+import com.icebreaker.be.service.model.Authority
 import com.icebreaker.be.service.model.User
+import com.icebreaker.be.service.model.UserWithDistance
 import com.icebreaker.be.service.model.fromEntity
 import com.icebreaker.be.user.UserService
 import com.icebreaker.be.user.social.impl.SocialUser
@@ -17,12 +19,41 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Service
 class UserServiceDefault(val userRepository: UserRepository,
                          val passwordEncoder: PasswordEncoder,
                          val authorityRepository: AuthorityRepository,
                          val socialRepository: SocialRepository) : UserService {
+
+    @Transactional
+    override fun getUsersCloseToUser(user: User, distanceInMeters: Int): List<UserWithDistance> {
+//        val userEntity = userRepository.findById(user.id).orElseThrow { IllegalArgumentException("defaultAuthority not found") }
+//        val position = userEntity.position ?: IllegalStateException("user {$user.id} position is null")
+        val findUsersCloseToUser = userRepository.findUsersCloseToUser(user.id, distanceInMeters)
+
+        return findUsersCloseToUser.map { findUsersCloseToUser: Map<String, Any> ->
+            val id: Int = findUsersCloseToUser["ID"] as Int
+            val email: String = findUsersCloseToUser["EMAIL"] as String
+            val passwordHash: String? = findUsersCloseToUser["PASSWORD_HASH"] as? String
+            val firstName: String = findUsersCloseToUser["FIRST_NAME"] as String
+            val lastName: String = findUsersCloseToUser["LAST_NAME"] as String
+            val imgUrl: String? = findUsersCloseToUser["IMG_URL"] as?String
+            val authorities: List<Authority> = ArrayList()
+            val accountExpired: Boolean = findUsersCloseToUser["ACCOUNT_EXPIRED"] as Boolean
+            val accountLocked: Boolean = findUsersCloseToUser["ACCOUNT_LOCKED"] as Boolean
+            val credentialsExpired = findUsersCloseToUser["CREDENTIALS_EXPIRED"] as Boolean
+            val enabled: Boolean = findUsersCloseToUser["ENABLED"] as Boolean
+
+            val distance: Int = (findUsersCloseToUser["DISTANCE"] as Double).toInt()
+
+            val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, enabled)
+
+            UserWithDistance(distance, user)
+        }
+
+    }
 
     @Transactional
     override fun createUser(email: String, password: String, firstName: String, lastName: String): User {
@@ -101,5 +132,6 @@ class UserServiceDefault(val userRepository: UserRepository,
 
         return UserDetailsDefault(user)
     }
+
 }
 

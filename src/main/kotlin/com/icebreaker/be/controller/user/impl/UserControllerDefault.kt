@@ -1,14 +1,7 @@
 package com.icebreaker.be.controller.user.impl
 
 import com.icebreaker.be.controller.user.UserController
-import com.icebreaker.be.controller.user.dto.CreateUserResponse
-import com.icebreaker.be.controller.user.dto.GetAdminMeResponse
-import com.icebreaker.be.controller.user.dto.GetUserByIdResponse
-import com.icebreaker.be.controller.user.dto.GetUserMeResponse
-import com.icebreaker.be.controller.user.dto.AdminContextDto
-import com.icebreaker.be.controller.user.dto.CompleteUserDto
-import com.icebreaker.be.controller.user.dto.CreateUserRequest
-import com.icebreaker.be.controller.user.dto.UserContextDto
+import com.icebreaker.be.controller.user.dto.*
 import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.toDto
@@ -16,12 +9,24 @@ import com.icebreaker.be.user.UserService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 @RestController
 class UserControllerDefault(val authService: AuthService,
                             val userService: UserService) : UserController {
+
+
+    override fun getUserMeUsers(distance: Int): GetUserMeUsersResponse {
+        val userOrFail = authService.getUserOrFail()
+
+        val usersCloseToUser = userService.getUsersCloseToUser(userOrFail, distance)
+        val mapped = usersCloseToUser.map {
+            UserWithDistanceDto(it.distance, it.user.toDto())
+        }
+        return GetUserMeUsersResponse(mapped)
+    }
 
     @Transactional
     override fun createUser(@Valid @RequestBody request: CreateUserRequest): CreateUserResponse {
