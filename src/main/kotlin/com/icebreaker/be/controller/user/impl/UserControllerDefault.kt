@@ -30,10 +30,14 @@ import javax.validation.Valid
 class UserControllerDefault(val authService: AuthService,
                             val userService: UserService,
                             val fileService: FileService) : UserController {
-    override fun uploadUserProfileImage(imageId: Int, file: MultipartFile): UploadUserImageResponse {
+    @Transactional
+    override fun uploadUserProfileImage(file: MultipartFile): UploadUserImageResponse {
         val userOrFail = authService.getUserOrFail()
 
         val fileName = fileService.storeFile(file, 100, 100)
+
+        userService.updateUserProfilePhoto(userOrFail, fileName)
+
         val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/public/images/")
                 .path(fileName)

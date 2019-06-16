@@ -13,4 +13,5 @@ interface UserService {
     fun getUsersCloseToUser(user: User, distanceInMeters: Int): List<UserWithDistance>
     fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal): List<UserWithDistance>
     fun updateUserPosition(user: User, latitude: BigDecimal, longitude: BigDecimal)
+    fun updateUserProfilePhoto(user: User, imageName: String)
 }

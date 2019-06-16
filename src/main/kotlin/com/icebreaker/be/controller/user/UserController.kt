@@ -22,7 +22,7 @@ interface UserController {
     fun uploadUserImage(@PathVariable imageId: Int, @RequestParam("image") file: MultipartFile): UploadUserImageResponse
 
     @PostMapping(UPLOAD_USER_PROFILE_IMAGE)
-    fun uploadUserProfileImage(@PathVariable imageId: Int, @RequestParam("image") file: MultipartFile): UploadUserImageResponse
+    fun uploadUserProfileImage(@RequestParam("image") file: MultipartFile): UploadUserImageResponse
 
     @PostMapping(CREATE_USER_POSITION)
     fun createUserPosition(@RequestBody createUserPositionRequest: CreateUserPositionRequest): BaseResponse

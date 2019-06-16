@@ -31,6 +31,12 @@ class UserServiceDefault(val userRepository: UserRepository,
                          val authorityRepository: AuthorityRepository,
                          val socialRepository: SocialRepository,
                          val positionRepository: UserPositionRepository) : UserService {
+    @Transactional
+    override fun updateUserProfilePhoto(user: User, imageName: String) {
+        val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
+        userEntity.imgUrl = imageName
+        userRepository.save(userEntity)
+    }
 
     @Transactional
     override fun updateUserPosition(user: User, latitude: BigDecimal, longitude: BigDecimal) {

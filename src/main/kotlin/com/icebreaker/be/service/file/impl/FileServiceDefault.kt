@@ -72,7 +72,7 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
     }
 
     private fun scale(img: BufferedImage, width: Int, height: Int): BufferedImage {
-        val tmp = img.getScaledInstance(width, height, Image.SCALE_FAST)
+        val tmp = img.getScaledInstance(width, height, Image.SCALE_DEFAULT)
         val scaled = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
         val g2d = scaled.createGraphics()
         g2d.drawImage(tmp, 0, 0, null)
