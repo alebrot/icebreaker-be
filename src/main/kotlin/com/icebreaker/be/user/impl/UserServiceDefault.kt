@@ -4,6 +4,7 @@ import com.ak.be.engine.ext.toKotlinNotOptionalOrFail
 import com.icebreaker.be.auth.UserDetailsDefault
 import com.icebreaker.be.db.entity.AkSocialEntity
 import com.icebreaker.be.db.entity.AkUserEntity
+import com.icebreaker.be.db.entity.AkUserImageEntity
 import com.icebreaker.be.db.entity.AkUserPositionEntity
 import com.icebreaker.be.db.repository.*
 import com.icebreaker.be.service.model.Authority
@@ -29,6 +30,22 @@ class UserServiceDefault(val userRepository: UserRepository,
                          val socialRepository: SocialRepository,
                          val positionRepository: UserPositionRepository,
                          val userImageRepository: UserImageRepository) : UserService {
+    @Transactional
+    override fun updateImageForUser(user: User, position: Int, imageName: String) {
+        val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
+        val images = userEntity.images
+        val foundImage: AkUserImageEntity? = images.firstOrNull { it.position == position }
+        if (foundImage != null) {
+            foundImage.imageName = imageName
+            userImageRepository.save(foundImage)
+        } else {
+            val akUserImageEntity = AkUserImageEntity()
+            akUserImageEntity.imageName = imageName
+            akUserImageEntity.position = position
+            akUserImageEntity.user = userEntity
+            userImageRepository.save(akUserImageEntity)
+        }
+    }
 
     override fun getImages(user: User): List<String> {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()

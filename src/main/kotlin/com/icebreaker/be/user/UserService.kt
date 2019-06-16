@@ -15,4 +15,5 @@ interface UserService {
     fun updateUserPosition(user: User, latitude: BigDecimal, longitude: BigDecimal)
     fun updateUserProfilePhoto(user: User, imageName: String)
     fun getImages(user: User): List<String>
+    fun updateImageForUser(user: User, position: Int, imageName: String)
 }

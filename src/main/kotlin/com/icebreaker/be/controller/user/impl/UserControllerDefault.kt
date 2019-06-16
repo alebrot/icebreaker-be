@@ -46,10 +46,18 @@ class UserControllerDefault(val authService: AuthService,
         return UploadUserImageResponse(fileDownloadUri)
     }
 
+    @Transactional
     override fun uploadUserImage(imageId: Int, file: MultipartFile): UploadUserImageResponse {
         val userOrFail = authService.getUserOrFail()
 
+        if (imageId !in 1..3) {
+            throw IllegalArgumentException("wrong image id, allowed values [1,2,3]")
+        }
+
         val fileName = fileService.storeFile(file, 100, 200)
+
+        userService.updateImageForUser(userOrFail, imageId, fileName)
+
         val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(GET_IMAGE_PATH)
                 .path(fileName)
