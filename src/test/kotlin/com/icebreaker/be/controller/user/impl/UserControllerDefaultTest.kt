@@ -3,16 +3,15 @@ package com.icebreaker.be.controller.user.impl
 import com.icebreaker.be.BeApplicationTests
 import com.icebreaker.be.controller.user.*
 import com.icebreaker.be.controller.user.dto.*
-import com.icebreaker.be.db.repository.SocialRepository
 import com.icebreaker.be.db.repository.UserPositionRepository
 import com.icebreaker.be.db.repository.UserRepository
 import org.junit.Assert
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
-import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
-internal open class UserControllerDefaultTest : BeApplicationTests() {
+internal class UserControllerDefaultTest : BeApplicationTests() {
     @Test
     fun getUserById() {
 //        authenticate()
@@ -76,26 +75,38 @@ internal open class UserControllerDefaultTest : BeApplicationTests() {
         Assert.assertNotNull(response.body!!.users)
     }
 
+
+    @Test
+    fun createUserPosition() {
+        authenticate("email2@email.com", "password")
+        val responseEntity = testRestTemplate.postForEntity(CREATE_USER_POSITION, CreateUserPositionRequest(BigDecimal(45.4748338), BigDecimal(9.1746082)), String::class.java)
+        Assert.assertEquals(responseEntity.statusCode, HttpStatus.OK)
+        Assert.assertNotNull(responseEntity)
+        testRestTemplate.postForEntity(CREATE_USER_POSITION, CreateUserPositionRequest(BigDecimal(46.4748338), BigDecimal(10.1746082)), String::class.java)
+    }
+
+
+
     @Autowired
     lateinit var userPositionRepository: UserPositionRepository
 
     @Autowired
     lateinit var userRepository: UserRepository
 
-    @Test
-    fun fdfdyf() {
-        ssdsfsd()
-
-//        findByUserId.u
-    }
-
-    @Transactional
-    public open fun ssdsfsd() {
-        val findUsersCloseToUser = userRepository.findUsersCloseToUser(1, 1000)
-
-
-//        val findByUserId = userPositionRepository.findByUserId(1)
-//        val user = findByUserId?.user
-//        val authorities = user?.authorities
-    }
+//    @Test
+//    fun fdfdyf() {
+//        ssdsfsd()
+//
+////        findByUserId.u
+//    }
+//
+//    @Transactional
+//    fun ssdsfsd() {
+//        val findUsersCloseToUser = userRepository.findUsersCloseToUser(1, 1000)
+//
+//
+////        val findByUserId = userPositionRepository.findByUserId(1)
+////        val user = findByUserId?.user
+////        val authorities = user?.authorities
+//    }
 }

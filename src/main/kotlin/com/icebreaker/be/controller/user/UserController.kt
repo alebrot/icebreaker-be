@@ -1,5 +1,6 @@
 package com.icebreaker.be.controller.user
 
+import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.dto.*
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
@@ -9,9 +10,13 @@ const val GET_USER_BY_ID = "/users/{userId}"
 const val GET_USER_ME = "/users/me"
 const val GET_ADMIN_ME = "/admins/me"
 const val GET_USER_ME_USERS = "/users/me/users"
+const val CREATE_USER_POSITION = "/users/position"
 const val CREATE_USER = "/public/users"
 
 interface UserController {
+    @PostMapping(CREATE_USER_POSITION)
+    fun createUserPosition(@RequestBody createUserPositionRequest: CreateUserPositionRequest): BaseResponse
+
     @GetMapping(GET_USER_BY_ID)
     fun getUserById(@PathVariable userId: Int): GetUserByIdResponse
 

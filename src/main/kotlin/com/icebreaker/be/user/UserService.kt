@@ -3,9 +3,7 @@ package com.icebreaker.be.user
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.UserWithDistance
 import com.icebreaker.be.user.social.impl.SocialUser
-import org.springframework.data.geo.Distance
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 interface UserService {
@@ -14,4 +12,5 @@ interface UserService {
     fun createUserDetails(socialUser: SocialUser): UserDetails
     fun getUsersCloseToUser(user: User, distanceInMeters: Int): List<UserWithDistance>
     fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal): List<UserWithDistance>
+    fun updateUserPosition(user: User, latitude: BigDecimal, longitude: BigDecimal)
 }

@@ -6,3 +6,4 @@ import java.math.BigDecimal
 data class GetUserMeResponse(val context: UserContextDto) : BaseResponse()
 data class GetUserMeUsersResponse(val users: List<UserWithDistanceDto>) : BaseResponse()
 data class UserWithDistanceDto(val distance: Int, val user: UserDto)
+data class CreateUserPositionRequest(val latitude: BigDecimal, val longitude: BigDecimal)

@@ -1,10 +1,13 @@
 package com.icebreaker.be.user.impl
 
+import com.ak.be.engine.ext.toKotlinNotOptionalOrFail
 import com.icebreaker.be.auth.UserDetailsDefault
 import com.icebreaker.be.db.entity.AkSocialEntity
 import com.icebreaker.be.db.entity.AkUserEntity
+import com.icebreaker.be.db.entity.AkUserPositionEntity
 import com.icebreaker.be.db.repository.AuthorityRepository
 import com.icebreaker.be.db.repository.SocialRepository
+import com.icebreaker.be.db.repository.UserPositionRepository
 import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.service.model.Authority
 import com.icebreaker.be.service.model.User
@@ -26,7 +29,27 @@ import kotlin.collections.ArrayList
 class UserServiceDefault(val userRepository: UserRepository,
                          val passwordEncoder: PasswordEncoder,
                          val authorityRepository: AuthorityRepository,
-                         val socialRepository: SocialRepository) : UserService {
+                         val socialRepository: SocialRepository,
+                         val positionRepository: UserPositionRepository) : UserService {
+
+    @Transactional
+    override fun updateUserPosition(user: User, latitude: BigDecimal, longitude: BigDecimal) {
+        val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
+        var position = userEntity.position
+
+        if (position == null) {
+            position = AkUserPositionEntity()
+            position.latitude = latitude
+            position.longitude = longitude
+            positionRepository.save(position)
+            userEntity.position = position
+            userRepository.save(userEntity)
+        } else {
+            position.latitude = latitude
+            position.longitude = longitude
+            positionRepository.save(position)
+        }
+    }
 
     @Transactional
     override fun getUsersCloseToUser(user: User, distanceInMeters: Int): List<UserWithDistance> {

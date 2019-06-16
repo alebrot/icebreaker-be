@@ -1,18 +1,16 @@
 package com.icebreaker.be.db.entity
 
-import com.icebreaker.be.service.auth.social.SocialType
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.math.BigDecimal
 import java.sql.Timestamp
-import java.util.*
 import javax.persistence.*
 
 @Entity
 @Table(name = "AK_POSITION", schema = "PUBLIC", catalog = "DEFAULT")
 class AkUserPositionEntity {
     @get:Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @get:GeneratedValue(strategy = GenerationType.IDENTITY)
     @get:Column(name = "ID")
     var id: Int = 0
 

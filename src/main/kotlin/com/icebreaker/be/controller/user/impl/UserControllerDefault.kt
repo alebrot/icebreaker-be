@@ -1,5 +1,6 @@
 package com.icebreaker.be.controller.user.impl
 
+import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.UserController
 import com.icebreaker.be.controller.user.dto.*
 import com.icebreaker.be.service.auth.AuthService
@@ -10,7 +11,6 @@ import com.icebreaker.be.user.UserService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.math.BigDecimal
 import javax.validation.Valid
@@ -18,6 +18,11 @@ import javax.validation.Valid
 @RestController
 class UserControllerDefault(val authService: AuthService,
                             val userService: UserService) : UserController {
+    override fun createUserPosition(request: CreateUserPositionRequest): BaseResponse {
+        val userOrFail = authService.getUserOrFail()
+        userService.updateUserPosition(userOrFail, request.latitude, request.longitude)
+        return BaseResponse()
+    }
 
 
     override fun getUserMeUsers(distance: Int,
