@@ -16,6 +16,8 @@ const val GET_USER_ME_USERS = "/users/me/users"
 const val CREATE_USER_POSITION = "/users/position"
 const val CREATE_USER = "/public/users"
 
+const val GET_IMAGE_PATH = "/public/images/"
+
 interface UserController {
 
     @PostMapping(UPLOAD_USER_IMAGE)

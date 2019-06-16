@@ -21,7 +21,7 @@ data class User(val id: Int,
 data class UserWithDistance(val distance: Int, val user: User)
 
 fun User.toDto(): UserDto {
-    return UserDto(this.id, this.firstName, this.lastName)
+    return UserDto(this.id, this.firstName, this.lastName, this.imgUrl)
 }
 
 fun User.Companion.fromEntity(userEntity: AkUserEntity): User {

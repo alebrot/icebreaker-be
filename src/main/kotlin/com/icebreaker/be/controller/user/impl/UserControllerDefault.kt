@@ -1,6 +1,7 @@
 package com.icebreaker.be.controller.user.impl
 
 import com.icebreaker.be.controller.core.dto.BaseResponse
+import com.icebreaker.be.controller.user.GET_IMAGE_PATH
 import com.icebreaker.be.controller.user.UserController
 import com.icebreaker.be.controller.user.dto.*
 import com.icebreaker.be.service.auth.AuthService
@@ -39,7 +40,7 @@ class UserControllerDefault(val authService: AuthService,
         userService.updateUserProfilePhoto(userOrFail, fileName)
 
         val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/public/images/")
+                .path(GET_IMAGE_PATH)
                 .path(fileName)
                 .toUriString()
         return UploadUserImageResponse(fileDownloadUri)
@@ -50,14 +51,14 @@ class UserControllerDefault(val authService: AuthService,
 
         val fileName = fileService.storeFile(file, 100, 200)
         val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/public/images/")
+                .path(GET_IMAGE_PATH)
                 .path(fileName)
                 .toUriString()
         return UploadUserImageResponse(fileDownloadUri)
     }
 
 
-    @GetMapping("/public/images/{fileName:.+}")
+    @GetMapping("$GET_IMAGE_PATH{fileName:.+}")
     fun downloadFile(@PathVariable fileName: String, request: HttpServletRequest): ResponseEntity<Resource> {
         val resource = fileService.loadFileAsResource(fileName)
         val contentType: String = try {
@@ -108,7 +109,13 @@ class UserControllerDefault(val authService: AuthService,
     override fun getUserById(userId: Int): GetUserByIdResponse {
         val userOrFail = authService.getUserOrFail()
         val authorities = userOrFail.authorities.map { it.toDto() }
-        val completeUserDto = CompleteUserDto(userOrFail.toDto(), authorities)
+        val images = userService.getImages(userOrFail).map {
+            ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path(GET_IMAGE_PATH)
+                    .path(it)
+                    .toUriString()
+        }
+        val completeUserDto = CompleteUserDto(userOrFail.toDto(), authorities, images)
         return GetUserByIdResponse(completeUserDto)
 
     }
@@ -117,7 +124,13 @@ class UserControllerDefault(val authService: AuthService,
     override fun getUserMe(): GetUserMeResponse {
         val userOrFail = authService.getUserOrFail()
         val authorities = userOrFail.authorities.map { it.toDto() }
-        val completeUserDto = CompleteUserDto(userOrFail.toDto(), authorities)
+        val images = userService.getImages(userOrFail).map {
+            ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path(GET_IMAGE_PATH)
+                    .path(it)
+                    .toUriString()
+        }
+        val completeUserDto = CompleteUserDto(userOrFail.toDto(), authorities, images)
         return GetUserMeResponse(UserContextDto(completeUserDto))
     }
 
@@ -125,7 +138,13 @@ class UserControllerDefault(val authService: AuthService,
     override fun getAdminMe(): GetAdminMeResponse {
         val userOrFail = authService.getUserOrFail()
         val authorities = userOrFail.authorities.map { it.toDto() }
-        val completeUserDto = CompleteUserDto(userOrFail.toDto(), authorities)
+        val images = userService.getImages(userOrFail).map {
+            ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path(GET_IMAGE_PATH)
+                    .path(it)
+                    .toUriString()
+        }
+        val completeUserDto = CompleteUserDto(userOrFail.toDto(), authorities, images)
         return GetAdminMeResponse(AdminContextDto(completeUserDto))
     }
 }

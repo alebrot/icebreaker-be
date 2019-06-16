@@ -61,6 +61,9 @@ class AkUserEntity {
     @get:JoinTable(name = "AK_USER_AUTHORITY", joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "ID")], inverseJoinColumns = [JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")])
     var authorities: Collection<AkAuthorityEntity> = ArrayList()
 
+    @get:OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    var images: Collection<AkUserImageEntity> = ArrayList()
+
     @get:OneToOne(fetch = FetchType.LAZY)
     @get:JoinColumn(name = "POSITION_ID", referencedColumnName = "ID", nullable = false)
     var position: AkUserPositionEntity? = null
