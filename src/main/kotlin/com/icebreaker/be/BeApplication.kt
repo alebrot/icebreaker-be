@@ -5,8 +5,9 @@ import com.icebreaker.be.user.UserService
 import com.icebreaker.be.user.impl.UserServiceDefault
 import com.icebreaker.be.user.social.SocialService
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
-import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
@@ -16,7 +17,6 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -30,13 +30,13 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer
-import org.springframework.security.oauth2.provider.*
+import org.springframework.security.oauth2.provider.ClientDetailsService
+import org.springframework.security.oauth2.provider.CompositeTokenGranter
+import org.springframework.security.oauth2.provider.OAuth2RequestFactory
+import org.springframework.security.oauth2.provider.TokenGranter
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore
-import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import org.springframework.web.filter.CorsFilter
 import java.util.*
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse
 import javax.sql.DataSource
 
 @SpringBootApplication
+@EnableConfigurationProperties(FileStorageProperties::class)
 class BeApplication
 
 fun main(args: Array<String>) {
@@ -169,15 +170,15 @@ class CorsConfig {
 
     @Configuration
     @Order(Ordered.HIGHEST_PRECEDENCE)
-    public class CORSFilter : Filter {
+    class CORSFilter : Filter {
 
-        private var config: FilterConfig? = null;
+        private var config: FilterConfig? = null
 
-        public val CREDENTIALS_NAME = "Access-Control-Allow-Credentials";
-        public val ORIGIN_NAME = "Access-Control-Allow-Origin";
-        public val METHODS_NAME = "Access-Control-Allow-Methods";
-        public val HEADERS_NAME = "Access-Control-Allow-Headers";
-        public val MAX_AGE_NAME = "Access-Control-Max-Age";
+        val CREDENTIALS_NAME = "Access-Control-Allow-Credentials"
+        val ORIGIN_NAME = "Access-Control-Allow-Origin"
+        val METHODS_NAME = "Access-Control-Allow-Methods"
+        val HEADERS_NAME = "Access-Control-Allow-Headers"
+        val MAX_AGE_NAME = "Access-Control-Max-Age"
 
         override fun destroy() {
 
@@ -187,21 +188,21 @@ class CorsConfig {
         override fun doFilter(req: ServletRequest, resp: ServletResponse,
                               chain: FilterChain) {
             val response = resp as HttpServletResponse
-            val request = req as HttpServletRequest;
-            response.setHeader("Access-Control-Allow-Origin", "*");
-            response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-            response.setHeader("Access-Control-Max-Age", "3600");
-            response.setHeader("Access-Control-Allow-Headers", "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN");
+            val request = req as HttpServletRequest
+            response.setHeader("Access-Control-Allow-Origin", "*")
+            response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE")
+            response.setHeader("Access-Control-Max-Age", "3600")
+            response.setHeader("Access-Control-Allow-Headers", "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN")
 
             if ("OPTIONS" == (request.method)) {
-                response.status = HttpServletResponse.SC_OK;
+                response.status = HttpServletResponse.SC_OK
             } else {
-                chain.doFilter(req, resp);
+                chain.doFilter(req, resp)
             }
         }
 
         override fun init(filterConfig: FilterConfig) {
-            config = filterConfig;
+            config = filterConfig
         }
     }
 
@@ -210,5 +211,13 @@ class CorsConfig {
         return BCryptPasswordEncoder(8)
     }
 }
+
+
+@Configuration
+@ConfigurationProperties(prefix = "file")
+class FileStorageProperties {
+    lateinit var uploadDir: String
+}
+
 
 

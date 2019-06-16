@@ -3,17 +3,27 @@ package com.icebreaker.be.controller.user
 import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.dto.*
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.math.BigDecimal
 import javax.validation.Valid
 
 const val GET_USER_BY_ID = "/users/{userId}"
 const val GET_USER_ME = "/users/me"
+const val UPLOAD_USER_IMAGE = "/users/me/images/{imageId}"
+const val UPLOAD_USER_PROFILE_IMAGE = "/users/me/image"
 const val GET_ADMIN_ME = "/admins/me"
 const val GET_USER_ME_USERS = "/users/me/users"
 const val CREATE_USER_POSITION = "/users/position"
 const val CREATE_USER = "/public/users"
 
 interface UserController {
+
+    @PostMapping(UPLOAD_USER_IMAGE)
+    fun uploadUserImage(@PathVariable imageId: Int, @RequestParam("image") file: MultipartFile): UploadUserImageResponse
+
+    @PostMapping(UPLOAD_USER_PROFILE_IMAGE)
+    fun uploadUserProfileImage(@PathVariable imageId: Int, @RequestParam("image") file: MultipartFile): UploadUserImageResponse
+
     @PostMapping(CREATE_USER_POSITION)
     fun createUserPosition(@RequestBody createUserPositionRequest: CreateUserPositionRequest): BaseResponse
 
