@@ -5,6 +5,7 @@ import com.icebreaker.be.controller.user.*
 import com.icebreaker.be.controller.user.dto.*
 import com.icebreaker.be.db.repository.UserPositionRepository
 import com.icebreaker.be.db.repository.UserRepository
+import com.icebreaker.be.service.chat.impl.ChatServiceImpl
 import org.junit.Assert
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -68,7 +69,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
     @Test
     fun getUserMeUsers() {
         authenticate()
-        val response = testRestTemplate.getForEntity("$GET_USER_ME_USERS?distance={distance}", GetUserMeUsersResponse::class.java, 100 )
+        val response = testRestTemplate.getForEntity("$GET_USER_ME_USERS?distance={distance}", GetUserMeUsersResponse::class.java, 100)
         Assert.assertNotNull(response)
         Assert.assertEquals(response.statusCode, HttpStatus.OK)
         Assert.assertNotNull(response.body)
@@ -86,27 +87,33 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
     }
 
 
-
     @Autowired
     lateinit var userPositionRepository: UserPositionRepository
 
     @Autowired
     lateinit var userRepository: UserRepository
 
+
+    @Autowired
+    lateinit var chatServiceImpl: ChatServiceImpl
+
 //    @Test
 //    fun fdfdyf() {
 //        ssdsfsd()
-//
 ////        findByUserId.u
 //    }
 //
 //    @Transactional
 //    fun ssdsfsd() {
-//        val findUsersCloseToUser = userRepository.findUsersCloseToUser(1, 1000)
+////        val findUsersCloseToUser = userRepository.findUsersCloseToUser(1, 1000)
 //
 //
 ////        val findByUserId = userPositionRepository.findByUserId(1)
 ////        val user = findByUserId?.user
 ////        val authorities = user?.authorities
+//        val findById = userRepository.findById(1).toKotlinNotOptionalOrFail()
+//        val model = User.fromEntity(findById)
+//
+//        val chatsByUser = chatServiceImpl.getChatsByUser(model)
 //    }
 }
