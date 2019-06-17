@@ -30,6 +30,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.springframework.security.oauth", "spring-security-oauth2", "2.3.5.RELEASE")
+    implementation("org.imgscalr", "imgscalr-lib", "4.2")
     runtimeOnly("com.h2database:h2")
 }
 

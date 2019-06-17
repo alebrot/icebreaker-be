@@ -2,6 +2,7 @@ package com.icebreaker.be.service.file.impl
 
 import com.icebreaker.be.FileStorageProperties
 import com.icebreaker.be.service.file.FileService
+import org.imgscalr.Scalr
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Service
@@ -71,7 +72,7 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
         return UUID.randomUUID().toString()
     }
 
-    private fun scale(img: BufferedImage, width: Int, height: Int): BufferedImage {
+    private fun scaleOld(img: BufferedImage, width: Int, height: Int): BufferedImage {
         val tmp = img.getScaledInstance(width, height, Image.SCALE_DEFAULT)
         val scaled = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
         val g2d = scaled.createGraphics()
@@ -80,9 +81,14 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
         return scaled
     }
 
+    private fun scale(img: BufferedImage, width: Int, height: Int): BufferedImage {
+        return Scalr.resize(img, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
+                width, height, Scalr.OP_ANTIALIAS)
+    }
+
     private fun scale(img: InputStream, ext: String, width: Int, height: Int): InputStream {
         val image = ImageIO.read(img)
-        val scaled = scale(image, 50, 50)
+        val scaled = scale(image, width, height)
         val os = ByteArrayOutputStream()
         ImageIO.write(scaled, ext.toLowerCase(), os)
         return ByteArrayInputStream(os.toByteArray())

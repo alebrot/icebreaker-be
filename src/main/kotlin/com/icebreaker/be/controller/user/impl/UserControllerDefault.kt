@@ -35,7 +35,7 @@ class UserControllerDefault(val authService: AuthService,
     override fun uploadUserProfileImage(file: MultipartFile): UploadUserImageResponse {
         val userOrFail = authService.getUserOrFail()
 
-        val fileName = fileService.storeFile(file, 100, 100)
+        val fileName = fileService.storeFile(file, 250, 250)
 
         userService.updateUserProfilePhoto(userOrFail, fileName)
 
@@ -54,7 +54,7 @@ class UserControllerDefault(val authService: AuthService,
             throw IllegalArgumentException("wrong image id, allowed values [1,2,3]")
         }
 
-        val fileName = fileService.storeFile(file, 100, 200)
+        val fileName = fileService.storeFile(file, 600, 800)
 
         userService.updateImageForUser(userOrFail, imageId, fileName)
 
