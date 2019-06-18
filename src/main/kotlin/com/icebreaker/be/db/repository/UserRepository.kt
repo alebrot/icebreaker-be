@@ -4,7 +4,6 @@ import com.icebreaker.be.db.entity.AkUserEntity
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
-import java.math.BigDecimal
 
 interface UserRepository : CrudRepository<AkUserEntity, Int> {
     fun findByEmail(email: String): AkUserEntity?
@@ -14,15 +13,4 @@ interface UserRepository : CrudRepository<AkUserEntity, Int> {
 
     @Query(value = "SELECT * FROM (SELECT (6371 * acos( cos(radians(LAT)) * cos(radians( :latOriginal)) * cos(radians( :lonOriginal) - radians(LON)) + sin(radians(LAT)) * sin(radians(:latOriginal)) )) * 1000 as distance, A.* FROM AK_POSITION INNER JOIN AK_USER A on AK_POSITION.ID = A.POSITION_ID WHERE A.ID != :userId) as `d*` WHERE distance < :distanceInMeters", nativeQuery = true)
     fun findUsersCloseToUserPosition(@Param("userId") userId: Int, @Param("distanceInMeters") distanceInMeters: Int, @Param("latOriginal") latOriginal: Double, @Param("lonOriginal") lonOriginal: Double): List<Map<String, Any>>
-}
-
-
-interface PublicUser {
-    fun getId(): Int
-    fun getFirstName(): String
-    fun getLastName(): String
-}
-
-interface UserDistance : PublicUser {
-    fun getDistance(): BigDecimal
 }
