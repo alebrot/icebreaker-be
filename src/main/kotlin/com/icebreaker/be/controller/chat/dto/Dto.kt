@@ -1,5 +1,6 @@
 package com.icebreaker.be.controller.chat.dto
 
+import com.icebreaker.be.controller.core.dto.BaseRequest
 import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.dto.UserDto
 import java.time.LocalDateTime
@@ -12,3 +13,5 @@ data class ChatLineDto(val id: Int, val user: UserDto, val content: String, val 
 
 
 data class SendMessageRequest(val content: String) : BaseResponse()
+data class FindOrCreateChatRequest(val userIds: List<Int>) : BaseRequest()
+data class FindOrCreateChatResponse(val chat: ChatDto) : BaseResponse()

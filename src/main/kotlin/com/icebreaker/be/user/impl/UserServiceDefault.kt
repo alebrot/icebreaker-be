@@ -1,12 +1,12 @@
 package com.icebreaker.be.user.impl
 
-import com.ak.be.engine.ext.toKotlinNotOptionalOrFail
 import com.icebreaker.be.auth.UserDetailsDefault
 import com.icebreaker.be.db.entity.AkSocialEntity
 import com.icebreaker.be.db.entity.AkUserEntity
 import com.icebreaker.be.db.entity.AkUserImageEntity
 import com.icebreaker.be.db.entity.AkUserPositionEntity
 import com.icebreaker.be.db.repository.*
+import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
 import com.icebreaker.be.service.model.Authority
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.UserWithDistance

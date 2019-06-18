@@ -4,6 +4,7 @@ import com.icebreaker.be.controller.chat.dto.ChatDto
 import com.icebreaker.be.controller.chat.dto.ChatLineDto
 import com.icebreaker.be.db.entity.AkChatEntity
 import com.icebreaker.be.db.entity.AkChatLineEntity
+import com.icebreaker.be.db.entity.AkUserEntity
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.fromEntity
 import com.icebreaker.be.service.model.toDto
@@ -13,6 +14,11 @@ data class Chat(val id: Int, val users: List<User>, var lastMessage: ChatLine? =
     companion object {
         fun fromEntity(entity: AkChatEntity): Chat {
             val users = entity.users.map { u -> User.fromEntity(u) }
+            return Chat(entity.id, users)
+        }
+
+        fun fromEntity(entity: AkChatEntity, usersEntity: List<AkUserEntity>): Chat {
+            val users = usersEntity.map { u -> User.fromEntity(u) }
             return Chat(entity.id, users)
         }
     }

@@ -8,5 +8,5 @@ interface ChatService {
     fun getChatsByUser(user: User): List<Chat>
     fun getChatLinesByChatId(chatId: Int, limit: Int, offset: Int): List<ChatLine>
     fun sendMessage(user: User, chatId: Int, content: String)
-    fun createChat(user: User, vararg userIds: Int)
+    fun findOrCreateChat(user: User, userIds: List<Int>): Chat
 }

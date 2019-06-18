@@ -1,9 +1,7 @@
 package com.icebreaker.be.controller.chat.impl
 
 import com.icebreaker.be.controller.chat.ChatController
-import com.icebreaker.be.controller.chat.dto.GetChatLinesResponse
-import com.icebreaker.be.controller.chat.dto.GetUserMeChatsResponse
-import com.icebreaker.be.controller.chat.dto.SendMessageRequest
+import com.icebreaker.be.controller.chat.dto.*
 import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.chat.ChatService
 import com.icebreaker.be.service.chat.model.toDto
@@ -42,10 +40,14 @@ class ChatControllerDefault(val authService: AuthService, val chatService: ChatS
 
         val userOrFail = authService.getUserOrFail()
         val chats = chatService.getChatsByUser(userOrFail)
-        val found = chats.find { it.id == chatId }
-                ?: throw IllegalArgumentException("user doesn't have chat with id $chatId")
+        chats.find { it.id == chatId } ?: throw IllegalArgumentException("user doesn't have chat with id $chatId")
         val chatLinesByChatId = chatService.getChatLinesByChatId(chatId, limitChecked, offsetChecked)
         return GetChatLinesResponse(chatLinesByChatId.map { it.toDto() })
     }
 
+    override fun findOrCreateChat(request: FindOrCreateChatRequest): FindOrCreateChatResponse {
+        val userOrFail = authService.getUserOrFail()
+        val chat = chatService.findOrCreateChat(userOrFail, request.userIds)
+        return FindOrCreateChatResponse(chat.toDto())
+    }
 }
