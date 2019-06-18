@@ -7,7 +7,7 @@ import javax.persistence.*
 @Table(name = "AK_USER_IMAGE", schema = "PUBLIC", catalog = "DEFAULT")
 class AkUserImageEntity {
     @get:Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @get:GeneratedValue(strategy = GenerationType.IDENTITY)
     @get:Column(name = "ID")
     var id: Int = 0
     @get:Basic

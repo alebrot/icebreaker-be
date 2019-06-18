@@ -11,7 +11,7 @@ import javax.persistence.*
 class AkChatLineEntity {
 
     @get:Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @get:GeneratedValue(strategy = GenerationType.IDENTITY)
     @get:Column(name = "ID")
     var id: Int = 0
 
@@ -29,15 +29,17 @@ class AkChatLineEntity {
     @get:Column(name = "UPDATED_AT")
     var updatedAt: Timestamp? = null
 
-    @get:OneToOne(fetch = FetchType.LAZY)
-//    @get:JoinTable(name = "AK_CHAT_USER", joinColumns = [JoinColumn(name = "CHAT_ID", referencedColumnName = "ID")], inverseJoinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "ID")])
-    @get:JoinColumn(name = "USER_ID", referencedColumnName = "ID", nullable = false)
-    var user: AkUserEntity? = null
+//    @get:OneToOne(fetch = FetchType.LAZY)
+//    @get:JoinColumn(name = "USER_ID", referencedColumnName = "ID", nullable = false)
+//    var user: AkUserEntity? = null
+//
+//    @get:OneToOne(fetch = FetchType.LAZY)
+//    @get:JoinColumn(name = "CHAT_ID", referencedColumnName = "ID", nullable = false)
+//    var chat: AkChatEntity? = null
 
     @get:OneToOne(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "CHAT_ID", referencedColumnName = "ID", nullable = false)
-//    @get:JoinTable(name = "AK_CHAT_USER", joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "ID")], inverseJoinColumns = [JoinColumn(name = "CHAT_ID", referencedColumnName = "ID")])
-    var chat: AkChatEntity? = null
+    @get:JoinColumn(name = "CHAT_USER_ID", referencedColumnName = "ID", nullable = false)
+    var chatUser: AkChatUserEntity? = null
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -11,7 +11,7 @@ import javax.persistence.*
 @Table(name = "AK_SOCIAL", schema = "PUBLIC", catalog = "DEFAULT")
 class AkSocialEntity {
     @get:Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @get:GeneratedValue(strategy = GenerationType.IDENTITY)
     @get:Column(name = "ID")
     var id: Int = 0
     @get:Basic
@@ -50,5 +50,9 @@ class AkSocialEntity {
                 user == that.user &&
                 email == that.email &&
                 type == that.type
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(id, socialId, type, user, email)
     }
 }

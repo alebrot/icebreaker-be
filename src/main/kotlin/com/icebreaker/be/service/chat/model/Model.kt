@@ -27,8 +27,8 @@ fun Chat.toDto(): ChatDto {
 data class ChatLine(val id: Int, val user: User, val content: String, val createdAt: LocalDateTime, val updatedAt: LocalDateTime) {
     companion object {
         fun fromEntity(entity: AkChatLineEntity): ChatLine {
-            val user = entity.user ?: throw IllegalStateException("user not retrieved")
-            val chat = entity.chat ?: throw IllegalStateException("chat not retrieved")
+            val user = entity.chatUser?.user ?: throw IllegalStateException("user not retrieved")
+            val chat = entity.chatUser?.chat ?: throw IllegalStateException("chat not retrieved")
             val content = entity.content ?: ""
             val createdAt = entity.createdAt ?: throw IllegalStateException("createdAt is null")
             val updatedAt = entity.updatedAt ?: throw IllegalStateException("updatedAt is null")

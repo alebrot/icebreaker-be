@@ -3,6 +3,7 @@ package com.icebreaker.be.controller.chat.impl
 import com.icebreaker.be.controller.chat.ChatController
 import com.icebreaker.be.controller.chat.dto.GetChatLinesResponse
 import com.icebreaker.be.controller.chat.dto.GetUserMeChatsResponse
+import com.icebreaker.be.controller.chat.dto.SendMessageRequest
 import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.chat.ChatService
 import com.icebreaker.be.service.chat.model.toDto
@@ -10,6 +11,13 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ChatControllerDefault(val authService: AuthService, val chatService: ChatService) : ChatController {
+
+    override fun sendMessage(chatId: Int, request: SendMessageRequest) {
+        val userOrFail = authService.getUserOrFail()
+        chatService.sendMessage(userOrFail, chatId, request.content)
+    }
+
+
     override fun getUserMeChats(): GetUserMeChatsResponse {
         val userOrFail = authService.getUserOrFail()
         val chats = chatService.getChatsByUser(userOrFail)
