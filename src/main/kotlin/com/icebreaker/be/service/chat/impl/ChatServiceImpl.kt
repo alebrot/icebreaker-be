@@ -21,7 +21,12 @@ class ChatServiceImpl(val userRepository: UserRepository,
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         val chats = userEntity.chats
         return chats.sortedByDescending { akChatEntity -> akChatEntity.createdAt }.map {
-            Chat.fromEntity(it)
+            val lastLine = chatLineRepository.findByChatId(it.id, 1, 0).firstOrNull()
+            val chat = Chat.fromEntity(it)
+            if (lastLine != null) {
+                chat.lastMessage = ChatLine.fromEntity(lastLine)
+            }
+            chat
         }
     }
 

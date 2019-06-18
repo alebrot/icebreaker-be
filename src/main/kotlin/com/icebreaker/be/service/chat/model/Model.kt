@@ -9,7 +9,7 @@ import com.icebreaker.be.service.model.fromEntity
 import com.icebreaker.be.service.model.toDto
 import java.time.LocalDateTime
 
-data class Chat(val id: Int, val users: List<User>) {
+data class Chat(val id: Int, val users: List<User>, var lastMessage: ChatLine? = null) {
     companion object {
         fun fromEntity(entity: AkChatEntity): Chat {
             val users = entity.users.map { u -> User.fromEntity(u) }
@@ -21,7 +21,7 @@ data class Chat(val id: Int, val users: List<User>) {
 
 fun Chat.toDto(): ChatDto {
     val users = this.users.map { user -> user.toDto() }
-    return ChatDto(this.id, users)
+    return ChatDto(this.id, users, this.lastMessage?.toDto())
 }
 
 data class ChatLine(val id: Int, val user: User, val content: String, val createdAt: LocalDateTime, val updatedAt: LocalDateTime) {
