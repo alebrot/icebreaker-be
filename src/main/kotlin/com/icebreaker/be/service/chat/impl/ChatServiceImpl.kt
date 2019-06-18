@@ -36,6 +36,11 @@ class ChatServiceImpl(val userRepository: UserRepository,
     override fun findOrCreateChat(user: User, userIds: List<Int>): Chat {
         val ids = HashSet(userIds.toList())
         ids.add(user.id)
+
+        if (ids.size == 1) {
+            throw IllegalArgumentException("invalid input")
+        }
+
         val toSortedSet = ids.toSortedSet()
 
         val found = chatRepository.findByUserIds(toSortedSet.joinToString(","))
