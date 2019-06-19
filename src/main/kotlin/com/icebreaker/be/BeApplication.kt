@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpMethod
+import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
@@ -37,6 +38,10 @@ import org.springframework.security.oauth2.provider.TokenGranter
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore
+import org.springframework.transaction.annotation.EnableTransactionManagement
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 import java.util.*
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
@@ -45,6 +50,7 @@ import javax.sql.DataSource
 
 @SpringBootApplication
 @EnableConfigurationProperties(FileStorageProperties::class)
+@EnableTransactionManagement
 class BeApplication
 
 fun main(args: Array<String>) {
@@ -219,5 +225,20 @@ class FileStorageProperties {
     lateinit var uploadDir: String
 }
 
+
+@Configuration
+@EnableWebSocketMessageBroker
+class WebSocketConfig : WebSocketMessageBrokerConfigurer {
+
+    override fun configureMessageBroker(config: MessageBrokerRegistry) {
+        config.enableSimpleBroker("/topic")
+        config.setApplicationDestinationPrefixes("/app")
+//        config.enableSimpleBroker("/topic", "/queue")
+    }
+
+    override fun registerStompEndpoints(registry: StompEndpointRegistry) {
+        registry.addEndpoint("/ak-websocket").withSockJS()
+    }
+}
 
 

@@ -32,6 +32,15 @@ dependencies {
     implementation("org.springframework.security.oauth", "spring-security-oauth2", "2.3.5.RELEASE")
     implementation("org.imgscalr", "imgscalr-lib", "4.2")
     runtimeOnly("com.h2database:h2")
+
+
+    implementation("org.webjars:webjars-locator-core")
+    implementation("org.webjars:sockjs-client:1.0.2")
+    implementation("org.webjars:stomp-websocket:2.3.3")
+    implementation("org.webjars:bootstrap:3.3.7")
+    implementation("org.webjars:jquery:3.1.0")
+
+
 }
 
 tasks.withType<KotlinCompile> {
