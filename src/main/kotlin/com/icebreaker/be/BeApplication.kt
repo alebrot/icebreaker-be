@@ -231,7 +231,7 @@ class FileStorageProperties {
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
-        config.enableSimpleBroker("/topic")
+        config.enableSimpleBroker("/chat")
         config.setApplicationDestinationPrefixes("/app")
 //        config.enableSimpleBroker("/topic", "/queue")
     }

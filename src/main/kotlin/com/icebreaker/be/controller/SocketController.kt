@@ -19,21 +19,16 @@ class SocketController(val authService: AuthService,
 
     val logger: Logger = LoggerFactory.getLogger(SocketController::class.java)
 
-    @MessageMapping("/hello/{chatId}")
-//    @SendToUser("/topic/orders/{chatId}")
+    @MessageMapping("/{chatId}")//complete path from client app/{chatId}
     @Throws(Exception::class)
-    fun greeting(principal: OAuth2Authentication, message: Message, @DestinationVariable chatId: Int) {
+    fun sendMessageByClient(principal: OAuth2Authentication, message: Message, @DestinationVariable chatId: Int) {
         val userOrFail = authService.getUserOrFail(principal)
         val chat = chatService.findChatOrFail(chatId)
         //sendMessage performs validation
         val chatLine = chatService.sendMessage(userOrFail, chatId, message.name)
         chat.users.forEach {
-            simpMessagingTemplate.convertAndSendToUser(it.email, "/topic/orders/$chatId", chatLine)
+            simpMessagingTemplate.convertAndSendToUser(it.email, "/chat/$chatId", chatLine)
         }
-
-//        simpMessagingTemplate.convertAndSendToUser("email1@email.com", "/topic/orders/$chatId", "{\"content\":\"Hello, " + HtmlUtils.htmlEscape("email1@email.com") + "\"}")
-//        simpMessagingTemplate.convertAndSendToUser("email2@email.com", "/topic/orders/$chatId", "{\"content\":\"Hello, " + HtmlUtils.htmlEscape("email2@email.com") + "\"}")
-//        return "{\"content\":\"Hello111, " + HtmlUtils.htmlEscape(message.name) + "\"}"
     }
 }
 

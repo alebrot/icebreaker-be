@@ -19,8 +19,9 @@ function connect() {
         var chatId = $("#chat").val();
         console.log('Connected: ' + frame + 'chat id ' + chatId);
 
-        stompClient.subscribe('/user/topic/orders/' + chatId, function (orders) {
-            showGreeting(JSON.parse(orders.body).content);
+        stompClient.subscribe('/user/chat/' + chatId, function (orders) {
+            var parse = JSON.parse(orders.body);
+            showGreeting(parse.user.email, parse.content);
         });
     });
 }
@@ -36,11 +37,11 @@ function disconnect() {
 function sendName() {
     var chatId = $("#chat").val();
     console.log('Send to: chat id ' + chatId);
-    stompClient.send("/app/hello/" + chatId, {}, JSON.stringify({'name': $("#name").val()}));
+    stompClient.send("/app/" + chatId, {}, JSON.stringify({'name': $("#name").val()}));
 }
 
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+function showGreeting(from, message) {
+    $("#greetings").append("<tr><td><strong>" + from + "<strong></td><td>" + message + "</td></tr>");
 }
 
 $(function () {
