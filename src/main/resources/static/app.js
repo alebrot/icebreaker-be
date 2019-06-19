@@ -12,15 +12,15 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('/ak-websocket');
+    var socket = new SockJS('/chat-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
         var chatId = $("#chat").val();
         console.log('Connected: ' + frame + 'chat id ' + chatId);
 
-        stompClient.subscribe('/user/chat/' + chatId, function (orders) {
-            var parse = JSON.parse(orders.body);
+        stompClient.subscribe('/user/chat/' + chatId, function (chatLine) {
+            var parse = JSON.parse(chatLine.body);
             showGreeting(parse.user.email, parse.content);
         });
     });
@@ -37,7 +37,7 @@ function disconnect() {
 function sendName() {
     var chatId = $("#chat").val();
     console.log('Send to: chat id ' + chatId);
-    stompClient.send("/app/" + chatId, {}, JSON.stringify({'name': $("#name").val()}));
+    stompClient.send("/app/" + chatId, {}, JSON.stringify({'content': $("#name").val()}));
 }
 
 function showGreeting(from, message) {

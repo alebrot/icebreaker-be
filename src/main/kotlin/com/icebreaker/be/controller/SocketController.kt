@@ -25,11 +25,11 @@ class SocketController(val authService: AuthService,
         val userOrFail = authService.getUserOrFail(principal)
         val chat = chatService.findChatOrFail(chatId)
         //sendMessage performs validation
-        val chatLine = chatService.sendMessage(userOrFail, chatId, message.name)
+        val chatLine = chatService.sendMessage(userOrFail, chatId, message.content)
         chat.users.forEach {
             simpMessagingTemplate.convertAndSendToUser(it.email, "/chat/$chatId", chatLine)
         }
     }
 }
 
-data class Message(val name: String)
+data class Message(val content: String)

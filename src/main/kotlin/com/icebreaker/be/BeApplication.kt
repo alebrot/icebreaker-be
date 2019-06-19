@@ -237,7 +237,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
     }
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-        registry.addEndpoint("/ak-websocket").withSockJS()
+        registry.addEndpoint("/chat-websocket").withSockJS()
     }
 }
 
