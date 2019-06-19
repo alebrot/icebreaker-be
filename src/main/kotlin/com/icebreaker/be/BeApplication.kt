@@ -195,7 +195,10 @@ class CorsConfig {
                               chain: FilterChain) {
             val response = resp as HttpServletResponse
             val request = req as HttpServletRequest
-            response.setHeader("Access-Control-Allow-Origin", "*")
+//            response.setHeader("Access-Control-Allow-Origin", "*")
+            val origin = req.getHeader("Origin") ?: "*"
+            response.setHeader("Access-Control-Allow-Origin", origin)
+            response.setHeader("Access-Control-Allow-Credentials", "true")
             response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE")
             response.setHeader("Access-Control-Max-Age", "3600")
             response.setHeader("Access-Control-Allow-Headers", "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN")
@@ -237,7 +240,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
     }
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-        registry.addEndpoint("/chat-websocket").withSockJS()
+        registry.addEndpoint("/chat-websocket").setAllowedOrigins("*").withSockJS()
     }
 }
 

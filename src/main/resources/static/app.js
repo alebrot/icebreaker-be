@@ -12,7 +12,8 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('/chat-websocket');
+    var token = $("#token").val();
+    var socket = new SockJS('/chat-websocket?access_token=' + token);
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
@@ -21,7 +22,7 @@ function connect() {
 
         stompClient.subscribe('/user/chat/' + chatId, function (chatLine) {
             var parse = JSON.parse(chatLine.body);
-            showGreeting(parse.user.email, parse.content);
+            showGreeting(parse.user.firstName, parse.content);
         });
     });
 }
