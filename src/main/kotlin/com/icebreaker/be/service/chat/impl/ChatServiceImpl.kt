@@ -9,6 +9,7 @@ import com.icebreaker.be.db.repository.ChatRepository
 import com.icebreaker.be.db.repository.ChatUserRepository
 import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
+import com.icebreaker.be.ext.toKotlinOptional
 import com.icebreaker.be.service.chat.ChatService
 import com.icebreaker.be.service.chat.model.Chat
 import com.icebreaker.be.service.chat.model.ChatLine
@@ -23,13 +24,29 @@ class ChatServiceImpl(val userRepository: UserRepository,
                       val chatUserRepository: ChatUserRepository) : ChatService {
 
     @Transactional
-    override fun sendMessage(user: User, chatId: Int, content: String) {
+    override fun findChat(chatId: Int): Chat? {
+        val chatEntity = chatRepository.findById(chatId).toKotlinOptional()
+        if (chatEntity != null) {
+            return Chat.fromEntity(chatEntity)
+        }
+        return null
+    }
+
+    @Transactional
+    override fun findChatOrFail(chatId: Int): Chat {
+        val chatEntity = chatRepository.findById(chatId).toKotlinNotOptionalOrFail()
+        return Chat.fromEntity(chatEntity)
+    }
+
+    @Transactional
+    override fun sendMessage(user: User, chatId: Int, content: String): ChatLine {
         val chatUserEntity = chatUserRepository.findByChatIdAndUserId(chatId, user.id)
                 ?: throw IllegalArgumentException("chat not found not found by userId ${user.id} and chatId $chatId")
         val akChatLineEntity = AkChatLineEntity()
         akChatLineEntity.content = content
         akChatLineEntity.chatUser = chatUserEntity
         chatLineRepository.save(akChatLineEntity)
+        return ChatLine.fromEntity(akChatLineEntity)
     }
 
     @Transactional
