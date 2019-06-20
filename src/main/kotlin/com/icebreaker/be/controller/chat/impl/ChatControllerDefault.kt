@@ -4,17 +4,24 @@ import com.icebreaker.be.controller.chat.ChatController
 import com.icebreaker.be.controller.chat.dto.*
 import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.chat.ChatService
+import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.chat.model.toDto
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ChatControllerDefault(val authService: AuthService, val chatService: ChatService) : ChatController {
 
-    override fun sendMessage(chatId: Int, request: SendMessageRequest) {
+    override fun createInvitation(request: CreateInvitationRequest): CreateInvitationResponse {
         val userOrFail = authService.getUserOrFail()
-        chatService.sendMessage(userOrFail, chatId, request.content)
+        val chat = chatService.findOrCreateChat(userOrFail, request.userIds)
+        chatService.sendMessage(userOrFail, chat.id, request.content, MessageType.INVITATION)
+        return CreateInvitationResponse(chat.toDto())
     }
 
+    override fun sendMessage(chatId: Int, request: SendMessageRequest) {
+        val userOrFail = authService.getUserOrFail()
+        chatService.sendMessage(userOrFail, chatId, request.content, MessageType.DEFAULT)
+    }
 
     override fun getUserMeChats(): GetUserMeChatsResponse {
         val userOrFail = authService.getUserOrFail()

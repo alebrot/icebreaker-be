@@ -13,6 +13,7 @@ import com.icebreaker.be.ext.toKotlinOptional
 import com.icebreaker.be.service.chat.ChatService
 import com.icebreaker.be.service.chat.model.Chat
 import com.icebreaker.be.service.chat.model.ChatLine
+import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.model.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -39,11 +40,12 @@ class ChatServiceImpl(val userRepository: UserRepository,
     }
 
     @Transactional
-    override fun sendMessage(user: User, chatId: Int, content: String): ChatLine {
+    override fun sendMessage(user: User, chatId: Int, content: String, type: MessageType): ChatLine {
         val chatUserEntity = chatUserRepository.findByChatIdAndUserId(chatId, user.id)
                 ?: throw IllegalArgumentException("chat not found not found by userId ${user.id} and chatId $chatId")
         val akChatLineEntity = AkChatLineEntity()
         akChatLineEntity.content = content
+        akChatLineEntity.type = type
         akChatLineEntity.chatUser = chatUserEntity
         chatLineRepository.save(akChatLineEntity)
         return ChatLine.fromEntity(akChatLineEntity)

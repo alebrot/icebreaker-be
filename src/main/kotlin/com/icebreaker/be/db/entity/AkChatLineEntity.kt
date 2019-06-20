@@ -1,5 +1,6 @@
 package com.icebreaker.be.db.entity
 
+import com.icebreaker.be.service.chat.model.MessageType
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.sql.Timestamp
@@ -28,6 +29,11 @@ class AkChatLineEntity {
     @get:UpdateTimestamp
     @get:Column(name = "UPDATED_AT")
     var updatedAt: Timestamp? = null
+
+    @get:Enumerated(EnumType.ORDINAL)
+    @get:Basic
+    @get:Column(name = "TYPE")
+    lateinit var type: MessageType
 
 //    @get:OneToOne(fetch = FetchType.LAZY)
 //    @get:JoinColumn(name = "USER_ID", referencedColumnName = "ID", nullable = false)

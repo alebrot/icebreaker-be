@@ -2,6 +2,7 @@ package com.icebreaker.be.controller
 
 import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.chat.ChatService
+import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.chat.model.toDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,7 +27,7 @@ class SocketController(val authService: AuthService,
         val userOrFail = authService.getUserOrFail(principal)
         val chat = chatService.findChatOrFail(chatId)
         //sendMessage performs validation
-        val chatLine = chatService.sendMessage(userOrFail, chatId, message.content)
+        val chatLine = chatService.sendMessage(userOrFail, chatId, message.content, MessageType.DEFAULT)
         chat.users.forEach {
             simpMessagingTemplate.convertAndSendToUser(it.email, "/chat/$chatId", chatLine.toDto())
         }
