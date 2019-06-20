@@ -76,12 +76,12 @@ class UserControllerDefault(val authService: AuthService,
         }
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .body<Resource>(resource)
+                .body(resource)
     }
 
-    override fun createUserPosition(request: CreateUserPositionRequest): BaseResponse {
+    override fun createUserPosition(createUserPositionRequest: CreateUserPositionRequest): BaseResponse {
         val userOrFail = authService.getUserOrFail()
-        userService.updateUserPosition(userOrFail, request.latitude, request.longitude)
+        userService.updateUserPosition(userOrFail, createUserPositionRequest.latitude, createUserPositionRequest.longitude)
         return BaseResponse()
     }
 
@@ -117,12 +117,7 @@ class UserControllerDefault(val authService: AuthService,
     override fun getUserById(userId: Int): GetUserByIdResponse {
         val userOrFail = authService.getUserOrFail()
         val authorities = userOrFail.authorities.map { it.toDto() }
-        val images = userService.getImages(userOrFail).map {
-            ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path(GET_IMAGE_PATH)
-                    .path(it)
-                    .toUriString()
-        }
+        val images = userService.getImages(userOrFail)
         val completeUserDto = CompleteUserDto(userOrFail.toDto(), authorities, images)
         return GetUserByIdResponse(completeUserDto)
 
@@ -132,12 +127,7 @@ class UserControllerDefault(val authService: AuthService,
     override fun getUserMe(): GetUserMeResponse {
         val userOrFail = authService.getUserOrFail()
         val authorities = userOrFail.authorities.map { it.toDto() }
-        val images = userService.getImages(userOrFail).map {
-            ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path(GET_IMAGE_PATH)
-                    .path(it)
-                    .toUriString()
-        }
+        val images = userService.getImages(userOrFail)
         val completeUserDto = CompleteUserDto(userOrFail.toDto(), authorities, images)
         return GetUserMeResponse(UserContextDto(completeUserDto))
     }
@@ -146,12 +136,7 @@ class UserControllerDefault(val authService: AuthService,
     override fun getAdminMe(): GetAdminMeResponse {
         val userOrFail = authService.getUserOrFail()
         val authorities = userOrFail.authorities.map { it.toDto() }
-        val images = userService.getImages(userOrFail).map {
-            ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path(GET_IMAGE_PATH)
-                    .path(it)
-                    .toUriString()
-        }
+        val images = userService.getImages(userOrFail)
         val completeUserDto = CompleteUserDto(userOrFail.toDto(), authorities, images)
         return GetAdminMeResponse(AdminContextDto(completeUserDto))
     }

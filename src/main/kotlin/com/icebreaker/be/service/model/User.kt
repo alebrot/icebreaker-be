@@ -1,7 +1,9 @@
 package com.icebreaker.be.service.model
 
+import com.icebreaker.be.controller.user.GET_IMAGE_PATH
 import com.icebreaker.be.controller.user.dto.UserDto
 import com.icebreaker.be.db.entity.AkUserEntity
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.io.Serializable
 
 data class User(val id: Int,
@@ -21,7 +23,16 @@ data class User(val id: Int,
 data class UserWithDistance(val distance: Int, val user: User)
 
 fun User.toDto(): UserDto {
-    return UserDto(this.id, this.firstName, this.lastName, this.imgUrl)
+    val image = if (this.imgUrl != null) {
+        ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path(GET_IMAGE_PATH)
+                .path(this.imgUrl)
+                .toUriString()
+    } else {
+        null
+    }
+
+    return UserDto(this.id, this.firstName, this.lastName, image)
 }
 
 fun User.Companion.fromEntity(userEntity: AkUserEntity): User {

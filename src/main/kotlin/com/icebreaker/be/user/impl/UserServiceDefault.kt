@@ -1,6 +1,7 @@
 package com.icebreaker.be.user.impl
 
 import com.icebreaker.be.auth.UserDetailsDefault
+import com.icebreaker.be.controller.user.GET_IMAGE_PATH
 import com.icebreaker.be.db.entity.AkSocialEntity
 import com.icebreaker.be.db.entity.AkUserEntity
 import com.icebreaker.be.db.entity.AkUserImageEntity
@@ -19,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.math.BigDecimal
 import java.util.*
 import kotlin.collections.ArrayList
@@ -48,9 +50,13 @@ class UserServiceDefault(val userRepository: UserRepository,
     }
 
     override fun getImages(user: User): List<String> {
-        val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         val images = userImageRepository.findByUserIdOrderByPosition(user.id)
-        return images.map { it.imageName }
+        return images.map {
+            ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path(GET_IMAGE_PATH)
+                    .path(it.imageName)
+                    .toUriString()
+        }
     }
 
     @Transactional

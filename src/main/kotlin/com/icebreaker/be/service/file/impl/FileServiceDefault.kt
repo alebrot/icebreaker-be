@@ -28,6 +28,7 @@ import javax.imageio.ImageIO
 class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : FileService {
 
     lateinit var storageLocation: Path
+    val fileExtensionRegex = Regex("(?<=\\.)[a-zA-Z]+\$")
 
     @PostConstruct
     fun init() {
@@ -40,7 +41,7 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
         // Normalize file name
         val originalFilename = file.originalFilename ?: throw IllegalArgumentException("originalFilename is null")
         val fileNameCleaned = StringUtils.cleanPath(originalFilename)
-        val ext = fileNameCleaned.split(".")[1]
+        val ext = fileExtensionRegex.find(fileNameCleaned)?.value ?: "jpeg"
         val fileName = generateUniqueFileName() + "." + ext
         try {
             val targetLocation = storageLocation.resolve(fileName)
