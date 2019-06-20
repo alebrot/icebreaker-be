@@ -105,7 +105,7 @@ class ChatServiceImpl(val userRepository: UserRepository,
 
     @Transactional
     override fun getChatLinesByChatId(chatId: Int, limit: Int, offset: Int): List<ChatLine> {
-        val chatLines = chatLineRepository.findByChatId(chatId, limit, offset)
+        val chatLines = chatLineRepository.findByChatId(chatId, limit, offset).sortedByDescending { akChatLineEntity -> akChatLineEntity.createdAt }
         return chatLines.map { ChatLine.fromEntity(it) }
     }
 
