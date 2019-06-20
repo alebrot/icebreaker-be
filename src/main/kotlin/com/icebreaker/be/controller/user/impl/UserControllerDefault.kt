@@ -1,5 +1,6 @@
 package com.icebreaker.be.controller.user.impl
 
+import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH
 import com.icebreaker.be.controller.user.UserController
@@ -30,12 +31,13 @@ import javax.validation.Valid
 @RestController
 class UserControllerDefault(val authService: AuthService,
                             val userService: UserService,
-                            val fileService: FileService) : UserController {
+                            val fileService: FileService,
+                            val imageProperties: ImageProperties) : UserController {
     @Transactional
     override fun uploadUserProfileImage(file: MultipartFile): UploadUserImageResponse {
         val userOrFail = authService.getUserOrFail()
 
-        val fileName = fileService.storeFile(file, 250, 250)
+        val fileName = fileService.storeImage(file, imageProperties.profileMaxWidth, imageProperties.profileMaxHeight)
 
         userService.updateUserProfilePhoto(userOrFail, fileName)
 
@@ -54,7 +56,7 @@ class UserControllerDefault(val authService: AuthService,
             throw IllegalArgumentException("wrong image id, allowed values [1,2,3]")
         }
 
-        val fileName = fileService.storeFile(file, 600, 800)
+        val fileName = fileService.storeImage(file, imageProperties.maxWidth, imageProperties.maxHeight)
 
         userService.updateImageForUser(userOrFail, imageId, fileName)
 

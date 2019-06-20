@@ -11,7 +11,7 @@ data class User(val id: Int,
                 val passwordHash: String?,
                 val firstName: String,
                 val lastName: String,
-                val imgUrl: String?,
+                var imgUrl: String?,
                 val authorities: List<Authority>,
                 val accountExpired: Boolean,
                 val accountLocked: Boolean,
@@ -23,10 +23,11 @@ data class User(val id: Int,
 data class UserWithDistance(val distance: Int, val user: User)
 
 fun User.toDto(): UserDto {
-    val image = if (this.imgUrl != null) {
+    val url = this.imgUrl
+    val image = if (url != null) {
         ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(GET_IMAGE_PATH)
-                .path(this.imgUrl)
+                .path(url)
                 .toUriString()
     } else {
         null

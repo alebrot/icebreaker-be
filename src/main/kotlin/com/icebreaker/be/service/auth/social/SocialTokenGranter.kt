@@ -1,6 +1,6 @@
 package com.icebreaker.be.service.auth.social
 
-import com.icebreaker.be.user.UserService
+import com.icebreaker.be.user.facade.UserFacade
 import com.icebreaker.be.user.social.SocialService
 import org.springframework.security.oauth2.provider.*
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter
@@ -9,11 +9,13 @@ import org.springframework.security.oauth2.provider.token.AuthorizationServerTok
 const val GRANT_TYPE = "social"
 
 
-class SocialTokenGranter(private val socialService: SocialService,
-                         private val userService: UserService,
-                         tokenServices: AuthorizationServerTokenServices,
-                         clientDetailsService: ClientDetailsService,
-                         requestFactory: OAuth2RequestFactory) : AbstractTokenGranter(tokenServices, clientDetailsService, requestFactory, GRANT_TYPE) {
+open class SocialTokenGranter(private val socialService: SocialService,
+                              tokenServices: AuthorizationServerTokenServices,
+                              clientDetailsService: ClientDetailsService,
+                              private val userFacade: UserFacade,
+                              requestFactory: OAuth2RequestFactory) : AbstractTokenGranter(tokenServices, clientDetailsService, requestFactory, GRANT_TYPE) {
+
+
     override fun getOAuth2Authentication(client: ClientDetails?, tokenRequest: TokenRequest): OAuth2Authentication {
         val storedOAuth2Request = requestFactory.createOAuth2Request(client, tokenRequest)
 
@@ -30,12 +32,14 @@ class SocialTokenGranter(private val socialService: SocialService,
         }
 
         val socialUser = socialService.getUser(token)
-        val createUserDetails = userService.createUserDetails(socialUser)
+        val createUserDetails = userFacade.createUserDetailsAndUploadPhoto(socialUser)
+
 
         val socialAuthentication = SocialAuthentication(createUserDetails)
         socialAuthentication.isAuthenticated = true
         return OAuth2Authentication(storedOAuth2Request, socialAuthentication)
     }
+
 
 //    override protected fun getOAuth2Authentication(clientToken: AuthorizationRequest): OAuth2Authentication {
 //

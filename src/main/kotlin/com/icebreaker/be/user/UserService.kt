@@ -9,7 +9,7 @@ import java.math.BigDecimal
 interface UserService {
     fun createUserDetails(username: String?): UserDetails
     fun createUser(email: String, password: String, firstName: String, lastName: String): User
-    fun createUserDetails(socialUser: SocialUser): UserDetails
+    fun createUserDetails(socialUser: SocialUser): Pair<UserDetails, Boolean>
     fun getUsersCloseToUser(user: User, distanceInMeters: Int): List<UserWithDistance>
     fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal): List<UserWithDistance>
     fun updateUserPosition(user: User, latitude: BigDecimal, longitude: BigDecimal)

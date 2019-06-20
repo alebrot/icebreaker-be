@@ -59,10 +59,10 @@ class UserServiceDefault(val userRepository: UserRepository,
         }
     }
 
-    @Transactional
     override fun updateUserProfilePhoto(user: User, imageName: String) {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         userEntity.imgUrl = imageName
+        user.imgUrl = imageName
         userRepository.save(userEntity)
     }
 
@@ -132,9 +132,11 @@ class UserServiceDefault(val userRepository: UserRepository,
     }
 
     @Transactional
-    override fun createUserDetails(socialUser: SocialUser): UserDetails {
+    override fun createUserDetails(socialUser: SocialUser): Pair<UserDetails, Boolean> {
+        var created = false
 
-        var userEntity: AkUserEntity? = null
+
+        var userEntity: AkUserEntity?
 
         val socialEntity = socialRepository.findBySocialIdAndType(socialUser.id, socialUser.socialType)
         if (socialEntity == null) {//new social user
@@ -143,20 +145,19 @@ class UserServiceDefault(val userRepository: UserRepository,
 
             if (userEntity == null) {//user have never been registered
                 //create record in user table
-
                 val defaultAuthorityOpt = authorityRepository.findById(1)
                 val defaultAuthority = if (defaultAuthorityOpt.isPresent) defaultAuthorityOpt.get() else throw IllegalArgumentException("defaultAuthority not found")
 
                 val akUserEntity = AkUserEntity()
                 akUserEntity.email = socialUser.email
-                akUserEntity.authorities = Arrays.asList(defaultAuthority)
+                akUserEntity.authorities = listOf(defaultAuthority)
                 akUserEntity.firstName = socialUser.firstName
                 akUserEntity.lastName = socialUser.lastName
                 akUserEntity.imgUrl = socialUser.imgUrl
                 userEntity = userRepository.save(akUserEntity)
 
             }
-
+            created = true
             //create record in social table
             val socialEntityToCreate = AkSocialEntity()
             socialEntityToCreate.email = socialUser.email
@@ -175,7 +176,7 @@ class UserServiceDefault(val userRepository: UserRepository,
 
         val user = User.fromEntity(userEntity)
 
-        return UserDetailsDefault(user)
+        return Pair(UserDetailsDefault(user), created)
     }
 
     val mapper = { findUsersCloseToUser: Map<String, Any> ->

@@ -1,7 +1,8 @@
 package com.icebreaker.be
 
 import com.icebreaker.be.service.auth.social.SocialTokenGranter
-import com.icebreaker.be.user.UserService
+import com.icebreaker.be.service.file.FileService
+import com.icebreaker.be.user.facade.UserFacade
 import com.icebreaker.be.user.impl.UserServiceDefault
 import com.icebreaker.be.user.social.SocialService
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -49,7 +50,7 @@ import javax.servlet.http.HttpServletResponse
 import javax.sql.DataSource
 
 @SpringBootApplication
-@EnableConfigurationProperties(FileStorageProperties::class)
+@EnableConfigurationProperties(FileStorageProperties::class, ImageProperties::class)
 @EnableTransactionManagement
 class BeApplication
 
@@ -116,9 +117,11 @@ class SecurityConfig(val userService: UserServiceDefault, val passwordEncoder: P
 class AuthServerOAuth2Config(val userDetailsService: UserDetailsService,
                              val dataSource: DataSource,
                              val authenticationManager: AuthenticationManager,
-                             val userService: UserService,
+                             val userFacade: UserFacade,
                              val socialService: SocialService,
-                             val clientDetailsService: ClientDetailsService) : AuthorizationServerConfigurerAdapter() {
+                             val clientDetailsService: ClientDetailsService,
+                             val fileService: FileService,
+                             val imageProperties: ImageProperties) : AuthorizationServerConfigurerAdapter() {
     @Bean
     fun oauthAccessDeniedHandler(): OAuth2AccessDeniedHandler {
         return OAuth2AccessDeniedHandler()
@@ -143,8 +146,13 @@ class AuthServerOAuth2Config(val userDetailsService: UserDetailsService,
     }
 
     private fun tokenGranter(endpoints: AuthorizationServerEndpointsConfigurer): TokenGranter {
-        val granters = ArrayList<TokenGranter>(Arrays.asList(endpoints.tokenGranter))
-        granters.add(SocialTokenGranter(socialService, userService, endpoints.tokenServices, endpoints.clientDetailsService, endpoints.oAuth2RequestFactory))
+        val granters = ArrayList<TokenGranter>(listOf(endpoints.tokenGranter))
+        granters.add(SocialTokenGranter(
+                socialService,
+                endpoints.tokenServices,
+                endpoints.clientDetailsService,
+                userFacade,
+                endpoints.oAuth2RequestFactory))
         return CompositeTokenGranter(granters)
     }
 
@@ -180,16 +188,8 @@ class CorsConfig {
 
         private var config: FilterConfig? = null
 
-        val CREDENTIALS_NAME = "Access-Control-Allow-Credentials"
-        val ORIGIN_NAME = "Access-Control-Allow-Origin"
-        val METHODS_NAME = "Access-Control-Allow-Methods"
-        val HEADERS_NAME = "Access-Control-Allow-Headers"
-        val MAX_AGE_NAME = "Access-Control-Max-Age"
-
         override fun destroy() {
-
         }
-
 
         override fun doFilter(req: ServletRequest, resp: ServletResponse,
                               chain: FilterChain) {
@@ -226,6 +226,15 @@ class CorsConfig {
 @ConfigurationProperties(prefix = "file")
 class FileStorageProperties {
     lateinit var uploadDir: String
+}
+
+@Configuration
+@ConfigurationProperties(prefix = "image")
+class ImageProperties {
+    var maxWidth: Int = 0
+    var maxHeight: Int = 0
+    var profileMaxWidth: Int = 0
+    var profileMaxHeight: Int = 0
 }
 
 

@@ -1,6 +1,7 @@
 package com.icebreaker.be.service.file.impl
 
 import com.icebreaker.be.FileStorageProperties
+import com.icebreaker.be.ext.toInputStream
 import com.icebreaker.be.service.file.FileService
 import org.imgscalr.Scalr
 import org.springframework.core.io.Resource
@@ -10,11 +11,10 @@ import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
 import java.awt.Image
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.MalformedURLException
+import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -37,17 +37,32 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
                 .normalize()
     }
 
-    override fun storeFile(file: MultipartFile, maxWidth: Int, maxHeight: Int): String {
+    override fun storeImage(url: String, maxWidth: Int, maxHeight: Int): String {
+        val urlInput = URL(url)
+        val ext = fileExtensionRegex.find(url)?.value ?: "jpeg"
+        val urlImage = ImageIO.read(urlInput)
+        val toInputStream = scale(urlImage, maxWidth, maxHeight).toInputStream(ext)
+        return generateNameAndStore(ext, toInputStream)
+    }
+
+    override fun storeImage(file: MultipartFile, maxWidth: Int, maxHeight: Int): String {
         // Normalize file name
         val originalFilename = file.originalFilename ?: throw IllegalArgumentException("originalFilename is null")
         val fileNameCleaned = StringUtils.cleanPath(originalFilename)
+
+        val inputStreamOrig = file.inputStream
+
         val ext = fileExtensionRegex.find(fileNameCleaned)?.value ?: "jpeg"
+        val inputStream = scale(inputStreamOrig, ext, maxWidth, maxHeight)
+
+        return generateNameAndStore(ext, inputStream)
+    }
+
+    private fun generateNameAndStore(ext: String, inputStream: InputStream): String {
         val fileName = generateUniqueFileName() + "." + ext
         try {
             val targetLocation = storageLocation.resolve(fileName)
-            val inputStream = scale(file.inputStream, ext, maxWidth, maxHeight)
             Files.copy(inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING)
-
             return fileName
         } catch (ex: IOException) {
             throw IllegalStateException("Could not store file $fileName. Please try again!", ex)
@@ -90,9 +105,7 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
     private fun scale(img: InputStream, ext: String, width: Int, height: Int): InputStream {
         val image = ImageIO.read(img)
         val scaled = scale(image, width, height)
-        val os = ByteArrayOutputStream()
-        ImageIO.write(scaled, ext.toLowerCase(), os)
-        return ByteArrayInputStream(os.toByteArray())
+        return scaled.toInputStream(ext)
     }
 
 }

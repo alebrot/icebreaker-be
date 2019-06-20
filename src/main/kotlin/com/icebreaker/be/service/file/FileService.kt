@@ -4,6 +4,7 @@ import org.springframework.core.io.Resource
 import org.springframework.web.multipart.MultipartFile
 
 interface FileService {
-    fun storeFile(file: MultipartFile, maxWidth: Int, maxHeight: Int): String
+    fun storeImage(file: MultipartFile, maxWidth: Int, maxHeight: Int): String
+    fun storeImage(url: String, maxWidth: Int, maxHeight: Int): String
     fun loadFileAsResource(fileName: String): Resource
 }
