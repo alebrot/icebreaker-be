@@ -50,7 +50,7 @@ import javax.servlet.http.HttpServletResponse
 import javax.sql.DataSource
 
 @SpringBootApplication
-@EnableConfigurationProperties(FileStorageProperties::class, ImageProperties::class)
+@EnableConfigurationProperties(FileStorageProperties::class, ImageProperties::class, PushProperties::class)
 @EnableTransactionManagement
 class BeApplication
 
@@ -235,6 +235,13 @@ class ImageProperties {
     var maxHeight: Int = 0
     var profileMaxWidth: Int = 0
     var profileMaxHeight: Int = 0
+}
+
+@Configuration
+@ConfigurationProperties(prefix = "push")
+class PushProperties {
+    lateinit var secret: String
+    lateinit var appId: String
 }
 
 
