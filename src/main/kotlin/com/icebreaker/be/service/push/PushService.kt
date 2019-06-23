@@ -7,7 +7,6 @@ import com.icebreaker.be.db.repository.PushRepository
 import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
 import com.icebreaker.be.service.model.User
-import com.sun.org.apache.xpath.internal.operations.Bool
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
@@ -29,7 +28,8 @@ interface PushService {
 @Service
 class NotificationServiceDefault(val userRepository: UserRepository,
                                  val pushRepository: PushRepository,
-                                 val pushProperties: PushProperties) : PushService {
+                                 val pushProperties: PushProperties,
+                                 val restTemplate:RestTemplate) : PushService {
 
     val logger: Logger = LoggerFactory.getLogger(NotificationServiceDefault::class.java)
 
@@ -37,23 +37,33 @@ class NotificationServiceDefault(val userRepository: UserRepository,
     override fun send(user: User, message: String): Boolean {
 
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
-        val userId = userEntity.push?.id
+        val userId = userEntity.push?.userId
 
         if (userId != null) {
+
             val appId = pushProperties.appId
+
+            data class Contents(val en: String,
+                                val it: String)
+
+            data class Data(val fee: String, val foo: String)
 
             class Body(@get:JsonProperty("app_id") val appId: String,
                        @get:JsonProperty("include_player_ids") val includePlayerIds: List<String>,
-                       val data: Any,
-                       val contents: Map<String, String>)
+                       val data: Data,
+                       val contents: Contents)
 
-            val restTemplate = RestTemplate()
+
+            val body = Body(appId, listOf(userId), Data("fee", "foo"), Contents(message, message))
+
+//            val restTemplate = RestTemplate()
+//            restTemplate.interceptors.add(LoggingRequestInterceptor())
 
             val httpHeaders = HttpHeaders()
             httpHeaders.set("Authorization", pushProperties.secret)
             httpHeaders.set("Content-Type", "application/json; charset=UTF-8")
 
-            val body = ("{"
+            val bodyStr = ("{"
                     + "\"app_id\": \"" + appId + "\","
                     + "\"include_player_ids\": [\"" + userId + "\"],"
                     + "\"data\": {\"foo\": \"bar\"},"

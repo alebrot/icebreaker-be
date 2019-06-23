@@ -1,5 +1,6 @@
 package com.icebreaker.be
 
+import com.icebreaker.be.extra.LoggingRequestInterceptor
 import com.icebreaker.be.service.auth.social.SocialTokenGranter
 import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.user.facade.UserFacade
@@ -40,6 +41,7 @@ import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHand
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore
 import org.springframework.transaction.annotation.EnableTransactionManagement
+import org.springframework.web.client.RestTemplate
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
@@ -52,7 +54,15 @@ import javax.sql.DataSource
 @SpringBootApplication
 @EnableConfigurationProperties(FileStorageProperties::class, ImageProperties::class, PushProperties::class)
 @EnableTransactionManagement
-class BeApplication
+class BeApplication {
+    @Bean
+    fun restTemplate(): RestTemplate {
+        val restTemplate = RestTemplate()
+        restTemplate.interceptors.add(LoggingRequestInterceptor())
+        return restTemplate
+    }
+
+}
 
 fun main(args: Array<String>) {
     runApplication<BeApplication>(*args)
