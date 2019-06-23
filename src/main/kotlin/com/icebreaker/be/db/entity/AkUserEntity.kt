@@ -71,6 +71,11 @@ class AkUserEntity {
     @get:JoinColumn(name = "POSITION_ID", referencedColumnName = "ID", nullable = false)
     var position: AkUserPositionEntity? = null
 
+
+    @get:OneToOne(fetch = FetchType.LAZY)
+    @get:JoinColumn(name = "PUSH_ID", referencedColumnName = "ID", nullable = false)
+    var push: AkPushEntity? = null
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
