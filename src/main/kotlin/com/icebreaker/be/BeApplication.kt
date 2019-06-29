@@ -247,11 +247,17 @@ class ImageProperties {
     var profileMaxHeight: Int = 0
 }
 
+
+
 @Configuration
 @ConfigurationProperties(prefix = "push")
 class PushProperties {
     lateinit var secret: String
     lateinit var appId: String
+    lateinit var itInvitationContent: String
+    lateinit var enInvitationContent: String
+    lateinit var itInvitationTitle: String
+    lateinit var enInvitationTitle: String
 }
 
 

@@ -6,6 +6,7 @@ import com.icebreaker.be.db.entity.AkPushEntity
 import com.icebreaker.be.db.repository.PushRepository
 import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
+import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.model.User
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -16,25 +17,27 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestTemplate
+import java.lang.IllegalStateException
 import java.net.URI
+import java.text.MessageFormat
 
 
 interface PushService {
     fun subscribe(user: User, id: String, pushToken: String)
 
-    fun send(user: User, message: String): Boolean
+    fun send(user: User, message: String, type: MessageType = MessageType.DEFAULT): Boolean
 }
 
 @Service
 class NotificationServiceDefault(val userRepository: UserRepository,
                                  val pushRepository: PushRepository,
                                  val pushProperties: PushProperties,
-                                 val restTemplate:RestTemplate) : PushService {
+                                 val restTemplate: RestTemplate) : PushService {
 
     val logger: Logger = LoggerFactory.getLogger(NotificationServiceDefault::class.java)
 
 
-    override fun send(user: User, message: String): Boolean {
+    override fun send(user: User, message: String, type: MessageType): Boolean {
 
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         val userId = userEntity.push?.userId
@@ -46,15 +49,29 @@ class NotificationServiceDefault(val userRepository: UserRepository,
             data class Contents(val en: String,
                                 val it: String)
 
+            val headings = Contents(pushProperties.enInvitationTitle, pushProperties.itInvitationTitle)
+
+            val contents = if (message.isBlank() && type == MessageType.INVITATION) {
+                val contentEn = pushProperties.enInvitationContent
+                val contentEnFormatted = MessageFormat.format(contentEn, user.firstName)
+                val contentIt = pushProperties.itInvitationContent
+                val contentItFormatted = MessageFormat.format(contentIt, user.firstName)
+
+                Contents(contentEnFormatted, contentItFormatted)
+            } else {
+                Contents(message, message)
+            }
+
             data class Data(val fee: String, val foo: String)
 
             class Body(@get:JsonProperty("app_id") val appId: String,
                        @get:JsonProperty("include_player_ids") val includePlayerIds: List<String>,
                        val data: Data,
-                       val contents: Contents)
+                       val contents: Contents,
+                       val headings: Contents)
 
 
-            val body = Body(appId, listOf(userId), Data("fee", "foo"), Contents(message, message))
+            val body = Body(appId, listOf(userId), Data("fee", "foo"), contents, headings)
 
 //            val restTemplate = RestTemplate()
 //            restTemplate.interceptors.add(LoggingRequestInterceptor())

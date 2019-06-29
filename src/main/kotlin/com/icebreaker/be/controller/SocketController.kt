@@ -4,6 +4,7 @@ import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.chat.ChatService
 import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.chat.model.toDto
+import com.icebreaker.be.service.push.PushService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.messaging.handler.annotation.DestinationVariable
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Controller
 @Controller
 class SocketController(val authService: AuthService,
                        val simpMessagingTemplate: SimpMessageSendingOperations,
-                       val chatService: ChatService
+                       val chatService: ChatService,
+                       val pushService: PushService
 ) {
 
     val logger: Logger = LoggerFactory.getLogger(SocketController::class.java)
@@ -31,6 +33,7 @@ class SocketController(val authService: AuthService,
         chat.users.forEach {
             simpMessagingTemplate.convertAndSendToUser(it.email, "/chat/$chatId", chatLine.toDto())
         }
+        chat.users.filter { it.id != userOrFail.id }.forEach { pushService.send(it, message.content) }
     }
 }
 
