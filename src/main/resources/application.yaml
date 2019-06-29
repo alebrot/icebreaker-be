@@ -41,10 +41,10 @@ spring:
 file:
   upload-dir: /Users/alexey/IdeaProjects/imgs
 image:
-  maxWidth: 600
-  maxHeight: 800
-  profileMaxWidth: 250
-  profileMaxHeight: 250
+  maxWidth: 1200
+  maxHeight: 1600
+  profileMaxWidth: 500
+  profileMaxHeight: 500
 
 push:
   secret: MWFhMDUyMDUtMjE5Ny00MWI1LTg2MmUtNjE1Y2E3MzY2YmRl

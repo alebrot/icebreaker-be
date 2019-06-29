@@ -8,10 +8,7 @@ import com.icebreaker.be.db.entity.AkUserImageEntity
 import com.icebreaker.be.db.entity.AkUserPositionEntity
 import com.icebreaker.be.db.repository.*
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
-import com.icebreaker.be.service.model.Authority
-import com.icebreaker.be.service.model.User
-import com.icebreaker.be.service.model.UserWithDistance
-import com.icebreaker.be.service.model.fromEntity
+import com.icebreaker.be.service.model.*
 import com.icebreaker.be.user.UserService
 import com.icebreaker.be.user.social.impl.SocialUser
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker
@@ -22,6 +19,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -32,6 +30,20 @@ class UserServiceDefault(val userRepository: UserRepository,
                          val socialRepository: SocialRepository,
                          val positionRepository: UserPositionRepository,
                          val userImageRepository: UserImageRepository) : UserService {
+
+    override fun updateUser(user: User): User {
+        val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
+        userEntity.bio = user.bio
+        userEntity.gender = user.gender
+        val saved = userRepository.save(userEntity)
+        return User.fromEntity(saved)
+    }
+
+    override fun getUserById(userId: Int): User {
+        val userEntity = userRepository.findById(userId).toKotlinNotOptionalOrFail()
+        return User.fromEntity(userEntity)
+    }
+
     @Transactional
     override fun updateImageForUser(user: User, position: Int, imageName: String) {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
@@ -101,7 +113,7 @@ class UserServiceDefault(val userRepository: UserRepository,
 
 
     @Transactional
-    override fun createUser(email: String, password: String, firstName: String, lastName: String): User {
+    override fun createUser(email: String, password: String, firstName: String, lastName: String, birthday: LocalDate): User {
         val passwordHash = passwordEncoder.encode(password)
         val defaultAuthorityOpt = authorityRepository.findById(1)
         val defaultAuthority = if (defaultAuthorityOpt.isPresent) defaultAuthorityOpt.get() else throw IllegalArgumentException("defaultAuthority not found")
@@ -109,9 +121,10 @@ class UserServiceDefault(val userRepository: UserRepository,
         val akUserEntity = AkUserEntity()
         akUserEntity.email = email
         akUserEntity.passwordHash = passwordHash
-        akUserEntity.authorities = Arrays.asList(defaultAuthority)
+        akUserEntity.authorities = listOf(defaultAuthority)
         akUserEntity.firstName = firstName
         akUserEntity.lastName = lastName
+        akUserEntity.birthday = java.sql.Date.valueOf(birthday)
         val saved = userRepository.save(akUserEntity)
         return User.fromEntity(saved)
     }
@@ -154,6 +167,9 @@ class UserServiceDefault(val userRepository: UserRepository,
                 akUserEntity.firstName = socialUser.firstName
                 akUserEntity.lastName = socialUser.lastName
                 akUserEntity.imgUrl = socialUser.imgUrl
+                akUserEntity.birthday = java.sql.Date.valueOf(socialUser.birthDay)
+                akUserEntity.gender = socialUser.gender
+
                 userEntity = userRepository.save(akUserEntity)
 
             }
@@ -186,15 +202,17 @@ class UserServiceDefault(val userRepository: UserRepository,
         val firstName: String = findUsersCloseToUser["FIRST_NAME"] as String
         val lastName: String = findUsersCloseToUser["LAST_NAME"] as String
         val imgUrl: String? = findUsersCloseToUser["IMG_URL"] as?String
+        val birthday: java.sql.Date = findUsersCloseToUser["BIRTHDAY"] as java.sql.Date
         val authorities: List<Authority> = ArrayList()
         val accountExpired: Boolean = findUsersCloseToUser["ACCOUNT_EXPIRED"] as Boolean
         val accountLocked: Boolean = findUsersCloseToUser["ACCOUNT_LOCKED"] as Boolean
         val credentialsExpired = findUsersCloseToUser["CREDENTIALS_EXPIRED"] as Boolean
         val enabled: Boolean = findUsersCloseToUser["ENABLED"] as Boolean
+        val gender: Gender? = findUsersCloseToUser["GENDER"] as? Gender
 
         val distance: Int = (findUsersCloseToUser["DISTANCE"] as Double).toInt()
 
-        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, enabled)
+        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), null, gender, enabled)
 
         UserWithDistance(distance, user)
     }

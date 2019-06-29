@@ -9,6 +9,7 @@ import javax.validation.Valid
 
 const val GET_USER_BY_ID = "/users/{userId}"
 const val GET_USER_ME = "/users/me"
+const val POST_USER_ME = "/users/me"
 const val UPLOAD_USER_IMAGE = "/users/me/images/{imageId}"
 const val UPLOAD_USER_PROFILE_IMAGE = "/users/me/image"
 const val GET_ADMIN_ME = "/admins/me"
@@ -45,4 +46,7 @@ interface UserController {
 
     @PostMapping(CREATE_USER)
     fun createUser(@Valid @RequestBody request: CreateUserRequest): CreateUserResponse
+
+    @PostMapping(POST_USER_ME)
+    fun updateUser(@Valid @RequestBody request: UpdateUserRequest): UpdateUserResponse
 }

@@ -11,6 +11,7 @@ import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
+import java.time.LocalDate
 
 internal class UserControllerDefaultTest : BeApplicationTests() {
     @Test
@@ -54,7 +55,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
 
         val email = "test@email.com"
         val password = "password"
-        val createUserRequest = CreateUserRequest(email, "new firstname", "new lastname", password)
+        val createUserRequest = CreateUserRequest(email, "new firstname", "new lastname", password, LocalDate.now().minusYears(20))
 
         val responseEntity = testRestTemplate.postForEntity(CREATE_USER, createUserRequest, CreateUserResponse::class.java)
         Assert.assertEquals(responseEntity.statusCode, HttpStatus.OK)

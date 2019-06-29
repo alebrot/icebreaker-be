@@ -33,6 +33,15 @@ class UserControllerDefault(val authService: AuthService,
                             val userService: UserService,
                             val fileService: FileService,
                             val imageProperties: ImageProperties) : UserController {
+
+    override fun updateUser(request: UpdateUserRequest): UpdateUserResponse {
+        val userOrFail = authService.getUserOrFail()
+        userOrFail.bio = request.bio
+        userOrFail.gender = request.gender
+        val updateUser = userService.updateUser(userOrFail)
+        return UpdateUserResponse(updateUser.toDto())
+    }
+
     @Transactional
     override fun uploadUserProfileImage(file: MultipartFile): UploadUserImageResponse {
         val userOrFail = authService.getUserOrFail()
@@ -111,16 +120,17 @@ class UserControllerDefault(val authService: AuthService,
                 request.email,
                 request.password,
                 request.firstName,
-                request.lastName)
+                request.lastName,
+                request.birthday)
 
         return CreateUserResponse(user.toDto())
     }
 
     override fun getUserById(userId: Int): GetUserByIdResponse {
-        val userOrFail = authService.getUserOrFail()
-        val authorities = userOrFail.authorities.map { it.toDto() }
-        val images = userService.getImages(userOrFail)
-        val completeUserDto = CompleteUserDto(userOrFail.toDto(), authorities, images)
+        val user = userService.getUserById(userId)
+        val authorities = user.authorities.map { it.toDto() }
+        val images = userService.getImages(user)
+        val completeUserDto = CompleteUserDto(user.toDto(), authorities, images)
         return GetUserByIdResponse(completeUserDto)
 
     }

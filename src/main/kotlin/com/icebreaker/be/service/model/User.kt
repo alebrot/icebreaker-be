@@ -5,6 +5,7 @@ import com.icebreaker.be.controller.user.dto.UserDto
 import com.icebreaker.be.db.entity.AkUserEntity
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.io.Serializable
+import java.time.LocalDate
 
 data class User(val id: Int,
                 val email: String,
@@ -16,6 +17,9 @@ data class User(val id: Int,
                 val accountExpired: Boolean,
                 val accountLocked: Boolean,
                 val credentialsExpired: Boolean,
+                val birthday: LocalDate,
+                var bio: String?,
+                var gender: Gender?,
                 val enabled: Boolean) : Serializable {
     companion object
 }
@@ -33,7 +37,7 @@ fun User.toDto(): UserDto {
         null
     }
 
-    return UserDto(this.id, this.firstName, this.lastName, image)
+    return UserDto(this.id, this.firstName, this.lastName, image, this.birthday, this.bio, this.gender)
 }
 
 fun User.Companion.fromEntity(userEntity: AkUserEntity): User {
@@ -48,6 +52,14 @@ fun User.Companion.fromEntity(userEntity: AkUserEntity): User {
             userEntity.accountExpired,
             userEntity.accountLocked,
             userEntity.credentialsExpired,
+            userEntity.birthday.toLocalDate(),
+            userEntity.bio,
+            userEntity.gender,
             userEntity.enabled
     )
+}
+
+enum class Gender {
+    FEMALE,
+    MALE
 }

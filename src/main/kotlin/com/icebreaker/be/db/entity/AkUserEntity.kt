@@ -1,7 +1,9 @@
 package com.icebreaker.be.db.entity
 
+import com.icebreaker.be.service.model.Gender
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
+import java.sql.Date
 import java.sql.Timestamp
 import java.util.*
 import javax.persistence.*
@@ -23,6 +25,19 @@ class AkUserEntity {
     @get:Basic
     @get:Column(name = "EMAIL")
     lateinit var email: String
+
+    @get:Enumerated(EnumType.ORDINAL)
+    @get:Basic
+    @get:Column(name = "GENDER")
+    var gender: Gender? = null
+
+    @get:Basic
+    @get:Column(name = "BIRTHDAY")
+    lateinit var birthday: Date
+
+    @get:Basic
+    @get:Column(name = "BIO")
+    var bio: String? = null
 
     @get:Basic
     @get:Column(name = "IMG_URL")

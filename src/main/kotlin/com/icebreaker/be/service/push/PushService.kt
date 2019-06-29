@@ -80,13 +80,6 @@ class NotificationServiceDefault(val userRepository: UserRepository,
             httpHeaders.set("Authorization", pushProperties.secret)
             httpHeaders.set("Content-Type", "application/json; charset=UTF-8")
 
-            val bodyStr = ("{"
-                    + "\"app_id\": \"" + appId + "\","
-                    + "\"include_player_ids\": [\"" + userId + "\"],"
-                    + "\"data\": {\"foo\": \"bar\"},"
-                    + "\"contents\": {\"en\": \"" + message + "\"}"
-                    + "}")
-
             val url = "https://onesignal.com/api/v1/notifications"
 
             val response: ResponseEntity<String>
