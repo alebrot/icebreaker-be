@@ -51,10 +51,10 @@ class UserServiceDefault(val userRepository: UserRepository,
 
     override fun getImages(user: User): List<String> {
         val images = userImageRepository.findByUserIdOrderByPosition(user.id)
-        return images.map {
+        return images.mapNotNull { it.imageName }.map {
             ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(GET_IMAGE_PATH)
-                    .path(it.imageName)
+                    .path(it)
                     .toUriString()
         }
     }

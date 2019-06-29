@@ -12,7 +12,7 @@ class AkUserImageEntity {
     var id: Int = 0
     @get:Basic
     @get:Column(name = "IMAGE_NAME")
-    lateinit var imageName: String
+    var imageName: String? = null
 
     @get:Basic
     @get:Column(name = "POSITION")
