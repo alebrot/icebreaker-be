@@ -74,7 +74,7 @@ class NotificationServiceDefault(val userRepository: UserRepository,
 
             val response: ResponseEntity<String>
             try {
-                response = restTemplate.postForEntity(URI(url), HttpEntity(body, httpHeaders), String::class.java)
+                response = restTemplate.postForEntity(url, HttpEntity(body, httpHeaders), String::class.java)
                 if (response.statusCode == HttpStatus.OK) {
                     return true
                 } else {
@@ -109,8 +109,6 @@ class NotificationServiceDefault(val userRepository: UserRepository,
             userEntity.push = push
             userRepository.save(userEntity)
         }
-        send(user, "ddddd")
-
     }
 
 

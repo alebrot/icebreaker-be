@@ -21,14 +21,15 @@ class ChatControllerDefault(val authService: AuthService,
         val chat = chatService.findOrCreateChat(userOrFail, request.userIds)
         val sendMessage = chatService.sendMessage(userOrFail, chat.id, request.content, MessageType.INVITATION)
         chat.lastMessage = sendMessage
-        pushService.send(userOrFail, request.content)
+        chat.users.filter { it.id != userOrFail.id }.forEach { pushService.send(it, request.content) }
         return CreateInvitationResponse(chat.toDto())
     }
 
     override fun sendMessage(chatId: Int, request: SendMessageRequest) {
         val userOrFail = authService.getUserOrFail()
+        val chat = chatService.findChatOrFail(chatId)
         chatService.sendMessage(userOrFail, chatId, request.content, MessageType.DEFAULT)
-        pushService.send(userOrFail, request.content)
+        chat.users.filter { it.id != userOrFail.id }.forEach { pushService.send(it, request.content) }
     }
 
     override fun getUserMeChats(): GetUserMeChatsResponse {
