@@ -1,9 +1,10 @@
 logging:
   level:
     org:
+      apache:
+        http: trace
       springframework:
-        web:
-          client: trace
+        web: trace
 #    logging.level.org.apache.http=trace
 #    logging.level.org.apache.http.wire=trace
 #    logging.level.org.springframework.web=trace

@@ -12,4 +12,5 @@ interface ChatService {
     fun findOrCreateChat(user: User, userIds: List<Int>): Chat
     fun findChat(chatId: Int): Chat?
     fun findChatOrFail(chatId: Int): Chat
+    fun notifyMessageReceived(user: User, lineIds: List<Int>)
 }

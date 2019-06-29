@@ -1,5 +1,7 @@
 package com.icebreaker.be.service.chat.impl
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.icebreaker.be.db.entity.AkChatEntity
 import com.icebreaker.be.db.entity.AkChatLineEntity
 import com.icebreaker.be.db.entity.AkChatUserEntity
@@ -22,7 +24,31 @@ import org.springframework.transaction.annotation.Transactional
 class ChatServiceImpl(val userRepository: UserRepository,
                       val chatRepository: ChatRepository,
                       val chatLineRepository: ChatLineRepository,
-                      val chatUserRepository: ChatUserRepository) : ChatService {
+                      val chatUserRepository: ChatUserRepository,
+                      val objectMapper: ObjectMapper) : ChatService {
+
+
+    @Transactional
+    override fun notifyMessageReceived(user: User, lineIds: List<Int>) {
+        val ids = HashSet(lineIds.toList())
+        ids.forEach {
+            val findById = chatLineRepository.findById(it)
+            findById.ifPresent { chatLineEntity: AkChatLineEntity ->
+
+                val akChatUserEntity = chatLineEntity.chatUser ?: throw IllegalStateException()
+                val akChatEntity = akChatUserEntity.chat ?: throw IllegalStateException()
+                if (!akChatEntity.users.map(AkUserEntity::id).contains(user.id)) {
+                    throw IllegalArgumentException("User ${user.id} doesn't belong to chat ${akChatEntity.id}")
+                }
+
+                val readBy = chatLineEntity.getReadBy(objectMapper)
+                val toMutableSet = readBy.toMutableSet()
+                toMutableSet.add(user.id)
+                chatLineEntity.setReadBy(objectMapper, toMutableSet)
+                chatLineRepository.save(chatLineEntity)
+            }
+        }
+    }
 
     @Transactional
     override fun findChat(chatId: Int): Chat? {
@@ -42,13 +68,14 @@ class ChatServiceImpl(val userRepository: UserRepository,
     @Transactional
     override fun sendMessage(user: User, chatId: Int, content: String, type: MessageType): ChatLine {
         val chatUserEntity = chatUserRepository.findByChatIdAndUserId(chatId, user.id)
-                ?: throw IllegalArgumentException("chat not found not found by userId ${user.id} and chatId $chatId")
+                ?: throw IllegalArgumentException("chat not found by userId ${user.id} and chatId $chatId")
         val akChatLineEntity = AkChatLineEntity()
         akChatLineEntity.content = content
         akChatLineEntity.type = type
         akChatLineEntity.chatUser = chatUserEntity
+        akChatLineEntity.setReadBy(objectMapper, HashSet(user.id))
         chatLineRepository.save(akChatLineEntity)
-        return ChatLine.fromEntity(akChatLineEntity)
+        return ChatLine.fromEntity(akChatLineEntity, objectMapper)
     }
 
     @Transactional
@@ -83,7 +110,7 @@ class ChatServiceImpl(val userRepository: UserRepository,
             val lastLine = chatLineRepository.findByChatId(found.id, 1, 0).firstOrNull()
             val chat = Chat.fromEntity(found)
             if (lastLine != null) {
-                chat.lastMessage = ChatLine.fromEntity(lastLine)
+                chat.lastMessage = ChatLine.fromEntity(lastLine, objectMapper)
             }
             return chat
         }
@@ -97,7 +124,7 @@ class ChatServiceImpl(val userRepository: UserRepository,
             val lastLine = chatLineRepository.findByChatId(it.id, 1, 0).firstOrNull()
             val chat = Chat.fromEntity(it)
             if (lastLine != null) {
-                chat.lastMessage = ChatLine.fromEntity(lastLine)
+                chat.lastMessage = ChatLine.fromEntity(lastLine, objectMapper)
             }
             chat
         }
@@ -106,7 +133,7 @@ class ChatServiceImpl(val userRepository: UserRepository,
     @Transactional
     override fun getChatLinesByChatId(chatId: Int, limit: Int, offset: Int): List<ChatLine> {
         val chatLines = chatLineRepository.findByChatId(chatId, limit, offset).sortedBy { akChatLineEntity -> akChatLineEntity.createdAt }
-        return chatLines.map { ChatLine.fromEntity(it) }
+        return chatLines.map { ChatLine.fromEntity(it, objectMapper) }
     }
 
 

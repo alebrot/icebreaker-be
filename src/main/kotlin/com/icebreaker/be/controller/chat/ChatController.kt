@@ -1,6 +1,7 @@
 package com.icebreaker.be.controller.chat
 
 import com.icebreaker.be.controller.chat.dto.*
+import com.icebreaker.be.controller.core.dto.BaseResponse
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
@@ -10,6 +11,7 @@ const val GET_CHAT_LINES = "/chats/{chatId}/lines"
 const val POST_CHAT_LINES = "/chats/{chatId}/lines"
 const val FIND_OR_CREATE_CHAT = "/chats"
 const val CREATE_INVITATION = "/invitations"
+const val POST_NOTIFY_MESSAGE_RECEIVED = "/lines"
 
 @Validated
 interface ChatController {
@@ -29,5 +31,7 @@ interface ChatController {
     @PostMapping(POST_CHAT_LINES)
     fun sendMessage(@PathVariable chatId: Int, @RequestBody request: SendMessageRequest)
 
+    @PostMapping(POST_NOTIFY_MESSAGE_RECEIVED)
+    fun notifyMessageReceived(@RequestBody request: NotifyMessageReceivedRequest): BaseResponse
 
 }

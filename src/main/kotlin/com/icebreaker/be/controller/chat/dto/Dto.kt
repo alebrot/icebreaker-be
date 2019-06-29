@@ -11,8 +11,9 @@ data class GetUserMeChatsResponse(val chats: List<ChatDto>) : BaseResponse()
 data class GetChatLinesResponse(val chatLines: List<ChatLineDto>) : BaseResponse()
 
 data class ChatDto(val id: Int, val users: List<UserDto>, val lastMessage: ChatLineDto? = null)
-data class ChatLineDto(val id: Int, val user: UserDto, val content: String, val createdAt: LocalDateTime, val type: MessageType)
+data class ChatLineDto(val id: Int, val user: UserDto, val content: String, val readBy: Set<Int>, val createdAt: LocalDateTime, val type: MessageType)
 
+data class NotifyMessageReceivedRequest(@NotNull val lineIds: List<Int>) : BaseRequest()
 
 data class SendMessageRequest(val content: String) : BaseResponse()
 data class FindOrCreateChatRequest(@NotNull val userIds: List<Int>) : BaseRequest()

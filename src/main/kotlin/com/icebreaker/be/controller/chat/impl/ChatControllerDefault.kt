@@ -2,6 +2,7 @@ package com.icebreaker.be.controller.chat.impl
 
 import com.icebreaker.be.controller.chat.ChatController
 import com.icebreaker.be.controller.chat.dto.*
+import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.chat.ChatService
 import com.icebreaker.be.service.chat.model.MessageType
@@ -14,6 +15,15 @@ import org.springframework.web.bind.annotation.RestController
 class ChatControllerDefault(val authService: AuthService,
                             val chatService: ChatService,
                             val pushService: PushService) : ChatController {
+
+
+    override fun notifyMessageReceived(request: NotifyMessageReceivedRequest): BaseResponse {
+        val lineIds = request.lineIds
+        if (lineIds.isEmpty()) throw IllegalArgumentException("lineIds can not be empty")
+        val userOrFail = authService.getUserOrFail()
+        chatService.notifyMessageReceived(userOrFail, lineIds)
+        return BaseResponse()
+    }
 
     @Transactional
     override fun createInvitation(request: CreateInvitationRequest): CreateInvitationResponse {

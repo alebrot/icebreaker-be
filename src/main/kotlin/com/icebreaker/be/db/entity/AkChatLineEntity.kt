@@ -1,11 +1,13 @@
 package com.icebreaker.be.db.entity
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.icebreaker.be.service.chat.model.MessageType
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.sql.Timestamp
 import java.util.*
 import javax.persistence.*
+import com.fasterxml.jackson.databind.ObjectMapper
 
 @Entity
 @Table(name = "AK_CHAT_LINE", schema = "PUBLIC", catalog = "DEFAULT")
@@ -35,6 +37,10 @@ class AkChatLineEntity {
     @get:Column(name = "TYPE")
     lateinit var type: MessageType
 
+    @get:Basic
+    @get:Column(name = "READ_BY")
+    var readBy: String = "[]"
+
 //    @get:OneToOne(fetch = FetchType.LAZY)
 //    @get:JoinColumn(name = "USER_ID", referencedColumnName = "ID", nullable = false)
 //    var user: AkUserEntity? = null
@@ -57,4 +63,15 @@ class AkChatLineEntity {
     override fun hashCode(): Int {
         return Objects.hash(id, content)
     }
+
+    fun setReadBy(objectMapper: ObjectMapper, userIds: Set<Int>) {
+        val toMutableSet = getReadBy(objectMapper).toMutableSet()
+        toMutableSet.addAll(userIds)
+        this.readBy = objectMapper.writeValueAsString(toMutableSet)
+    }
+
+    fun getReadBy(objectMapper: ObjectMapper): Set<Int> {
+        return objectMapper.readValue(this.readBy, object : TypeReference<Set<Int>>() {})
+    }
+
 }
