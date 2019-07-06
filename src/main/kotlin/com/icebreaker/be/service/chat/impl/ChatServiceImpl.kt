@@ -73,7 +73,7 @@ class ChatServiceImpl(val userRepository: UserRepository,
         akChatLineEntity.content = content
         akChatLineEntity.type = type
         akChatLineEntity.chatUser = chatUserEntity
-        akChatLineEntity.setReadBy(objectMapper, HashSet(user.id))
+        akChatLineEntity.setReadBy(objectMapper, setOf(user.id))
         chatLineRepository.save(akChatLineEntity)
         return ChatLine.fromEntity(akChatLineEntity, objectMapper)
     }
