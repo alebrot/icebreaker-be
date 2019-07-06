@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpMethod
@@ -248,7 +249,6 @@ class ImageProperties {
 }
 
 
-
 @Configuration
 @ConfigurationProperties(prefix = "push")
 class PushProperties {
@@ -262,13 +262,16 @@ class PushProperties {
 
 
 @Configuration
+@Profile("prod")
 @EnableWebSocketMessageBroker
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
-
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
-        config.enableSimpleBroker("/chat")
-        config.setApplicationDestinationPrefixes("/app")
-//        config.enableSimpleBroker("/topic", "/queue")
+        config.enableStompBrokerRelay("/chat")
+                .setRelayHost("localhost")
+                .setRelayPort(61613)
+                .setClientLogin("admin")
+                .setClientPasscode("admin");
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
@@ -276,4 +279,17 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
     }
 }
 
+@Configuration
+@Profile("dev")
+@EnableWebSocketMessageBroker
+class WebSocketConfigInMemory : WebSocketMessageBrokerConfigurer {
+    override fun configureMessageBroker(config: MessageBrokerRegistry) {
+        config.enableSimpleBroker("/chat")
+        config.setApplicationDestinationPrefixes("/app")
+    }
+
+    override fun registerStompEndpoints(registry: StompEndpointRegistry) {
+        registry.addEndpoint("/chat-websocket").setAllowedOrigins("*").withSockJS()
+    }
+}
 
