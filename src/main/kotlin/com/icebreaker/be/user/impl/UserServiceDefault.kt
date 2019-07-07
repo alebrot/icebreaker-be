@@ -1,5 +1,6 @@
 package com.icebreaker.be.user.impl
 
+import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.auth.UserDetailsDefault
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH
 import com.icebreaker.be.db.entity.AkSocialEntity
@@ -20,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.*
-import kotlin.collections.ArrayList
 
 @Service
 class UserServiceDefault(val userRepository: UserRepository,
@@ -29,7 +28,8 @@ class UserServiceDefault(val userRepository: UserRepository,
                          val authorityRepository: AuthorityRepository,
                          val socialRepository: SocialRepository,
                          val positionRepository: UserPositionRepository,
-                         val userImageRepository: UserImageRepository) : UserService {
+                         val userImageRepository: UserImageRepository,
+                         val imageProperties: ImageProperties) : UserService {
 
     override fun updateUser(user: User): User {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
@@ -64,7 +64,7 @@ class UserServiceDefault(val userRepository: UserRepository,
     override fun getImages(user: User): List<String> {
         val images = userImageRepository.findByUserIdOrderByPosition(user.id)
         return images.mapNotNull { it.imageName }.map {
-            ServletUriComponentsBuilder.fromCurrentContextPath()
+            ServletUriComponentsBuilder.fromPath(imageProperties.host)
                     .path(GET_IMAGE_PATH)
                     .path(it)
                     .toUriString()
