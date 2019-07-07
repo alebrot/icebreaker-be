@@ -31,7 +31,7 @@ data class UserWithDistance(val distance: Int, val user: User)
 fun User.toDto(imageHost: String): UserDto {
     val url = this.imgUrl
     val image = if (url != null) {
-        ServletUriComponentsBuilder.fromPath(imageHost)
+        ServletUriComponentsBuilder.fromHttpUrl(imageHost)
                 .path(GET_IMAGE_PATH)
                 .path(url)
                 .toUriString()
