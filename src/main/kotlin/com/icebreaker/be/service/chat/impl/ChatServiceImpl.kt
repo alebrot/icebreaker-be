@@ -103,11 +103,12 @@ class ChatServiceImpl(val userRepository: UserRepository,
                 akChatUserEntity.chat = akChatEntity
                 chatUserRepository.save(akChatUserEntity)
             }
-            return Chat.fromEntity(akChatEntity, users)
+            return Chat.fromEntity(akChatEntity, users.filter { akUserEntity -> akUserEntity.id != user.id })
 
         } else {
             val lastLine = chatLineRepository.findByChatId(found.id, 1, 0).firstOrNull()
-            val chat = Chat.fromEntity(found)
+            val usersWithoutMe = found.users.filter { akUserEntity -> akUserEntity.id != user.id }
+            val chat = Chat.fromEntity(found, usersWithoutMe)
             if (lastLine != null) {
                 chat.lastMessage = ChatLine.fromEntity(lastLine, objectMapper)
             }
