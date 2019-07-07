@@ -22,14 +22,16 @@ data class User(val id: Int,
                 var gender: Gender?,
                 val enabled: Boolean) : Serializable {
     companion object
+
+    val fullName: String = "$firstName $lastName"
 }
 
 data class UserWithDistance(val distance: Int, val user: User)
 
-fun User.toDto(): UserDto {
+fun User.toDto(imageHost: String): UserDto {
     val url = this.imgUrl
     val image = if (url != null) {
-        ServletUriComponentsBuilder.fromCurrentContextPath()
+        ServletUriComponentsBuilder.fromPath(imageHost)
                 .path(GET_IMAGE_PATH)
                 .path(url)
                 .toUriString()

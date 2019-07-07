@@ -46,6 +46,7 @@ image:
   maxHeight: 1600
   profileMaxWidth: 500
   profileMaxHeight: 500
+  host: http://localhost:8080
 
 push:
   secret: MWFhMDUyMDUtMjE5Ny00MWI1LTg2MmUtNjE1Y2E3MzY2YmRl

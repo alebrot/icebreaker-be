@@ -11,24 +11,26 @@ import com.icebreaker.be.service.model.fromEntity
 import com.icebreaker.be.service.model.toDto
 import java.time.LocalDateTime
 
-data class Chat(val id: Int, val users: List<User>, var lastMessage: ChatLine? = null) {
+data class Chat(val id: Int, val users: List<User>, var lastMessage: ChatLine? = null, val title: String? = null) {
     companion object {
         fun fromEntity(entity: AkChatEntity): Chat {
             val users = entity.users.map { u -> User.fromEntity(u) }
-            return Chat(entity.id, users)
+            val title: String = entity.title ?: users.joinToString(",") { it.fullName }
+            return Chat(entity.id, users, null, title)
         }
 
         fun fromEntity(entity: AkChatEntity, usersEntity: List<AkUserEntity>): Chat {
             val users = usersEntity.map { u -> User.fromEntity(u) }
-            return Chat(entity.id, users)
+            val title: String = entity.title ?: users.joinToString(",") { it.fullName }
+            return Chat(entity.id, users, null, title)
         }
     }
 }
 
 
-fun Chat.toDto(): ChatDto {
-    val users = this.users.map { user -> user.toDto() }
-    return ChatDto(this.id, users, this.lastMessage?.toDto())
+fun Chat.toDto(imageHost: String): ChatDto {
+    val users = this.users.map { user -> user.toDto(imageHost) }
+    return ChatDto(this.id, users, this.lastMessage?.toDto(imageHost), this.title)
 }
 
 data class ChatLine(val id: Int, val user: User, val content: String, val readBy: Set<Int>, val createdAt: LocalDateTime, val updatedAt: LocalDateTime, val type: MessageType = MessageType.DEFAULT) {
@@ -54,6 +56,6 @@ enum class MessageType {
 }
 
 
-fun ChatLine.toDto(): ChatLineDto {
-    return ChatLineDto(this.id, this.user.toDto(), this.content, this.readBy, this.createdAt, this.type)
+fun ChatLine.toDto(imageHost: String): ChatLineDto {
+    return ChatLineDto(this.id, this.user.toDto(imageHost), this.content, this.readBy, this.createdAt, this.type)
 }

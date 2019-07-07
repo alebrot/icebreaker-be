@@ -39,7 +39,7 @@ class UserControllerDefault(val authService: AuthService,
         userOrFail.bio = request.bio
         userOrFail.gender = request.gender
         val updateUser = userService.updateUser(userOrFail)
-        return UpdateUserResponse(updateUser.toDto())
+        return UpdateUserResponse(updateUser.toDto(imageProperties.host))
     }
 
     @Transactional
@@ -109,7 +109,7 @@ class UserControllerDefault(val authService: AuthService,
         }
 
         val mapped = usersCloseToUser.map {
-            UserWithDistanceDto(it.distance, it.user.toDto())
+            UserWithDistanceDto(it.distance, it.user.toDto(imageProperties.host))
         }
         return GetUserMeUsersResponse(mapped)
     }
@@ -123,14 +123,14 @@ class UserControllerDefault(val authService: AuthService,
                 request.lastName,
                 request.birthday)
 
-        return CreateUserResponse(user.toDto())
+        return CreateUserResponse(user.toDto(imageProperties.host))
     }
 
     override fun getUserById(userId: Int): GetUserByIdResponse {
         val user = userService.getUserById(userId)
         val authorities = user.authorities.map { it.toDto() }
         val images = userService.getImages(user)
-        val completeUserDto = CompleteUserDto(user.toDto(), authorities, images)
+        val completeUserDto = CompleteUserDto(user.toDto(imageProperties.host), authorities, images)
         return GetUserByIdResponse(completeUserDto)
 
     }
@@ -140,7 +140,7 @@ class UserControllerDefault(val authService: AuthService,
         val userOrFail = authService.getUserOrFail()
         val authorities = userOrFail.authorities.map { it.toDto() }
         val images = userService.getImages(userOrFail)
-        val completeUserDto = CompleteUserDto(userOrFail.toDto(), authorities, images)
+        val completeUserDto = CompleteUserDto(userOrFail.toDto(imageProperties.host), authorities, images)
         return GetUserMeResponse(UserContextDto(completeUserDto))
     }
 
@@ -149,7 +149,7 @@ class UserControllerDefault(val authService: AuthService,
         val userOrFail = authService.getUserOrFail()
         val authorities = userOrFail.authorities.map { it.toDto() }
         val images = userService.getImages(userOrFail)
-        val completeUserDto = CompleteUserDto(userOrFail.toDto(), authorities, images)
+        val completeUserDto = CompleteUserDto(userOrFail.toDto(imageProperties.host), authorities, images)
         return GetAdminMeResponse(AdminContextDto(completeUserDto))
     }
 }

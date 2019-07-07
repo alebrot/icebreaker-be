@@ -246,6 +246,7 @@ class ImageProperties {
     var maxHeight: Int = 0
     var profileMaxWidth: Int = 0
     var profileMaxHeight: Int = 0
+    lateinit var host: String
 }
 
 

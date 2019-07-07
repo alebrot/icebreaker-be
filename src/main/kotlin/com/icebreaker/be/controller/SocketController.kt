@@ -1,5 +1,6 @@
 package com.icebreaker.be.controller
 
+import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.chat.ChatService
 import com.icebreaker.be.service.chat.model.MessageType
@@ -18,7 +19,8 @@ import org.springframework.stereotype.Controller
 class SocketController(val authService: AuthService,
                        val simpMessagingTemplate: SimpMessageSendingOperations,
                        val chatService: ChatService,
-                       val pushService: PushService
+                       val pushService: PushService,
+                       val imageProperties: ImageProperties
 ) {
 
     val logger: Logger = LoggerFactory.getLogger(SocketController::class.java)
@@ -31,7 +33,7 @@ class SocketController(val authService: AuthService,
         //sendMessage performs validation
         val chatLine = chatService.sendMessage(userOrFail, chatId, message.content, MessageType.DEFAULT)
         chat.users.forEach {
-            simpMessagingTemplate.convertAndSendToUser(it.email, "/chat/$chatId", chatLine.toDto())
+            simpMessagingTemplate.convertAndSendToUser(it.email, "/chat/$chatId", chatLine.toDto(imageProperties.host))
         }
         chat.users.filter { it.id != userOrFail.id }.forEach { pushService.send(it, message.content) }
     }

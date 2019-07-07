@@ -1,6 +1,5 @@
 package com.icebreaker.be.service.chat.impl
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.icebreaker.be.db.entity.AkChatEntity
 import com.icebreaker.be.db.entity.AkChatLineEntity
@@ -122,7 +121,7 @@ class ChatServiceImpl(val userRepository: UserRepository,
         val chats = userEntity.chats
         return chats.sortedByDescending { akChatEntity -> akChatEntity.createdAt }.map {
             val lastLine = chatLineRepository.findByChatId(it.id, 1, 0).firstOrNull()
-            val chat = Chat.fromEntity(it)
+            val chat = Chat.fromEntity(it, it.users.filter { akUserEntity -> akUserEntity.id != user.id })
             if (lastLine != null) {
                 chat.lastMessage = ChatLine.fromEntity(lastLine, objectMapper)
             }
