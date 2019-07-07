@@ -2,12 +2,14 @@ package com.icebreaker.be.controller.user
 
 import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.dto.*
+import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.math.BigDecimal
 import javax.validation.Valid
 
 const val GET_USER_BY_ID = "/users/{userId}"
+const val POST_LOGOUT = "/users/me/logout"
 const val GET_USER_ME = "/users/me"
 const val POST_USER_ME = "/users/me"
 const val UPLOAD_USER_IMAGE = "/users/me/images/{imageId}"
@@ -15,8 +17,8 @@ const val UPLOAD_USER_PROFILE_IMAGE = "/users/me/image"
 const val GET_ADMIN_ME = "/admins/me"
 const val GET_USER_ME_USERS = "/users/me/users"
 const val CREATE_USER_POSITION = "/users/position"
-const val CREATE_USER = "/public/users"
 
+const val CREATE_USER = "/public/users"
 const val GET_IMAGE_PATH = "/public/images/"
 
 interface UserController {
@@ -49,4 +51,7 @@ interface UserController {
 
     @PostMapping(POST_USER_ME)
     fun updateUser(@Valid @RequestBody request: UpdateUserRequest): UpdateUserResponse
+
+    @PostMapping(POST_LOGOUT)
+    fun logout(principal: OAuth2Authentication): BaseResponse
 }

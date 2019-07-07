@@ -15,6 +15,9 @@ import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.oauth2.provider.OAuth2Authentication
+import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices
+import org.springframework.security.oauth2.provider.token.ConsumerTokenServices
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -32,7 +35,15 @@ import javax.validation.Valid
 class UserControllerDefault(val authService: AuthService,
                             val userService: UserService,
                             val fileService: FileService,
-                            val imageProperties: ImageProperties) : UserController {
+                            val imageProperties: ImageProperties,
+                            val authorizationServerTokenServices: AuthorizationServerTokenServices,
+                            val consumerTokenServices: ConsumerTokenServices) : UserController {
+
+    override fun logout(principal: OAuth2Authentication): BaseResponse {
+        val accessToken = authorizationServerTokenServices.getAccessToken(principal)
+        consumerTokenServices.revokeToken(accessToken.value)
+        return BaseResponse()
+    }
 
     override fun updateUser(request: UpdateUserRequest): UpdateUserResponse {
         val userOrFail = authService.getUserOrFail()
