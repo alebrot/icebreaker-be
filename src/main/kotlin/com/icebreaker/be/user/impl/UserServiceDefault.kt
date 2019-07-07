@@ -111,6 +111,10 @@ class UserServiceDefault(val userRepository: UserRepository,
         return findUsersCloseToUser.map(mapper)
     }
 
+    @Transactional
+    override fun getDistanceBetweenUsers(user1: User, user2: User): Int? {
+        return userRepository.findDistanceBetweenUsers(user1.id, user2.id)
+    }
 
     @Transactional
     override fun createUser(email: String, password: String, firstName: String, lastName: String, birthday: LocalDate): User {

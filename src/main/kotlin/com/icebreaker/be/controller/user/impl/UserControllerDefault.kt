@@ -127,10 +127,12 @@ class UserControllerDefault(val authService: AuthService,
     }
 
     override fun getUserById(userId: Int): GetUserByIdResponse {
+        val userOrFail = authService.getUserOrFail()
         val user = userService.getUserById(userId)
         val authorities = user.authorities.map { it.toDto() }
         val images = userService.getImages(user)
-        val completeUserDto = CompleteUserDto(user.toDto(imageProperties.host), authorities, images)
+        val distanceBetweenUsers = userService.getDistanceBetweenUsers(userOrFail, user)
+        val completeUserDto = CompleteUserDtoWithDistance(user.toDto(imageProperties.host), authorities, images, distanceBetweenUsers)
         return GetUserByIdResponse(completeUserDto)
 
     }

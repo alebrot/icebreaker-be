@@ -19,4 +19,5 @@ interface UserService {
     fun getImages(user: User): List<String>
     fun getUserById(userId: Int): User
     fun updateImageForUser(user: User, position: Int, imageName: String)
+    fun getDistanceBetweenUsers(user1: User, user2: User): Int?
 }

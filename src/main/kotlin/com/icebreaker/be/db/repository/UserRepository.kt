@@ -13,4 +13,7 @@ interface UserRepository : CrudRepository<AkUserEntity, Int> {
 
     @Query(value = "SELECT * FROM (SELECT (6371 * acos( cos(radians(LAT)) * cos(radians( :latOriginal)) * cos(radians( :lonOriginal) - radians(LON)) + sin(radians(LAT)) * sin(radians(:latOriginal)) )) * 1000 as distance, A.* FROM AK_POSITION INNER JOIN AK_USER A on AK_POSITION.ID = A.POSITION_ID WHERE A.ID != :userId) as `d*` WHERE distance < :distanceInMeters", nativeQuery = true)
     fun findUsersCloseToUserPosition(@Param("userId") userId: Int, @Param("distanceInMeters") distanceInMeters: Int, @Param("latOriginal") latOriginal: Double, @Param("lonOriginal") lonOriginal: Double): List<Map<String, Any>>
+
+    @Query(value = "SELECT * FROM (SELECT (6371 * acos(cos(radians(LAT))  * cos(radians(LAT_ORIGINAL))  * cos(radians(LON_ORIGINAL) - radians(LON)) + sin(radians(LAT)) * sin(radians(LAT_ORIGINAL)))) * 1000 as distance FROM (SELECT LAT AS LAT_ORIGINAL, LON AS LON_ORIGINAL FROM AK_POSITION INNER JOIN AK_USER AU on AK_POSITION.ID = AU.POSITION_ID  WHERE AU.ID = :userId1) as LOLO INNER JOIN AK_POSITION INNER JOIN AK_USER A on AK_POSITION.ID = A.POSITION_ID  WHERE A.ID = :userId2) as LOLOAPAd", nativeQuery = true)
+    fun findDistanceBetweenUsers(@Param("userId1") userId1: Int, @Param("userId2") userId2: Int): Int
 }

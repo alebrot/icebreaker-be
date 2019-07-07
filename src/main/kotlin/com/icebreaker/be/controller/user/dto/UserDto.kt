@@ -12,3 +12,4 @@ data class UserDto(val id: Int,
                    val gender: Gender?)
 
 data class CompleteUserDto(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<String>)
+data class CompleteUserDtoWithDistance(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<String>, val distance: Int?)
