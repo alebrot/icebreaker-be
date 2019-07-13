@@ -3,6 +3,7 @@ package com.icebreaker.be.service.file.impl
 import com.icebreaker.be.FileStorageProperties
 import com.icebreaker.be.ext.toInputStream
 import com.icebreaker.be.service.file.FileService
+import net.coobird.thumbnailator.Thumbnails
 import org.imgscalr.Scalr
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
@@ -97,9 +98,13 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
         return scaled
     }
 
-    private fun scale(img: BufferedImage, width: Int, height: Int): BufferedImage {
+    private fun scale1(img: BufferedImage, width: Int, height: Int): BufferedImage {
         return Scalr.resize(img, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
                 width, height, Scalr.OP_ANTIALIAS)
+    }
+
+    private fun scale(img: BufferedImage, width: Int, height: Int): BufferedImage {
+        return Thumbnails.of(img).size(width, height).asBufferedImage()
     }
 
     private fun scale(img: InputStream, ext: String, width: Int, height: Int): InputStream {

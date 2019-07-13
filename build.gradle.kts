@@ -42,6 +42,7 @@ dependencies {
     implementation("org.webjars:stomp-websocket:2.3.3")
     implementation("org.webjars:bootstrap:3.3.7")
     implementation("org.webjars:jquery:3.1.0")
+    implementation("net.coobird:thumbnailator:0.4.8")
 
 
 }
