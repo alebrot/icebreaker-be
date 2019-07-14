@@ -18,6 +18,7 @@ import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpMethod
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
+import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
@@ -56,6 +57,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.sql.DataSource
 
+@EnableAsync
 @SpringBootApplication
 @EnableConfigurationProperties(FileStorageProperties::class, ImageProperties::class, PushProperties::class)
 @EnableTransactionManagement

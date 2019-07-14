@@ -7,6 +7,7 @@ import com.icebreaker.be.service.model.User
 import com.icebreaker.be.user.UserService
 import com.icebreaker.be.user.facade.UserFacade
 import com.icebreaker.be.user.social.impl.SocialUser
+import org.springframework.scheduling.annotation.Async
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -38,7 +39,7 @@ class UserFacadeDefault(val userService: UserService,
         userService.updateUserProfilePhoto(user, storeImage)
     }
 
-
+    @Async
     override fun updateUserLastSeen(user: User) {
         user.lastSeen = LocalDateTime.now()
         userService.updateUser(user)
