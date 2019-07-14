@@ -31,10 +31,12 @@ class UserServiceDefault(val userRepository: UserRepository,
                          val userImageRepository: UserImageRepository,
                          val imageProperties: ImageProperties) : UserService {
 
+    @Transactional
     override fun updateUser(user: User): User {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         userEntity.bio = user.bio
         userEntity.gender = user.gender
+        userEntity.lastSeen = java.sql.Timestamp.valueOf(user.lastSeen)
         val saved = userRepository.save(userEntity)
         return User.fromEntity(saved)
     }

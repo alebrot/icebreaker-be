@@ -23,4 +23,11 @@ class AuthServiceDefault : AuthService {
                 ?: throw IllegalStateException("authentication.principal is not of type UserDetailsDefault")
         return userDetails.user
     }
+
+
+    override fun getUser(): User? {
+        val authentication = SecurityContextHolder.getContext().authentication
+        val userDetailsDefault = authentication?.principal as? UserDetailsDefault
+        return userDetailsDefault?.user
+    }
 }

@@ -9,6 +9,7 @@ import com.icebreaker.be.user.facade.UserFacade
 import com.icebreaker.be.user.social.impl.SocialUser
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class UserFacadeDefault(val userService: UserService,
@@ -36,4 +37,11 @@ class UserFacadeDefault(val userService: UserService,
         user.imgUrl = storeImage
         userService.updateUserProfilePhoto(user, storeImage)
     }
+
+
+    override fun updateUserLastSeen(user: User) {
+        user.lastSeen = LocalDateTime.now()
+        userService.updateUser(user)
+    }
+
 }

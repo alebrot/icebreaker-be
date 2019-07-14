@@ -1,6 +1,7 @@
 package com.icebreaker.be
 
 import com.icebreaker.be.extra.LoggingRequestInterceptor
+import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.auth.social.SocialTokenGranter
 import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.user.facade.UserFacade
@@ -43,6 +44,9 @@ import org.springframework.security.oauth2.provider.request.DefaultOAuth2Request
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.servlet.HandlerInterceptor
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
@@ -294,3 +298,25 @@ class WebSocketConfigInMemory : WebSocketMessageBrokerConfigurer {
     }
 }
 
+
+@Configuration
+class Config(val authService: AuthService, val userFacade: UserFacade) : WebMvcConfigurer {
+    //@Autowired
+    //MinimalInterceptor minimalInterceptor;
+
+
+    override fun addInterceptors(registry: InterceptorRegistry) {
+        registry.addInterceptor(object : HandlerInterceptor {
+            override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
+                if (request.method == "GET") {
+                    val user = authService.getUser()
+                    if (user != null) {
+                        userFacade.updateUserLastSeen(user)
+                    }
+                }
+
+                return super.preHandle(request, response, handler)
+            }
+        });
+    }
+}

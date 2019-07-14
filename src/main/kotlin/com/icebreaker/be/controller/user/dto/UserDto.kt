@@ -2,12 +2,14 @@ package com.icebreaker.be.controller.user.dto
 
 import com.icebreaker.be.service.model.Gender
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class UserDto(val id: Int,
                    val firstName: String,
                    val lastName: String,
                    val imageUrl: String?,
                    val birthday: LocalDate,
+                   val lastSeen: LocalDateTime,
                    val bio: String?,
                    val gender: Gender?)
 

@@ -72,6 +72,10 @@ class AkUserEntity {
     @get:Column(name = "UPDATED_AT")
     var updatedAt: Timestamp? = null
 
+    @get:Basic
+    @get:Column(name = "LAST_SEEN")
+    var lastSeen: Timestamp? = null
+
     @get:ManyToMany(fetch = FetchType.LAZY)
     @get:JoinTable(name = "AK_USER_AUTHORITY", joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "ID")], inverseJoinColumns = [JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")])
     var authorities: Collection<AkAuthorityEntity> = ArrayList()
