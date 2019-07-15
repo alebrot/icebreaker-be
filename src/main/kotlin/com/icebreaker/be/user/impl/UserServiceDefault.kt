@@ -73,6 +73,16 @@ class UserServiceDefault(val userRepository: UserRepository,
         }
     }
 
+    override fun getImageNameByPosition(user: User, position: Int): String? {
+        return userImageRepository.findByUserIdAndPosition(user.id, position)?.imageName
+    }
+
+    override fun getUserProfileImageName(user: User): String? {
+        val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
+        return userEntity.imgUrl
+    }
+
+
     override fun updateUserProfilePhoto(user: User, imageName: String) {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         userEntity.imgUrl = imageName

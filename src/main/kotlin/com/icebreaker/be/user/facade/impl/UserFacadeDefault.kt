@@ -2,6 +2,7 @@ package com.icebreaker.be.user.facade.impl
 
 import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.auth.UserDetailsDefault
+import com.icebreaker.be.service.file.FileFacade
 import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.user.UserService
@@ -15,7 +16,8 @@ import java.time.LocalDateTime
 @Service
 class UserFacadeDefault(val userService: UserService,
                         val fileService: FileService,
-                        val imageProperties: ImageProperties) : UserFacade {
+                        val imageProperties: ImageProperties,
+                        val fileFacade: FileFacade) : UserFacade {
 
 
     override fun createUserDetailsAndUploadPhoto(socialUser: SocialUser): UserDetails {
@@ -43,6 +45,24 @@ class UserFacadeDefault(val userService: UserService,
     override fun updateUserLastSeen(user: User) {
         user.lastSeen = LocalDateTime.now()
         userService.updateUser(user)
+    }
+
+
+    override fun updateImageForUserAndDeleteOldImage(user: User, position: Int, imageName: String) {
+        val imageNameToDeleteFromDisc = userService.getImageNameByPosition(user, position)
+        if (imageNameToDeleteFromDisc != null) {
+            fileFacade.deleteImageIfExistsAsync(imageNameToDeleteFromDisc)
+        }
+        userService.updateImageForUser(user, position, imageName)
+    }
+
+
+    override fun updateUserProfilePhotoAndDeleteOldUserProfile(user: User, imageName: String) {
+        val userProfileImageNameToDeleteFromDisc = userService.getUserProfileImageName(user)
+        if (userProfileImageNameToDeleteFromDisc != null) {
+            fileFacade.deleteImageIfExistsAsync(userProfileImageNameToDeleteFromDisc)
+        }
+        userService.updateUserProfilePhoto(user, imageName)
     }
 
 }

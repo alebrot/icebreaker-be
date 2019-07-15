@@ -11,6 +11,7 @@ import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.UserWithDistance
 import com.icebreaker.be.service.model.toDto
 import com.icebreaker.be.user.UserService
+import com.icebreaker.be.user.facade.UserFacade
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -37,7 +38,8 @@ class UserControllerDefault(val authService: AuthService,
                             val fileService: FileService,
                             val imageProperties: ImageProperties,
                             val authorizationServerTokenServices: AuthorizationServerTokenServices,
-                            val consumerTokenServices: ConsumerTokenServices) : UserController {
+                            val consumerTokenServices: ConsumerTokenServices,
+                            val userFacade: UserFacade) : UserController {
 
     override fun logout(principal: OAuth2Authentication): BaseResponse {
         val accessToken = authorizationServerTokenServices.getAccessToken(principal)
@@ -59,7 +61,8 @@ class UserControllerDefault(val authService: AuthService,
 
         val fileName = fileService.storeImage(file, imageProperties.profileMaxWidth, imageProperties.profileMaxHeight)
 
-        userService.updateUserProfilePhoto(userOrFail, fileName)
+//        userService.updateUserProfilePhoto(userOrFail, fileName)
+        userFacade.updateUserProfilePhotoAndDeleteOldUserProfile(userOrFail, fileName)
 
         val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(GET_IMAGE_PATH)
@@ -78,8 +81,8 @@ class UserControllerDefault(val authService: AuthService,
 
         val fileName = fileService.storeImage(file, imageProperties.maxWidth, imageProperties.maxHeight)
 
-        userService.updateImageForUser(userOrFail, imageId, fileName)
-
+//        userService.updateImageForUser(userOrFail, imageId, fileName)
+        userFacade.updateImageForUserAndDeleteOldImage(userOrFail, imageId, fileName)
         val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(GET_IMAGE_PATH)
                 .path(fileName)

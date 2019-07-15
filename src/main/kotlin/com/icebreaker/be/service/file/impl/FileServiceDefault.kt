@@ -72,7 +72,7 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
 
     override fun loadFileAsResource(fileName: String): Resource {
         try {
-            val filePath = storageLocation.resolve(fileName).normalize()
+            val filePath: Path = storageLocation.resolve(fileName).normalize()
             val resource = UrlResource(filePath.toUri())
             return if (resource.exists()) {
                 resource
@@ -84,6 +84,18 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
         }
     }
 
+    override fun loadFileAsPath(fileName: String): Path? {
+        val filePath: Path = storageLocation.resolve(fileName).normalize()
+        return if (Files.exists(filePath)) {
+            filePath
+        } else {
+            null
+        }
+    }
+
+    override fun deleteFile(path: Path) {
+        Files.delete(path)
+    }
 
     private fun generateUniqueFileName(): String {
         return UUID.randomUUID().toString()
