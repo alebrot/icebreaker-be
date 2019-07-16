@@ -61,13 +61,15 @@ class UserControllerDefault(val authService: AuthService,
 
         val fileName = fileService.storeImage(file, imageProperties.profileMaxWidth, imageProperties.profileMaxHeight)
 
-//        userService.updateUserProfilePhoto(userOrFail, fileName)
         userFacade.updateUserProfilePhotoAndDeleteOldUserProfile(userOrFail, fileName)
 
         val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(GET_IMAGE_PATH)
                 .path(fileName)
                 .toUriString()
+
+        userFacade.updateFirstUserPhotoIfNecessary(file, userOrFail)
+
         return UploadUserImageResponse(fileDownloadUri)
     }
 
@@ -81,12 +83,14 @@ class UserControllerDefault(val authService: AuthService,
 
         val fileName = fileService.storeImage(file, imageProperties.maxWidth, imageProperties.maxHeight)
 
-//        userService.updateImageForUser(userOrFail, imageId, fileName)
         userFacade.updateImageForUserAndDeleteOldImage(userOrFail, imageId, fileName)
         val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(GET_IMAGE_PATH)
                 .path(fileName)
                 .toUriString()
+
+        userFacade.updateUserProfilePhotoIfNecessary(file, userOrFail)
+
         return UploadUserImageResponse(fileDownloadUri)
     }
 
