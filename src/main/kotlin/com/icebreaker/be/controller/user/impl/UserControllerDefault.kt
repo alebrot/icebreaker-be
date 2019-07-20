@@ -52,8 +52,14 @@ class UserControllerDefault(val authService: AuthService,
 
     override fun updateUser(request: UpdateUserRequest): UpdateUserResponse {
         val userOrFail = authService.getUserOrFail()
-        userOrFail.bio = request.bio
-        userOrFail.gender = request.gender
+        if (request.bio != null) {
+            userOrFail.bio = request.bio
+        }
+
+        if (request.gender != null) {
+            userOrFail.gender = request.gender
+        }
+
         val updateUser = userService.updateUser(userOrFail)
         return UpdateUserResponse(updateUser.toDto(imageProperties.host, hashids))
     }
