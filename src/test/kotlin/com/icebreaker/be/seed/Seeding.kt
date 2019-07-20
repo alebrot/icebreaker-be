@@ -167,15 +167,14 @@ class Seeding() : BeApplicationTests() {
 
     private fun storeImage(file: File, to: Path): String {
         val ext = if (!file.extension.isNullOrBlank()) file.extension else "jpg"
-        val urlImage = ImageIO.read(file)
-        val toInputStream = scale(urlImage, maxWidth, maxHeight).toInputStream(ext)
-
+        val toInputStreamFirstImage = scale(ImageIO.read(file), maxWidth, maxHeight).toInputStream(ext)
+        val toInputStreamProfile = scale(ImageIO.read(file), profileMaxWidth, profileMaxHeight).toInputStream(ext)
 
         val fileName = generateUniqueFileName() + "." + ext
         val thumbnailName = thumbnail(fileName)
 
-        generateNameAndStore(ext, thumbnailName, toInputStream, to)
-        return generateNameAndStore(ext, fileName, toInputStream, to)
+        generateNameAndStore(ext, thumbnailName, toInputStreamProfile, to)
+        return generateNameAndStore(ext, fileName, toInputStreamFirstImage, to)
     }
 
     private fun scale(img: BufferedImage, width: Int, height: Int): BufferedImage {
