@@ -23,7 +23,8 @@ data class User(val id: Int,
                 var bio: String?,
                 var gender: Gender?,
                 val enabled: Boolean,
-                var lastSeen: LocalDateTime = LocalDateTime.now()) : Serializable {
+                var lastSeen: LocalDateTime = LocalDateTime.now(),
+                var createdAt: LocalDateTime) : Serializable {
     companion object
 
     val fullName: String = "$firstName $lastName"
@@ -42,11 +43,12 @@ fun User.toDto(imageHost: String, hashids: Hashids): UserDto {
         null
     }
 
-    return UserDto(hashids.encode(this.id.toLong()), this.firstName, this.lastName, image, this.birthday, this.lastSeen, this.bio, this.gender)
+    return UserDto(hashids.encode(this.id.toLong()), this.firstName, this.lastName, image, this.birthday, this.lastSeen, this.createdAt, this.bio, this.gender)
 }
 
 fun User.Companion.fromEntity(userEntity: AkUserEntity): User {
     val authorities = userEntity.authorities.map { Authority(it.id, it.name) }
+
     return User(userEntity.id,
             userEntity.email,
             userEntity.passwordHash,
@@ -60,7 +62,10 @@ fun User.Companion.fromEntity(userEntity: AkUserEntity): User {
             userEntity.birthday.toLocalDate(),
             userEntity.bio,
             userEntity.gender,
-            userEntity.enabled
+            userEntity.enabled,
+            userEntity.lastSeen.toLocalDateTime(),
+            userEntity.createdAt.toLocalDateTime()
+
     )
 }
 

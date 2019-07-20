@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.math.BigDecimal
+import java.sql.Timestamp
 import java.time.LocalDate
 
 @Service
@@ -226,13 +227,17 @@ class UserServiceDefault(val userRepository: UserRepository,
         val enabled: Boolean = findUsersCloseToUser["ENABLED"] as Boolean
         val genderInt: Int? = findUsersCloseToUser["GENDER"] as? Int
 
-        val gender: Gender? = if(genderInt!=null) Gender.values()[genderInt] else null
+        val lastSeen: Timestamp = findUsersCloseToUser["LAST_SEEN"] as Timestamp
+
+        val createdAt: Timestamp = findUsersCloseToUser["CREATED_AT"] as Timestamp
+
+        val gender: Gender? = if (genderInt != null) Gender.values()[genderInt] else null
 
         val bio: String? = findUsersCloseToUser["BIO"] as?String
 
         val distance: Int = (findUsersCloseToUser["DISTANCE"] as Double).toInt()
 
-        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), bio, gender, enabled)
+        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), bio, gender, enabled, lastSeen.toLocalDateTime(), createdAt.toLocalDateTime())
 
         UserWithDistance(distance, user)
     }

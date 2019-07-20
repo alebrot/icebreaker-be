@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.sql.Date
 import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
 import kotlin.collections.ArrayList
@@ -66,15 +67,15 @@ class AkUserEntity {
     @get:Basic
     @get:CreationTimestamp
     @get:Column(name = "CREATED_AT")
-    var createdAt: Timestamp? = null
+    var createdAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
     @get:Basic
     @get:UpdateTimestamp
     @get:Column(name = "UPDATED_AT")
-    var updatedAt: Timestamp? = null
+    var updatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
     @get:Basic
     @get:Column(name = "LAST_SEEN")
-    var lastSeen: Timestamp? = null
+    var lastSeen: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
     @get:ManyToMany(fetch = FetchType.LAZY)
     @get:JoinTable(name = "AK_USER_AUTHORITY", joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "ID")], inverseJoinColumns = [JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")])
