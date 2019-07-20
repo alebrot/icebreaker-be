@@ -42,6 +42,7 @@ class Seeding() : BeApplicationTests() {
         internal val log: Logger = LoggerFactory.getLogger(Seeding::class.java)
     }
 
+    //http://www.twitterbiogenerator.com/generate   bio english
 
     @Autowired
     lateinit var userRepository: UserRepository
@@ -69,7 +70,7 @@ class Seeding() : BeApplicationTests() {
         //https://uinames.com/api/?region=italy&amount=100&gender=female&ext
         val milan = Point(45.4726663, 9.1859992)
 
-        val size = 20
+        val size = 60
         val gender = "female"
 
 
@@ -91,7 +92,7 @@ class Seeding() : BeApplicationTests() {
         val files = listFiles(from).filter { it.extension == "jpg" }
 
 
-        val forEntity = testRestTemplate.getForEntity(URI("https://uinames.com/api/?region=italy&amount=$size&gender=$gender&ext"), String::class.java)
+        val forEntity = testRestTemplate.getForEntity(URI("https://uinames.com/api/?region=italy&amount=${size}&gender=$gender&ext"), String::class.java)
 
         val objectMapper = ObjectMapper()
 
@@ -116,11 +117,14 @@ class Seeding() : BeApplicationTests() {
 
         files.forEachIndexed { index, file ->
 
+            val bioResponse = testRestTemplate.getForEntity(URI("http://www.twitterbiogenerator.com/generate"), String::class.java)
+
+
             val firstImage = storeImage(file, to)
             val thumbnail = thumbnail(firstImage)
             val locationInLatLngRad = getLocationInLngLatRad(10000.0, milan)
-            val lng = locationInLatLngRad.x
-            val lat = locationInLatLngRad.y
+            val lat = locationInLatLngRad.x
+            val lng = locationInLatLngRad.y
 
             val container = list[index]
 
@@ -140,10 +144,11 @@ class Seeding() : BeApplicationTests() {
             akUserEntity.lastName = container.surname
             akUserEntity.email = container.email
             akUserEntity.imgUrl = thumbnail
-            akUserEntity.passwordHash = "\$2a\$08\\\$EfoMXblxEFhBxSCOxI/bju0G4oVwGgtCig6INKKOJbchvNw5XhoTW"
+            akUserEntity.passwordHash = "\$2a\$08\$EfoMXblxEFhBxSCOxI/bju0G4oVwGgtCig6INKKOJbchvNw5XhoTW"
             akUserEntity.birthday = container.birhtday
             akUserEntity.position = akUserPositionEntity
             akUserEntity.gender = genderId
+            akUserEntity.bio = bioResponse.body
             akUserEntity.authorities = listOf(defaultAuthority)
 
             val save = userRepository.save(akUserEntity)
@@ -243,3 +248,5 @@ class Seeding() : BeApplicationTests() {
 
 
 data class Container(val name: String, val surname: String, val email: String, val birhtday: java.sql.Date)
+
+
