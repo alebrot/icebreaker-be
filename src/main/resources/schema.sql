@@ -47,7 +47,7 @@ CREATE TABLE AK_USER
     PASSWORD_HASH       VARCHAR(255),
     IMG_URL             VARCHAR(255),
     BIRTHDAY            DATE                                NOT NULL,
-    BIO                 TEXT,
+    BIO                 VARCHAR(255),
     GENDER              INT COMMENT '1-male,0-female',
     CREATED_AT          TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     UPDATED_AT          TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,

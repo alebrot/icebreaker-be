@@ -224,11 +224,15 @@ class UserServiceDefault(val userRepository: UserRepository,
         val accountLocked: Boolean = findUsersCloseToUser["ACCOUNT_LOCKED"] as Boolean
         val credentialsExpired = findUsersCloseToUser["CREDENTIALS_EXPIRED"] as Boolean
         val enabled: Boolean = findUsersCloseToUser["ENABLED"] as Boolean
-        val gender: Gender? = findUsersCloseToUser["GENDER"] as? Gender
+        val genderInt: Int? = findUsersCloseToUser["GENDER"] as? Int
+
+        val gender: Gender? = if(genderInt!=null) Gender.values()[genderInt] else null
+
+        val bio: String? = findUsersCloseToUser["BIO"] as?String
 
         val distance: Int = (findUsersCloseToUser["DISTANCE"] as Double).toInt()
 
-        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), null, gender, enabled)
+        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), bio, gender, enabled)
 
         UserWithDistance(distance, user)
     }
