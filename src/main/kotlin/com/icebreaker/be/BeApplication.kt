@@ -6,6 +6,7 @@ import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.user.facade.UserFacade
 import com.icebreaker.be.user.impl.UserServiceDefault
 import com.icebreaker.be.user.social.SocialService
+import org.hashids.Hashids
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -55,14 +56,19 @@ import javax.sql.DataSource
 
 @EnableAsync
 @SpringBootApplication
-@EnableConfigurationProperties(FileStorageProperties::class, ImageProperties::class, PushProperties::class)
+@EnableConfigurationProperties(FileStorageProperties::class, ImageProperties::class, PushProperties::class, CoreProperties::class)
 @EnableTransactionManagement
-class BeApplication {
+class BeApplication(val coreProperties: CoreProperties) {
     @Bean
     fun restTemplate(): RestTemplate {
         val restTemplate = RestTemplate()
         restTemplate.interceptors.add(LoggingRequestInterceptor())
         return restTemplate
+    }
+
+    @Bean
+    fun hashIds(): Hashids {
+        return Hashids(coreProperties.idSalt, coreProperties.idMinLength)
     }
 
 }
@@ -261,6 +267,13 @@ class PushProperties {
     lateinit var enInvitationContent: String
     lateinit var itInvitationTitle: String
     lateinit var enInvitationTitle: String
+}
+
+@Configuration
+@ConfigurationProperties(prefix = "core")
+class CoreProperties {
+    lateinit var idSalt: String
+    var idMinLength: Int = 8
 }
 
 

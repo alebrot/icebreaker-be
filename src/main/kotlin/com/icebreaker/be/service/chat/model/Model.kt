@@ -9,6 +9,7 @@ import com.icebreaker.be.db.entity.AkUserEntity
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.fromEntity
 import com.icebreaker.be.service.model.toDto
+import org.hashids.Hashids
 import java.time.LocalDateTime
 
 data class Chat(val id: Int, val users: List<User>, var lastMessage: ChatLine? = null, val title: String? = null) {
@@ -28,9 +29,9 @@ data class Chat(val id: Int, val users: List<User>, var lastMessage: ChatLine? =
 }
 
 
-fun Chat.toDto(imageHost: String): ChatDto {
-    val users = this.users.map { user -> user.toDto(imageHost) }
-    return ChatDto(this.id, users, this.lastMessage?.toDto(imageHost), this.title)
+fun Chat.toDto(imageHost: String, hashids: Hashids): ChatDto {
+    val users = this.users.map { user -> user.toDto(imageHost, hashids) }
+    return ChatDto(this.id, users, this.lastMessage?.toDto(imageHost, hashids), this.title)
 }
 
 data class ChatLine(val id: Int, val user: User, val content: String, val readBy: Set<Int>, val createdAt: LocalDateTime, val updatedAt: LocalDateTime, val type: MessageType = MessageType.DEFAULT) {
@@ -56,6 +57,6 @@ enum class MessageType {
 }
 
 
-fun ChatLine.toDto(imageHost: String): ChatLineDto {
-    return ChatLineDto(this.id, this.user.toDto(imageHost), this.content, this.readBy, this.createdAt, this.type)
+fun ChatLine.toDto(imageHost: String, hashids: Hashids): ChatLineDto {
+    return ChatLineDto(this.id, this.user.toDto(imageHost, hashids), this.content, this.readBy, this.createdAt, this.type)
 }

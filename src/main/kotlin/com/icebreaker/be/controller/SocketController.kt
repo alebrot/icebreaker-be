@@ -6,6 +6,7 @@ import com.icebreaker.be.service.chat.ChatService
 import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.chat.model.toDto
 import com.icebreaker.be.service.push.PushService
+import org.hashids.Hashids
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.messaging.handler.annotation.DestinationVariable
@@ -20,7 +21,8 @@ class SocketController(val authService: AuthService,
                        val simpMessagingTemplate: SimpMessageSendingOperations,
                        val chatService: ChatService,
                        val pushService: PushService,
-                       val imageProperties: ImageProperties
+                       val imageProperties: ImageProperties,
+                       val hashids: Hashids
 ) {
 
     val logger: Logger = LoggerFactory.getLogger(SocketController::class.java)
@@ -33,7 +35,7 @@ class SocketController(val authService: AuthService,
         //sendMessage performs validation
         val chatLine = chatService.sendMessage(userOrFail, chatId, message.content, MessageType.DEFAULT)
         chat.users.forEach {
-            simpMessagingTemplate.convertAndSendToUser(it.email, "/chat/$chatId", chatLine.toDto(imageProperties.host))
+            simpMessagingTemplate.convertAndSendToUser(it.email, "/chat/$chatId", chatLine.toDto(imageProperties.host, hashids))
         }
         chat.users.filter { it.id != userOrFail.id }.forEach { pushService.send(it, message.content) }
     }

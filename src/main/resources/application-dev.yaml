@@ -42,8 +42,8 @@ spring:
 file:
   upload-dir: /Users/alexey/IdeaProjects/imgs
 image:
-  maxWidth: 1200
-  maxHeight: 1600
+  maxWidth: 1080
+  maxHeight: 1226
   profileMaxWidth: 500
   profileMaxHeight: 500
   host: "http://10.30.30.115:1234"
@@ -55,3 +55,7 @@ push:
   en-invitation-title: Kofify
   it-invitation-content: "{0} ti ha invitato a prendere un caffè"
   en-invitation-content: "{0} has invited you for a cup of coffee"
+
+core:
+  id-salt: "21312lkmcmslkacasdchuasoimk1l23"
+  id-min-length: 12

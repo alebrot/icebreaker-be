@@ -4,7 +4,7 @@ import com.icebreaker.be.service.model.Gender
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class UserDto(val id: Int,
+data class UserDto(val id: String,
                    val firstName: String,
                    val lastName: String,
                    val imageUrl: String?,

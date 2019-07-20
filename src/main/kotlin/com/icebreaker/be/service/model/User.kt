@@ -3,6 +3,7 @@ package com.icebreaker.be.service.model
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH
 import com.icebreaker.be.controller.user.dto.UserDto
 import com.icebreaker.be.db.entity.AkUserEntity
+import org.hashids.Hashids
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.io.Serializable
 import java.time.LocalDate
@@ -30,7 +31,7 @@ data class User(val id: Int,
 
 data class UserWithDistance(val distance: Int, val user: User)
 
-fun User.toDto(imageHost: String): UserDto {
+fun User.toDto(imageHost: String, hashids: Hashids): UserDto {
     val url = this.imgUrl
     val image = if (url != null) {
         ServletUriComponentsBuilder.fromHttpUrl(imageHost)
@@ -41,7 +42,7 @@ fun User.toDto(imageHost: String): UserDto {
         null
     }
 
-    return UserDto(this.id, this.firstName, this.lastName, image, this.birthday, this.lastSeen, this.bio, this.gender)
+    return UserDto(hashids.encode(this.id.toLong()), this.firstName, this.lastName, image, this.birthday, this.lastSeen, this.bio, this.gender)
 }
 
 fun User.Companion.fromEntity(userEntity: AkUserEntity): User {

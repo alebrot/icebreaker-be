@@ -33,7 +33,7 @@ interface UserController {
     fun createUserPosition(@RequestBody createUserPositionRequest: CreateUserPositionRequest): BaseResponse
 
     @GetMapping(GET_USER_BY_ID)
-    fun getUserById(@PathVariable userId: Int): GetUserByIdResponse
+    fun getUserById(@PathVariable userId: String): GetUserByIdResponse
 
     @GetMapping(GET_USER_ME)
     fun getUserMe(): GetUserMeResponse

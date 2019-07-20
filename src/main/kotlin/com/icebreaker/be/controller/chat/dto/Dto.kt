@@ -16,7 +16,7 @@ data class ChatLineDto(val id: Int, val user: UserDto, val content: String, val 
 data class NotifyMessageReceivedRequest(@NotNull val lineIds: List<Int>) : BaseRequest()
 
 data class SendMessageRequest(val content: String) : BaseResponse()
-data class FindOrCreateChatRequest(@NotNull val userIds: List<Int>) : BaseRequest()
+data class FindOrCreateChatRequest(@NotNull val userIds: List<String>) : BaseRequest()
 data class FindOrCreateChatResponse(val chat: ChatDto) : BaseResponse()
 
 data class CreateInvitationRequest(@NotNull val userIds: List<Int>, val content: String = "") : BaseRequest()

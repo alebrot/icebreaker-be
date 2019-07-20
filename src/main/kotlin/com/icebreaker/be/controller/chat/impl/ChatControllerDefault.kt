@@ -4,11 +4,13 @@ import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.controller.chat.ChatController
 import com.icebreaker.be.controller.chat.dto.*
 import com.icebreaker.be.controller.core.dto.BaseResponse
+import com.icebreaker.be.ext.decodeToInt
 import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.chat.ChatService
 import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.chat.model.toDto
 import com.icebreaker.be.service.push.PushService
+import org.hashids.Hashids
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RestController
 
@@ -16,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController
 class ChatControllerDefault(val authService: AuthService,
                             val chatService: ChatService,
                             val pushService: PushService,
-                            val imageProperties: ImageProperties) : ChatController {
+                            val imageProperties: ImageProperties,
+                            val hashids: Hashids) : ChatController {
 
 
     override fun notifyMessageReceived(request: NotifyMessageReceivedRequest): BaseResponse {
@@ -34,7 +37,7 @@ class ChatControllerDefault(val authService: AuthService,
         val sendMessage = chatService.sendMessage(userOrFail, chat.id, request.content, MessageType.INVITATION)
         chat.lastMessage = sendMessage
         chat.users.filter { it.id != userOrFail.id }.forEach { pushService.send(it, request.content, MessageType.INVITATION) }
-        return CreateInvitationResponse(chat.toDto(imageProperties.host))
+        return CreateInvitationResponse(chat.toDto(imageProperties.host, hashids))
     }
 
     override fun sendMessage(chatId: Int, request: SendMessageRequest) {
@@ -47,7 +50,7 @@ class ChatControllerDefault(val authService: AuthService,
     override fun getUserMeChats(): GetUserMeChatsResponse {
         val userOrFail = authService.getUserOrFail()
         val chats = chatService.getChatsByUser(userOrFail)
-        return GetUserMeChatsResponse(chats.map { it.toDto(imageProperties.host) })
+        return GetUserMeChatsResponse(chats.map { it.toDto(imageProperties.host, hashids) })
     }
 
     override fun getChatLines(chatId: Int, limit: Int?, offset: Int?): GetChatLinesResponse {
@@ -70,12 +73,13 @@ class ChatControllerDefault(val authService: AuthService,
         val chats = chatService.getChatsByUser(userOrFail)
         chats.find { it.id == chatId } ?: throw IllegalArgumentException("user doesn't have chat with id $chatId")
         val chatLinesByChatId = chatService.getChatLinesByChatId(chatId, limitChecked, offsetChecked)
-        return GetChatLinesResponse(chatLinesByChatId.map { it.toDto(imageProperties.host) })
+        return GetChatLinesResponse(chatLinesByChatId.map { it.toDto(imageProperties.host, hashids) })
     }
 
     override fun findOrCreateChat(request: FindOrCreateChatRequest): FindOrCreateChatResponse {
         val userOrFail = authService.getUserOrFail()
-        val chat = chatService.findOrCreateChat(userOrFail, request.userIds)
-        return FindOrCreateChatResponse(chat.toDto(imageProperties.host))
+        val userIds = request.userIds.map { hashids.decodeToInt(it) }
+        val chat = chatService.findOrCreateChat(userOrFail, userIds)
+        return FindOrCreateChatResponse(chat.toDto(imageProperties.host, hashids))
     }
 }

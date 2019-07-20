@@ -5,6 +5,7 @@ import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH
 import com.icebreaker.be.controller.user.UserController
 import com.icebreaker.be.controller.user.dto.*
+import com.icebreaker.be.ext.decodeToInt
 import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.service.model.User
@@ -12,6 +13,7 @@ import com.icebreaker.be.service.model.UserWithDistance
 import com.icebreaker.be.service.model.toDto
 import com.icebreaker.be.user.UserService
 import com.icebreaker.be.user.facade.UserFacade
+import org.hashids.Hashids
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -39,7 +41,8 @@ class UserControllerDefault(val authService: AuthService,
                             val imageProperties: ImageProperties,
                             val authorizationServerTokenServices: AuthorizationServerTokenServices,
                             val consumerTokenServices: ConsumerTokenServices,
-                            val userFacade: UserFacade) : UserController {
+                            val userFacade: UserFacade,
+                            val hashids: Hashids) : UserController {
 
     override fun logout(principal: OAuth2Authentication): BaseResponse {
         val accessToken = authorizationServerTokenServices.getAccessToken(principal)
@@ -52,7 +55,7 @@ class UserControllerDefault(val authService: AuthService,
         userOrFail.bio = request.bio
         userOrFail.gender = request.gender
         val updateUser = userService.updateUser(userOrFail)
-        return UpdateUserResponse(updateUser.toDto(imageProperties.host))
+        return UpdateUserResponse(updateUser.toDto(imageProperties.host, hashids))
     }
 
     @Transactional
@@ -127,7 +130,7 @@ class UserControllerDefault(val authService: AuthService,
         }
 
         val mapped = usersCloseToUser.map {
-            UserWithDistanceDto(it.distance, it.user.toDto(imageProperties.host))
+            UserWithDistanceDto(it.distance, it.user.toDto(imageProperties.host, hashids))
         }
         return GetUserMeUsersResponse(mapped)
     }
@@ -141,16 +144,18 @@ class UserControllerDefault(val authService: AuthService,
                 request.lastName,
                 request.birthday)
 
-        return CreateUserResponse(user.toDto(imageProperties.host))
+        return CreateUserResponse(user.toDto(imageProperties.host, hashids))
     }
 
-    override fun getUserById(userId: Int): GetUserByIdResponse {
+    override fun getUserById(userId: String): GetUserByIdResponse {
+        val decodedUserId = hashids.decodeToInt(userId)
+
         val userOrFail = authService.getUserOrFail()
-        val user = userService.getUserById(userId)
+        val user = userService.getUserById(decodedUserId)
         val authorities = user.authorities.map { it.toDto() }
         val images = userService.getImages(user)
         val distanceBetweenUsers = userService.getDistanceBetweenUsers(userOrFail, user)
-        val completeUserDto = CompleteUserDtoWithDistance(user.toDto(imageProperties.host), authorities, images, distanceBetweenUsers)
+        val completeUserDto = CompleteUserDtoWithDistance(user.toDto(imageProperties.host, hashids), authorities, images, distanceBetweenUsers)
         return GetUserByIdResponse(completeUserDto)
 
     }
@@ -160,7 +165,7 @@ class UserControllerDefault(val authService: AuthService,
         val userOrFail = authService.getUserOrFail()
         val authorities = userOrFail.authorities.map { it.toDto() }
         val images = userService.getImages(userOrFail)
-        val completeUserDto = CompleteUserDto(userOrFail.toDto(imageProperties.host), authorities, images)
+        val completeUserDto = CompleteUserDto(userOrFail.toDto(imageProperties.host, hashids), authorities, images)
         return GetUserMeResponse(UserContextDto(completeUserDto))
     }
 
@@ -169,7 +174,7 @@ class UserControllerDefault(val authService: AuthService,
         val userOrFail = authService.getUserOrFail()
         val authorities = userOrFail.authorities.map { it.toDto() }
         val images = userService.getImages(userOrFail)
-        val completeUserDto = CompleteUserDto(userOrFail.toDto(imageProperties.host), authorities, images)
+        val completeUserDto = CompleteUserDto(userOrFail.toDto(imageProperties.host, hashids), authorities, images)
         return GetAdminMeResponse(AdminContextDto(completeUserDto))
     }
 }
