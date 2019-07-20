@@ -4,7 +4,7 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "AK_AUTHORITY", schema = "PUBLIC", catalog = "DEFAULT")
+@Table(name = "AK_AUTHORITY", schema = "PUBLIC")
 class AkAuthorityEntity {
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)

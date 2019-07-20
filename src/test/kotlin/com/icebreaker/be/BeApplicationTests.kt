@@ -4,18 +4,23 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.client.ClientHttpRequestInterceptor
+import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Config::class])
@@ -104,4 +109,10 @@ class BeApplicationTests {
 }
 
 @TestConfiguration
-class Config
+@ComponentScan("com.icebreaker.be")
+class Config {
+    @Bean
+    fun mockedSimpMessageSendingOperations(): SimpMessageSendingOperations {
+        return mock(SimpMessageSendingOperations::class.java)
+    }
+}

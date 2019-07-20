@@ -4,7 +4,7 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "AK_USER_IMAGE", schema = "PUBLIC", catalog = "DEFAULT")
+@Table(name = "AK_USER_IMAGE", schema = "PUBLIC")
 class AkUserImageEntity {
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)

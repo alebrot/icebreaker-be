@@ -15,7 +15,7 @@ logging:
 # Threshold after which files are written to disk.
 spring:
   datasource:
-    url: jdbc:h2:mem:default;Mode=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=TRUE;
+    url: "jdbc:h2:~/testDb;Mode=MySQL;DATABASE_TO_UPPER=TRUE;AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;"
     platform: h2
     continue-on-error: true
     #spring.datasource.username=sa

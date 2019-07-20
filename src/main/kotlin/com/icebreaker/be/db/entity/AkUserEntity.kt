@@ -10,7 +10,7 @@ import javax.persistence.*
 import kotlin.collections.ArrayList
 
 @Entity
-@Table(name = "AK_USER", schema = "PUBLIC", catalog = "DEFAULT")
+@Table(name = "AK_USER", schema = "PUBLIC")
 class AkUserEntity {
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -87,12 +87,12 @@ class AkUserEntity {
     var images: Collection<AkUserImageEntity> = ArrayList()
 
     @get:OneToOne(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "POSITION_ID", referencedColumnName = "ID", nullable = false)
+    @get:JoinColumn(name = "POSITION_ID", referencedColumnName = "ID", nullable = true)
     var position: AkUserPositionEntity? = null
 
 
     @get:OneToOne(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "PUSH_ID", referencedColumnName = "ID", nullable = false)
+    @get:JoinColumn(name = "PUSH_ID", referencedColumnName = "ID", nullable = true)
     var push: AkPushEntity? = null
 
     override fun equals(other: Any?): Boolean {

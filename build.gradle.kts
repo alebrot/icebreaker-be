@@ -32,7 +32,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.springframework.security.oauth", "spring-security-oauth2", "2.3.5.RELEASE")
     implementation("org.imgscalr", "imgscalr-lib", "4.2")
-    runtimeOnly("com.h2database:h2")
+    implementation("com.h2database:h2")
     implementation("io.projectreactor:reactor-core")
     implementation("io.netty:netty-all")
     implementation("io.projectreactor.netty:reactor-netty:0.8.9.RELEASE")

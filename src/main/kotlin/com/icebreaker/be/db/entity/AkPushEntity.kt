@@ -6,7 +6,7 @@ import java.sql.Timestamp
 import javax.persistence.*
 
 @Entity
-@Table(name = "AK_PUSH", schema = "PUBLIC", catalog = "DEFAULT")
+@Table(name = "AK_PUSH", schema = "PUBLIC")
 class AkPushEntity {
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -8,7 +8,7 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "AK_SOCIAL", schema = "PUBLIC", catalog = "DEFAULT")
+@Table(name = "AK_SOCIAL", schema = "PUBLIC")
 class AkSocialEntity {
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)

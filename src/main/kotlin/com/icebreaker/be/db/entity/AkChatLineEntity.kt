@@ -1,16 +1,16 @@
 package com.icebreaker.be.db.entity
 
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.icebreaker.be.service.chat.model.MessageType
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.sql.Timestamp
 import java.util.*
 import javax.persistence.*
-import com.fasterxml.jackson.databind.ObjectMapper
 
 @Entity
-@Table(name = "AK_CHAT_LINE", schema = "PUBLIC", catalog = "DEFAULT")
+@Table(name = "AK_CHAT_LINE", schema = "PUBLIC")
 class AkChatLineEntity {
 
     @get:Id

@@ -7,7 +7,7 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "AK_CHAT", schema = "PUBLIC", catalog = "DEFAULT")
+@Table(name = "AK_CHAT", schema = "PUBLIC")
 class AkChatEntity {
 
     @get:Id
