@@ -19,5 +19,5 @@ data class SendMessageRequest(val content: String) : BaseResponse()
 data class FindOrCreateChatRequest(@NotNull val userIds: List<String>) : BaseRequest()
 data class FindOrCreateChatResponse(val chat: ChatDto) : BaseResponse()
 
-data class CreateInvitationRequest(@NotNull val userIds: List<Int>, val content: String = "") : BaseRequest()
+data class CreateInvitationRequest(@NotNull val userIds: List<String>, val content: String = "") : BaseRequest()
 data class CreateInvitationResponse(val chat: ChatDto) : BaseResponse()

@@ -33,7 +33,8 @@ class ChatControllerDefault(val authService: AuthService,
     @Transactional
     override fun createInvitation(request: CreateInvitationRequest): CreateInvitationResponse {
         val userOrFail = authService.getUserOrFail()
-        val chat = chatService.findOrCreateChat(userOrFail, request.userIds)
+        val userIds = request.userIds.map { hashids.decodeToInt(it) }
+        val chat = chatService.findOrCreateChat(userOrFail, userIds)
         val sendMessage = chatService.sendMessage(userOrFail, chat.id, request.content, MessageType.INVITATION)
         chat.lastMessage = sendMessage
         chat.users.filter { it.id != userOrFail.id }.forEach { pushService.send(it, request.content, MessageType.INVITATION) }

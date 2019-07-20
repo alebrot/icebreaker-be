@@ -120,15 +120,13 @@ class ChatServiceImpl(val userRepository: UserRepository,
     override fun getChatsByUser(user: User): List<Chat> {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         val chats = userEntity.chats
-        return chats.sortedByDescending { akChatEntity -> akChatEntity.createdAt }.mapNotNull {
+        return chats.sortedByDescending { akChatEntity -> akChatEntity.createdAt }.map {
             val lastLine = chatLineRepository.findByChatId(it.id, 1, 0).firstOrNull()
+            val chat = Chat.fromEntity(it, it.users.filter { akUserEntity -> akUserEntity.id != user.id })
             if (lastLine != null) {
-                val chat = Chat.fromEntity(it, it.users.filter { akUserEntity -> akUserEntity.id != user.id })
                 chat.lastMessage = ChatLine.fromEntity(lastLine, objectMapper)
-                chat
-            } else {
-                null
             }
+            chat
         }
     }
 
