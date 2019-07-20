@@ -3,9 +3,17 @@ package com.icebreaker.be.seed
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.icebreaker.be.BeApplicationTests
 import com.icebreaker.be.db.entity.AkUserEntity
+import com.icebreaker.be.db.entity.AkUserImageEntity
+import com.icebreaker.be.db.entity.AkUserPositionEntity
+import com.icebreaker.be.db.repository.AuthorityRepository
+import com.icebreaker.be.db.repository.UserImageRepository
+import com.icebreaker.be.db.repository.UserPositionRepository
 import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.ext.toInputStream
+import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
+import com.icebreaker.be.service.model.Gender
 import net.coobird.thumbnailator.Thumbnails
+import org.junit.Assert
 import org.junit.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -34,8 +42,18 @@ class Seeding() : BeApplicationTests() {
         internal val log: Logger = LoggerFactory.getLogger(Seeding::class.java)
     }
 
+
     @Autowired
     lateinit var userRepository: UserRepository
+
+    @Autowired
+    lateinit var authorityRepository: AuthorityRepository
+
+    @Autowired
+    lateinit var userImageRepository: UserImageRepository
+
+    @Autowired
+    lateinit var userPositionRepository: UserPositionRepository
 
     @Autowired
     lateinit var dataSource: DataSource
@@ -51,57 +69,96 @@ class Seeding() : BeApplicationTests() {
         //https://uinames.com/api/?region=italy&amount=100&gender=female&ext
         val milan = Point(45.4726663, 9.1859992)
 
+        val size = 20
+        val gender = "female"
+
+
+        val (from, to) = if (gender == "female") {
+            val fromF = Paths.get("/Users/alexey/fake/from/f")
+                    .toAbsolutePath()
+                    .normalize().toUri()
+            val toF = Paths.get("/Users/alexey/fake/to/f")
+            Pair(fromF, toF)
+        } else {
+            val fromM = Paths.get("/Users/alexey/fake/from/m")
+                    .toAbsolutePath()
+                    .normalize().toUri()
+            val toM = Paths.get("/Users/alexey/fake/to/m")
+            Pair(fromM, toM)
+        }
+
+
+        val files = listFiles(from).filter { it.extension == "jpg" }
+
+
+        val forEntity = testRestTemplate.getForEntity(URI("https://uinames.com/api/?region=italy&amount=$size&gender=$gender&ext"), String::class.java)
 
         val objectMapper = ObjectMapper()
 
-
-        val jsonNode = objectMapper.readTree(json)
+        val jsonNode = objectMapper.readTree(forEntity.body)
         val list: List<Container> = jsonNode.map {
             val name = it.get("name").asText()
             val surname = it.get("surname").asText()
-            val email = it.get("email").asText()
-
+            val email = "${name.toLowerCase()}.${surname.toLowerCase()}@email.com"
             val generateDate = generateDate()
             val birthDate = java.sql.Date.valueOf(generateDate)
-
             val container = Container(name, surname, email, birthDate)
             container
-        }
-        for (container in list) {
+        }.distinctBy { container -> container.email }
+
+
+
+
+
+        Assert.assertTrue(files.size == list.size)
+
+
+
+        files.forEachIndexed { index, file ->
+
+            val firstImage = storeImage(file, to)
+            val thumbnail = thumbnail(firstImage)
+            val locationInLatLngRad = getLocationInLngLatRad(10000.0, milan)
+            val lng = locationInLatLngRad.x
+            val lat = locationInLatLngRad.y
+
+            val container = list[index]
+
+
+            val akUserPositionEntity = AkUserPositionEntity()
+            akUserPositionEntity.latitude = lat.toBigDecimal()
+            akUserPositionEntity.longitude = lng.toBigDecimal()
+            userPositionRepository.save(akUserPositionEntity)
+
+            val defaultAuthority = authorityRepository.findById(1).toKotlinNotOptionalOrFail()
+
+
+            val genderId = if (gender == "female") Gender.FEMALE else Gender.MALE
+
             val akUserEntity = AkUserEntity()
             akUserEntity.firstName = container.name
             akUserEntity.lastName = container.surname
             akUserEntity.email = container.email
-            akUserEntity.passwordHash = ""
+            akUserEntity.imgUrl = thumbnail
+            akUserEntity.passwordHash = "\$2a\$08\\\$EfoMXblxEFhBxSCOxI/bju0G4oVwGgtCig6INKKOJbchvNw5XhoTW"
             akUserEntity.birthday = container.birhtday
+            akUserEntity.position = akUserPositionEntity
+            akUserEntity.gender = genderId
+            akUserEntity.authorities = listOf(defaultAuthority)
+
             val save = userRepository.save(akUserEntity)
-            log.info(save.toString())
-            break
+
+
+            val akUserImageEntity = AkUserImageEntity()
+            akUserImageEntity.imageName = firstImage
+            akUserImageEntity.position = 1
+            akUserImageEntity.user = save
+            userImageRepository.save(akUserImageEntity)
+
+
+            log.info("index $index ${save.email}")
         }
-        return;
-
-
-//        val ff: Set<Container> = objectMapper.readValue(json, object : TypeReference<Set<Container>>() {})
-
-        val fromF = Paths.get("/Users/alexey/fake/from/f")
-                .toAbsolutePath()
-                .normalize().toUri()
-        val toF = Paths.get("/Users/alexey/fake/to/f")
-        val fromM = Paths.get("/Users/alexey/fake/from/m")
-                .toAbsolutePath()
-                .normalize().toUri()
-        val toM = Paths.get("/Users/alexey/fake/to/m")
-
-
-        listFiles(fromF).forEach {
-            val storeImage = storeImage(it, toF)
-            val thumbnail = thumbnail(storeImage)
-            val locationInLatLngRad = getLocationInLngLatRad(10000.0, milan)
-            val lng = locationInLatLngRad.x
-            val lat = locationInLatLngRad.y
-            val passwordHash = "\$2a\$08\\\$EfoMXblxEFhBxSCOxI/bju0G4oVwGgtCig6INKKOJbchvNw5XhoTW"
-
-        }
+        log.info("end")
     }
 
     private fun listFiles(dir: URI): List<File> {
@@ -109,7 +166,7 @@ class Seeding() : BeApplicationTests() {
     }
 
     private fun storeImage(file: File, to: Path): String {
-        val ext = if (!file.extension.isNullOrBlank()) file.extension else "jpeg"
+        val ext = if (!file.extension.isNullOrBlank()) file.extension else "jpg"
         val urlImage = ImageIO.read(file)
         val toInputStream = scale(urlImage, maxWidth, maxHeight).toInputStream(ext)
 

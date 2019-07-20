@@ -70,7 +70,7 @@ CREATE TABLE AK_USER
             ON
                 DELETE CASCADE
             ON
-                UPDATE CASCADE,
+                UPDATE CASCADE
 );
 
 -- SELECT (6371 * acos(
