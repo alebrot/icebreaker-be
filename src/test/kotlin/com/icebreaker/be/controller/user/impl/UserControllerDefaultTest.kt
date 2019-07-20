@@ -5,7 +5,7 @@ import com.icebreaker.be.controller.user.*
 import com.icebreaker.be.controller.user.dto.*
 import com.icebreaker.be.db.repository.UserPositionRepository
 import com.icebreaker.be.db.repository.UserRepository
-import com.icebreaker.be.service.chat.impl.ChatServiceImpl
+import com.icebreaker.be.service.chat.impl.ChatServiceDefault
 import org.junit.Assert
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -96,7 +96,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
 
 
     @Autowired
-    lateinit var chatServiceImpl: ChatServiceImpl
+    lateinit var chatServiceDefault: ChatServiceDefault
 
 //    @Test
 //    fun fdfdyf() {

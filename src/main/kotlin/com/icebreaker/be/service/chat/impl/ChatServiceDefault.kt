@@ -20,11 +20,11 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class ChatServiceImpl(val userRepository: UserRepository,
-                      val chatRepository: ChatRepository,
-                      val chatLineRepository: ChatLineRepository,
-                      val chatUserRepository: ChatUserRepository,
-                      val objectMapper: ObjectMapper) : ChatService {
+class ChatServiceDefault(val userRepository: UserRepository,
+                         val chatRepository: ChatRepository,
+                         val chatLineRepository: ChatLineRepository,
+                         val chatUserRepository: ChatUserRepository,
+                         val objectMapper: ObjectMapper) : ChatService {
 
 
     @Transactional
@@ -117,16 +117,23 @@ class ChatServiceImpl(val userRepository: UserRepository,
     }
 
     @Transactional
-    override fun getChatsByUser(user: User): List<Chat> {
+    override fun getChatsByUser(user: User, excludeEmptyChats:Boolean): List<Chat> {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         val chats = userEntity.chats
-        return chats.sortedByDescending { akChatEntity -> akChatEntity.createdAt }.map {
+        return chats.sortedByDescending { akChatEntity -> akChatEntity.createdAt }.mapNotNull {
             val lastLine = chatLineRepository.findByChatId(it.id, 1, 0).firstOrNull()
+
             val chat = Chat.fromEntity(it, it.users.filter { akUserEntity -> akUserEntity.id != user.id })
             if (lastLine != null) {
                 chat.lastMessage = ChatLine.fromEntity(lastLine, objectMapper)
+                chat
+            } else {
+                if (excludeEmptyChats) {
+                    null
+                }else{
+                    chat
+                }
             }
-            chat
         }
     }
 

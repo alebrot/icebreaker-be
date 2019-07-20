@@ -50,7 +50,7 @@ class ChatControllerDefault(val authService: AuthService,
 
     override fun getUserMeChats(): GetUserMeChatsResponse {
         val userOrFail = authService.getUserOrFail()
-        val chats = chatService.getChatsByUser(userOrFail)
+        val chats = chatService.getChatsByUser(userOrFail,true)
         return GetUserMeChatsResponse(chats.map { it.toDto(imageProperties.host, hashids) })
     }
 
@@ -71,7 +71,7 @@ class ChatControllerDefault(val authService: AuthService,
         }
 
         val userOrFail = authService.getUserOrFail()
-        val chats = chatService.getChatsByUser(userOrFail)
+        val chats = chatService.getChatsByUser(userOrFail, false)
         chats.find { it.id == chatId } ?: throw IllegalArgumentException("user doesn't have chat with id $chatId")
         val chatLinesByChatId = chatService.getChatLinesByChatId(chatId, limitChecked, offsetChecked)
         return GetChatLinesResponse(chatLinesByChatId.map { it.toDto(imageProperties.host, hashids) })
