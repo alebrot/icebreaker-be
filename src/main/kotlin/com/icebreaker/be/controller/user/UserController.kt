@@ -54,7 +54,7 @@ interface UserController {
     fun createUser(@Valid @RequestBody request: CreateUserRequest): CreateUserResponse
 
     @PostMapping(POST_USER_ME)
-    fun updateUser(@Valid @RequestBody request: UpdateUserRequest): UpdateUserResponse
+    fun updateUser(@Valid @RequestBody request: UpdateUserRequest): GetUserMeResponse
 
     @PostMapping(POST_LOGOUT)
     fun logout(principal: OAuth2Authentication): BaseResponse

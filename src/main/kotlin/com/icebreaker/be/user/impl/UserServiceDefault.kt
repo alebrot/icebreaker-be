@@ -43,7 +43,7 @@ class UserServiceDefault(val userRepository: UserRepository,
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         userEntity.bio = user.bio
         userEntity.gender = user.gender
-        userEntity.lastSeen = java.sql.Timestamp.valueOf(user.lastSeen)
+        userEntity.lastSeen = Timestamp.valueOf(user.lastSeen)
         val saved = userRepository.save(userEntity)
         return User.fromEntity(saved)
     }

@@ -23,10 +23,47 @@ class UserFacadeDefault(val userService: UserService,
                         val imageProperties: ImageProperties,
                         val fileFacade: FileFacade) : UserFacade {
 
+
     val logger: Logger = LoggerFactory.getLogger(UserFacadeDefault::class.java)
 
 
     val positionOfFirstPhoto = 1
+
+    @Transactional
+    override fun updateUserImages(userOrFail: User, imageIds: List<Int>): List<String> {
+
+        if (imageIds.isEmpty() || imageIds.size > 3 || imageIds.toSet().size != imageIds.size) {
+            throw IllegalArgumentException("not valid imageIds")
+        } else {
+
+            val imageNames = imageIds.mapNotNull {
+                userService.getImageNameByPosition(userOrFail, it)
+            }
+
+            if (imageNames.size != imageIds.size) {
+                throw IllegalArgumentException("not valid imageIds, not found image names from imageIds")
+            }
+
+            imageNames.forEachIndexed { index, imageName ->
+                userService.updateImageForUser(userOrFail, index + 1, imageName)
+            }
+
+
+            val imageNameToMakeThumbnail = imageNames[0]
+
+            //remove old profile image
+            tryToRemoveOldImage(userOrFail)
+            // upload new
+            val newProfileImage = fileService.loadFileAsPath(imageNameToMakeThumbnail)
+            if (newProfileImage != null) {
+                val storeImage = fileService.storeImage(newProfileImage, imageProperties.profileMaxWidth, imageProperties.profileMaxHeight)
+                userService.updateUserProfilePhoto(userOrFail, storeImage)
+            }
+
+            return userService.getImages(userOrFail)
+        }
+
+    }
 
     @Transactional
     override fun swapUserImage(userOrFail: User, imageId1: Int, imageId2: Int): List<String> {

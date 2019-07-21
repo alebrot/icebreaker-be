@@ -64,18 +64,36 @@ class UserControllerDefault(val authService: AuthService,
         return BaseResponse()
     }
 
-    override fun updateUser(request: UpdateUserRequest): UpdateUserResponse {
+    override fun updateUser(request: UpdateUserRequest): GetUserMeResponse {
         val userOrFail = authService.getUserOrFail()
-        if (request.bio != null) {
-            userOrFail.bio = request.bio
+        val bio = request.bio
+        if (bio != null) {
+            userOrFail.bio = bio
         }
 
-        if (request.gender != null) {
-            userOrFail.gender = request.gender
+        val gender = request.gender
+        if (gender != null) {
+            userOrFail.gender = gender
         }
 
-        val updateUser = userService.updateUser(userOrFail)
-        return UpdateUserResponse(updateUser.toDto(imageProperties.host, hashids))
+        if (bio != null && gender != null) {
+            userService.updateUser(userOrFail)
+        }
+
+        val imageIds = request.imageIds
+
+        val images = if (imageIds != null) {
+            userFacade.updateUserImages(userOrFail, imageIds)
+        } else {
+            userService.getImages(userOrFail)
+        }
+
+        //get fresh user with updated thumbnail
+        val userById = userService.getUserById(userOrFail.id)
+        val authorities = userById.authorities.map { it.toDto() }
+        val completeUserDto = CompleteUserDto(userById.toDto(imageProperties.host, hashids), authorities, images)
+
+        return GetUserMeResponse(UserContextDto(completeUserDto))
     }
 
     @Transactional
@@ -191,6 +209,12 @@ class UserControllerDefault(val authService: AuthService,
         val userOrFail = authService.getUserOrFail()
         val authorities = userOrFail.authorities.map { it.toDto() }
         val images = userService.getImages(userOrFail)
+
+        if (userOrFail.imgUrl == null) {
+            val userProfileImageName = userService.getUserProfileImageName(userOrFail)
+            userOrFail.imgUrl = userProfileImageName
+        }
+
         val completeUserDto = CompleteUserDto(userOrFail.toDto(imageProperties.host, hashids), authorities, images)
         return GetUserMeResponse(UserContextDto(completeUserDto))
     }
