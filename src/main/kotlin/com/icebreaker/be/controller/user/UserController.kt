@@ -13,6 +13,7 @@ const val POST_LOGOUT = "/users/me/logout"
 const val GET_USER_ME = "/users/me"
 const val POST_USER_ME = "/users/me"
 const val UPLOAD_USER_IMAGE = "/users/me/images/{imageId}"
+const val SWAP_USER_IMAGE = "/users/me/images/from/{imageId1}/to/{imageId2}"
 const val UPLOAD_USER_PROFILE_IMAGE = "/users/me/image"
 const val GET_ADMIN_ME = "/admins/me"
 const val GET_USER_ME_USERS = "/users/me/users"
@@ -25,6 +26,9 @@ interface UserController {
 
     @PostMapping(UPLOAD_USER_IMAGE)
     fun uploadUserImage(@PathVariable imageId: Int, @RequestParam("image") file: MultipartFile): UploadUserImageResponse
+
+    @PostMapping(SWAP_USER_IMAGE)
+    fun swapUserImage(@PathVariable imageId1: Int, @PathVariable imageId2: Int): GetUserMeResponse
 
     @PostMapping(UPLOAD_USER_PROFILE_IMAGE)
     fun uploadUserProfileImage(@RequestParam("image") file: MultipartFile): UploadUserImageResponse

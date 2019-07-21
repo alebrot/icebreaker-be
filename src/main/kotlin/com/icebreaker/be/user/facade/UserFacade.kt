@@ -13,4 +13,5 @@ interface UserFacade {
     fun updateUserProfilePhotoAndDeleteOldUserProfile(user: User, imageName: String)
     fun updateFirstUserPhotoIfNecessary(file: MultipartFile, user: User)
     fun updateUserProfilePhotoIfNecessary(file: MultipartFile, user: User)
+    fun swapUserImage(userOrFail: User, imageId1: Int, imageId2: Int): List<String>
 }

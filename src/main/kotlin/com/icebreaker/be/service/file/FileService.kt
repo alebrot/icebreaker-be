@@ -10,4 +10,5 @@ interface FileService {
     fun loadFileAsResource(fileName: String): Resource
     fun loadFileAsPath(fileName: String): Path?
     fun deleteFile(path: Path)
+    fun storeImage(path: Path, maxWidth: Int, maxHeight: Int): String
 }

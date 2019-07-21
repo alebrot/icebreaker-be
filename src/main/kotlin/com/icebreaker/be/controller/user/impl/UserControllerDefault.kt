@@ -44,6 +44,18 @@ class UserControllerDefault(val authService: AuthService,
                             val userFacade: UserFacade,
                             val hashids: Hashids) : UserController {
 
+    override fun swapUserImage(imageId1: Int, imageId2: Int): GetUserMeResponse {
+        validateImageId(imageId1)
+        validateImageId(imageId2)
+        val userOrFail = authService.getUserOrFail()
+        val images = userFacade.swapUserImage(userOrFail, imageId1, imageId2)
+        //get fresh user with updated thumbnail
+        val userById = userService.getUserById(userOrFail.id)
+        val authorities = userById.authorities.map { it.toDto() }
+        val completeUserDto = CompleteUserDto(userById.toDto(imageProperties.host, hashids), authorities, images)
+        return GetUserMeResponse(UserContextDto(completeUserDto))
+    }
+
     override fun logout(principal: OAuth2Authentication): BaseResponse {
         val accessToken = authorizationServerTokenServices.getAccessToken(principal)
         consumerTokenServices.revokeToken(accessToken.value)
@@ -86,9 +98,7 @@ class UserControllerDefault(val authService: AuthService,
     override fun uploadUserImage(imageId: Int, file: MultipartFile): UploadUserImageResponse {
         val userOrFail = authService.getUserOrFail()
 
-        if (imageId !in 1..3) {
-            throw IllegalArgumentException("wrong image id, allowed values [1,2,3]")
-        }
+        validateImageId(imageId)
 
         val fileName = fileService.storeImage(file, imageProperties.maxWidth, imageProperties.maxHeight)
 
@@ -101,6 +111,12 @@ class UserControllerDefault(val authService: AuthService,
         userFacade.updateUserProfilePhotoIfNecessary(file, userOrFail)
 
         return UploadUserImageResponse(fileDownloadUri)
+    }
+
+    private fun validateImageId(imageId: Int) {
+        if (imageId !in 1..3) {
+            throw IllegalArgumentException("wrong image id, allowed values [1,2,3]")
+        }
     }
 
 

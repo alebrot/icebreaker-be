@@ -38,6 +38,13 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
                 .normalize()
     }
 
+    override fun storeImage(path: Path, maxWidth: Int, maxHeight: Int): String {
+        val ext = fileExtensionRegex.find(path.toString())?.value ?: "jpeg"
+        val urlImage = ImageIO.read(path.toFile())
+        val toInputStream = scale(urlImage, maxWidth, maxHeight).toInputStream(ext)
+        return generateNameAndStore(ext, toInputStream)
+    }
+
     override fun storeImage(url: String, maxWidth: Int, maxHeight: Int): String {
         val urlInput = URL(url)
         val ext = fileExtensionRegex.find(url)?.value ?: "jpeg"
