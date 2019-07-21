@@ -1,11 +1,6 @@
 package com.icebreaker.be
 
 import com.icebreaker.be.extra.LoggingRequestInterceptor
-import com.icebreaker.be.service.auth.social.SocialTokenGranter
-import com.icebreaker.be.service.file.FileService
-import com.icebreaker.be.user.facade.UserFacade
-import com.icebreaker.be.user.impl.UserServiceDefault
-import com.icebreaker.be.user.social.SocialService
 import org.hashids.Hashids
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -19,40 +14,20 @@ import org.springframework.core.annotation.Order
 import org.springframework.http.HttpMethod
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.scheduling.annotation.EnableAsync
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer
-import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer
-import org.springframework.security.oauth2.provider.ClientDetailsService
-import org.springframework.security.oauth2.provider.CompositeTokenGranter
-import org.springframework.security.oauth2.provider.OAuth2RequestFactory
-import org.springframework.security.oauth2.provider.TokenGranter
-import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler
-import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory
-import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
-import java.util.*
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.sql.DataSource
 
 @EnableAsync
 @SpringBootApplication
@@ -105,81 +80,6 @@ class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
 
 }
 
-@Configuration
-@EnableWebSecurity
-class SecurityConfig(val userService: UserServiceDefault, val passwordEncoder: PasswordEncoder) : WebSecurityConfigurerAdapter() {
-
-    @Bean
-    override fun userDetailsService(): UserDetailsService {
-        return UserDetailsService(userService::createUserDetails)
-    }
-
-    override fun configure(http: HttpSecurity) {
-        super.configure(http.csrf().disable())
-        http.authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/path/to/allow").permitAll()
-
-    }
-
-    override fun configure(auth: AuthenticationManagerBuilder) {
-        auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder)
-    }
-
-    @Bean
-    override fun authenticationManagerBean(): AuthenticationManager {
-        return super.authenticationManagerBean()
-    }
-}
-
-@Configuration
-@EnableAuthorizationServer
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-class AuthServerOAuth2Config(val userDetailsService: UserDetailsService,
-                             val dataSource: DataSource,
-                             val authenticationManager: AuthenticationManager,
-                             val userFacade: UserFacade,
-                             val socialService: SocialService,
-                             val clientDetailsService: ClientDetailsService,
-                             val fileService: FileService,
-                             val imageProperties: ImageProperties) : AuthorizationServerConfigurerAdapter() {
-    @Bean
-    fun oauthAccessDeniedHandler(): OAuth2AccessDeniedHandler {
-        return OAuth2AccessDeniedHandler()
-    }
-
-    override fun configure(oauthServer: AuthorizationServerSecurityConfigurer) {
-        oauthServer.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()")
-                .passwordEncoder(BCryptPasswordEncoder(4))
-    }
-
-    @Throws(Exception::class)
-    override fun configure(clients: ClientDetailsServiceConfigurer) {
-        clients.jdbc(dataSource)
-    }
-
-    override fun configure(endpoints: AuthorizationServerEndpointsConfigurer) {
-        endpoints.tokenStore(JdbcTokenStore(dataSource))
-                .authenticationManager(authenticationManager)
-                .userDetailsService(userDetailsService)
-        endpoints.tokenGranter(tokenGranter(endpoints))
-    }
-
-    private fun tokenGranter(endpoints: AuthorizationServerEndpointsConfigurer): TokenGranter {
-        val granters = ArrayList<TokenGranter>(listOf(endpoints.tokenGranter))
-        granters.add(SocialTokenGranter(
-                socialService,
-                endpoints.tokenServices,
-                endpoints.clientDetailsService,
-                userFacade,
-                endpoints.oAuth2RequestFactory))
-        return CompositeTokenGranter(granters)
-    }
-
-    @Bean
-    fun requestFactory(): OAuth2RequestFactory {
-        return DefaultOAuth2RequestFactory(clientDetailsService)
-    }
-}
 
 @Configuration
 class CorsConfig {
@@ -274,6 +174,8 @@ class PushProperties {
 class CoreProperties {
     lateinit var idSalt: String
     var idMinLength: Int = 8
+    var fake: Boolean = false
+    var maxDistance: Int = 5000;
 }
 
 

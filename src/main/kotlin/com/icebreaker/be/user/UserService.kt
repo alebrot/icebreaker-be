@@ -22,4 +22,5 @@ interface UserService {
     fun getDistanceBetweenUsers(user1: User, user2: User): Int?
     fun getImageNameByPosition(user: User, position: Int): String?
     fun getUserProfileImageName(user: User): String?
+    fun getFakeUsers(distanceInMeters: Int): List<UserWithDistance>
 }

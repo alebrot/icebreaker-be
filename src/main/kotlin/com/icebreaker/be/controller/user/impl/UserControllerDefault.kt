@@ -1,5 +1,6 @@
 package com.icebreaker.be.controller.user.impl
 
+import com.icebreaker.be.CoreProperties
 import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH
@@ -42,7 +43,8 @@ class UserControllerDefault(val authService: AuthService,
                             val authorizationServerTokenServices: AuthorizationServerTokenServices,
                             val consumerTokenServices: ConsumerTokenServices,
                             val userFacade: UserFacade,
-                            val hashids: Hashids) : UserController {
+                            val hashids: Hashids,
+                            val coreProperties: CoreProperties) : UserController {
 
     override fun swapUserImage(imageId1: Int, imageId2: Int): GetUserMeResponse {
         validateImageId(imageId1)
@@ -139,7 +141,6 @@ class UserControllerDefault(val authService: AuthService,
         return BaseResponse()
     }
 
-
     override fun getUserMeUsers(distance: Int,
                                 latitude: BigDecimal?,
                                 longitude: BigDecimal?): GetUserMeUsersResponse {
@@ -151,10 +152,13 @@ class UserControllerDefault(val authService: AuthService,
             userService.getUsersCloseToUser(userOrFail, distance)
         }
 
-        val mapped = usersCloseToUser.map {
+        val fakeUsers = if (coreProperties.fake) userService.getFakeUsers(distance) else emptyList()
+
+        val mapped = ArrayList(usersCloseToUser).union(fakeUsers).map {
             UserWithDistanceDto(it.distance, it.user.toDto(imageProperties.host, hashids))
         }
-        return GetUserMeUsersResponse(mapped)
+
+        return GetUserMeUsersResponse(mapped.size, mapped)
     }
 
     @Transactional

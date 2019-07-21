@@ -1,5 +1,6 @@
 package com.icebreaker.be.user.impl
 
+import com.icebreaker.be.CoreProperties
 import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.auth.UserDetailsDefault
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH
@@ -8,6 +9,7 @@ import com.icebreaker.be.db.entity.AkUserEntity
 import com.icebreaker.be.db.entity.AkUserImageEntity
 import com.icebreaker.be.db.entity.AkUserPositionEntity
 import com.icebreaker.be.db.repository.*
+import com.icebreaker.be.ext.getIntInRange
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
 import com.icebreaker.be.service.model.*
 import com.icebreaker.be.user.UserService
@@ -22,6 +24,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDate
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.min
 
 @Service
 class UserServiceDefault(val userRepository: UserRepository,
@@ -30,7 +35,8 @@ class UserServiceDefault(val userRepository: UserRepository,
                          val socialRepository: SocialRepository,
                          val positionRepository: UserPositionRepository,
                          val userImageRepository: UserImageRepository,
-                         val imageProperties: ImageProperties) : UserService {
+                         val imageProperties: ImageProperties,
+                         val coreProperties: CoreProperties) : UserService {
 
     @Transactional
     override fun updateUser(user: User): User {
@@ -112,9 +118,8 @@ class UserServiceDefault(val userRepository: UserRepository,
 
     @Transactional
     override fun getUsersCloseToUser(user: User, distanceInMeters: Int): List<UserWithDistance> {
-//        val userEntity = userRepository.findById(user.id).orElseThrow { IllegalArgumentException("defaultAuthority not found") }
-//        val position = userEntity.position ?: IllegalStateException("user {$user.id} position is null")
-        val findUsersCloseToUser = userRepository.findUsersCloseToUser(user.id, distanceInMeters)
+        val distance = min(distanceInMeters, coreProperties.maxDistance)
+        val findUsersCloseToUser = userRepository.findUsersCloseToUser(user.id, distance)
         return findUsersCloseToUser.map(mapper)
     }
 
@@ -122,6 +127,13 @@ class UserServiceDefault(val userRepository: UserRepository,
     override fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal): List<UserWithDistance> {
         val findUsersCloseToUser = userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble())
         return findUsersCloseToUser.map(mapper)
+    }
+
+    override fun getFakeUsers(distanceInMeters: Int): List<UserWithDistance> {
+        return userRepository.findAllByEmailContaining("@email.com").map {
+            val distance = Random().getIntInRange(1, distanceInMeters)
+            UserWithDistance(distance, User.fromEntity(it))
+        }
     }
 
     @Transactional

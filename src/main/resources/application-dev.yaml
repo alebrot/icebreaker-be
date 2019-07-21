@@ -59,3 +59,5 @@ push:
 core:
   id-salt: "21312lkmcmslkacasdchuasoimk1l23"
   id-min-length: 12
+  fake: true
+  max-distance: 10000
