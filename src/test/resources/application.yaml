@@ -55,3 +55,9 @@ push:
   en-invitation-title: Kofify
   it-invitation-content: "{0} ti ha invitato a prendere un caffè"
   en-invitation-content: "{0} has invited you for a cup of coffee"
+
+core:
+  id-salt: "21312lkmcmslkacasdchuasoimk1l23"
+  id-min-length: 12
+  fake: true
+  max-distance: 10000

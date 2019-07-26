@@ -1,5 +1,6 @@
 package com.icebreaker.be.seed
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.icebreaker.be.BeApplicationTests
 import com.icebreaker.be.db.entity.AkUserEntity
@@ -28,6 +29,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+import java.sql.Date
 import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
@@ -59,8 +61,8 @@ class Seeding() : BeApplicationTests() {
     @Autowired
     lateinit var dataSource: DataSource
 
-    val maxWidth = 1200
-    val maxHeight = 1600
+    val maxWidth = 1080
+    val maxHeight = 1226
     val profileMaxWidth = 500
     val profileMaxHeight = 500
 
@@ -70,7 +72,7 @@ class Seeding() : BeApplicationTests() {
         //https://uinames.com/api/?region=italy&amount=100&gender=female&ext
         val milan = Point(45.4726663, 9.1859992)
 
-        val size = 60
+        val size = 50
         val gender = "female"
 
 
@@ -91,28 +93,29 @@ class Seeding() : BeApplicationTests() {
 
         val files = listFiles(from).filter { it.extension == "jpg" }
 
-
-        val forEntity = testRestTemplate.getForEntity(URI("https://uinames.com/api/?region=italy&amount=${size}&gender=$gender&ext"), String::class.java)
-
         val objectMapper = ObjectMapper()
 
-        val jsonNode = objectMapper.readTree(forEntity.body)
-        val list: List<Container> = jsonNode.map {
-            val name = it.get("name").asText()
-            val surname = it.get("surname").asText()
-            val email = "${name.toLowerCase()}.${surname.toLowerCase()}@email.com"
-            val generateDate = generateDate()
-            val birthDate = java.sql.Date.valueOf(generateDate)
-            val container = Container(name, surname, email, birthDate)
-            container
-        }.distinctBy { container -> container.email }
+        val forEntityIt = testRestTemplate.getForEntity(URI("https://uinames.com/api/?region=italy&amount=60&gender=$gender&ext"), String::class.java)
+        val jsonNodeIt = objectMapper.readTree(forEntityIt.body)
 
 
+        val forEntityRu = testRestTemplate.getForEntity(URI("https://uinames.com/api/?region=russia&amount=20&gender=$gender&ext"), String::class.java)
+        val jsonNodeRu: JsonNode = objectMapper.readTree(forEntityRu.body)
 
 
+        val forEntityEn = testRestTemplate.getForEntity(URI("https://uinames.com/api/?region=england&amount=20&gender=$gender&ext"), String::class.java)
+        val jsonNodeEn = objectMapper.readTree(forEntityEn.body)
 
-        Assert.assertTrue(files.size == list.size)
 
+        val list: ArrayList<Container> = arrayListOf()
+
+        list.addAll(parse(jsonNodeIt))
+        list.addAll(parse(jsonNodeRu))
+        list.addAll(parse(jsonNodeEn))
+        val distinctBy = list.distinctBy { container -> container.email }
+
+
+        Assert.assertTrue(files.size == distinctBy.size)
 
 
         files.forEachIndexed { index, file ->
@@ -126,7 +129,7 @@ class Seeding() : BeApplicationTests() {
             val lat = locationInLatLngRad.x
             val lng = locationInLatLngRad.y
 
-            val container = list[index]
+            val container = distinctBy[index]
 
 
             val akUserPositionEntity = AkUserPositionEntity()
@@ -164,6 +167,22 @@ class Seeding() : BeApplicationTests() {
             log.info("index $index ${save.email}")
         }
         log.info("end")
+    }
+
+    private fun parse(jsonNode: JsonNode): List<Container> {
+        return jsonNode.map {
+            val name = it["name"].asText()
+            val surname = it["surname"].asText()
+
+            val nameTransliterated = transliterate(name.toLowerCase()).toLowerCase()
+            val lastNameTransliterated = transliterate(surname.toLowerCase()).toLowerCase()
+
+            val email = "$nameTransliterated.$lastNameTransliterated@email.com"
+            val generateDate = generateDate()
+            val birthDate = Date.valueOf(generateDate)
+            val container = Container(name, surname, email, birthDate)
+            container
+        }
     }
 
     private fun listFiles(dir: URI): List<File> {
@@ -234,6 +253,19 @@ class Seeding() : BeApplicationTests() {
         return Point(foundLongitude, foundLatitude)
     }
 
+    fun transliterate(message: String): String {
+        val abcCyr = charArrayOf(' ', 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
+        val abcLat = arrayOf(" ", "a", "b", "v", "g", "d", "e", "e", "zh", "z", "i", "y", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "f", "h", "ts", "ch", "sh", "sch", "", "i", "", "e", "ju", "ja", "A", "B", "V", "G", "D", "E", "E", "Zh", "Z", "I", "Y", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "H", "Ts", "Ch", "Sh", "Sch", "", "I", "", "E", "Ju", "Ja", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z")
+        val builder = StringBuilder()
+        for (i in 0 until message.length) {
+            for (x in abcCyr.indices) {
+                if (message[i] == abcCyr[x]) {
+                    builder.append(abcLat[x])
+                }
+            }
+        }
+        return builder.toString()
+    }
 
     fun generateDate(): LocalDate {
         val minDay = LocalDate.of(1989, 1, 1).toEpochDay()
