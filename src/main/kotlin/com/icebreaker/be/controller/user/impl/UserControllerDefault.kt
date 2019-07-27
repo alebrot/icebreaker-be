@@ -172,9 +172,10 @@ class UserControllerDefault(val authService: AuthService,
 
         val fakeUsers = if (coreProperties.fake) userService.getFakeUsers(distance) else emptyList()
 
-        val mapped = ArrayList(usersCloseToUser).union(fakeUsers).map {
-            UserWithDistanceDto(it.distance, it.user.toDto(imageProperties.host, hashids))
-        }
+        val mapped = ArrayList(usersCloseToUser).union(fakeUsers.filter { it.user.id != userOrFail.id }).distinctBy { it.user.id }
+                .map {
+                    UserWithDistanceDto(it.distance, it.user.toDto(imageProperties.host, hashids))
+                }
 
         return GetUserMeUsersResponse(mapped.size, mapped)
     }

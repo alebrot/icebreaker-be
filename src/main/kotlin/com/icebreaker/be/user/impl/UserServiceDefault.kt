@@ -133,7 +133,7 @@ class UserServiceDefault(val userRepository: UserRepository,
         return userRepository.findAllByEmailContaining("@email.com").map {
             val distance = Random().getIntInRange(1, distanceInMeters)
             UserWithDistance(distance, User.fromEntity(it))
-        }
+        }.shuffled()
     }
 
     @Transactional
