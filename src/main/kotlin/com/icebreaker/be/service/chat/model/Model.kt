@@ -16,13 +16,13 @@ data class Chat(val id: Int, val users: List<User>, var lastMessage: ChatLine? =
     companion object {
         fun fromEntity(entity: AkChatEntity): Chat {
             val users = entity.users.map { u -> User.fromEntity(u) }
-            val title: String = entity.title ?: users.joinToString(",") { it.fullName }
+            val title: String = entity.title ?: users.joinToString(", ") { it.firstName }
             return Chat(entity.id, users, null, title)
         }
 
         fun fromEntity(entity: AkChatEntity, usersEntity: List<AkUserEntity>): Chat {
             val users = usersEntity.map { u -> User.fromEntity(u) }
-            val title: String = entity.title ?: users.joinToString(",") { it.fullName }
+            val title: String = entity.title ?: users.joinToString(", ") { it.firstName }
             return Chat(entity.id, users, null, title)
         }
     }
