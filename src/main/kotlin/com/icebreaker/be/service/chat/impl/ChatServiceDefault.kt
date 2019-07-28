@@ -77,25 +77,33 @@ class ChatServiceDefault(val userRepository: UserRepository,
         return ChatLine.fromEntity(akChatLineEntity, objectMapper)
     }
 
-    @Transactional
-    override fun findOrCreateChat(user: User, userIds: List<Int>): Chat {
+    private fun findChat(user: User, userIds: List<Int>): Pair<AkChatEntity?, Set<Int>> {
         val ids = HashSet(userIds.toList())
         ids.add(user.id)
-
         if (ids.size == 1) {
             throw IllegalArgumentException("invalid input")
         }
-
         val toSortedSet = ids.toSortedSet()
+        return Pair(chatRepository.findByUserIds(toSortedSet.joinToString(",")), ids)
+    }
 
-        val found = chatRepository.findByUserIds(toSortedSet.joinToString(","))
+    override fun isNewChat(user: User, userIds: List<Int>): Boolean {
+        return findChat(user, userIds).first == null
+    }
+
+    /**
+     * returns true if created new chat
+     */
+    @Transactional
+    override fun findOrCreateChat(user: User, userIds: List<Int>): Pair<Chat, Boolean> {
+
+        val found = findChat(user, userIds).first
         if (found == null) {
-
             val akChatEntity = AkChatEntity()
             chatRepository.save(akChatEntity)
 
             val users = ArrayList<AkUserEntity>()
-            ids.forEach {
+            findChat(user, userIds).second.forEach {
                 val akUserEntity = userRepository.findById(it).toKotlinNotOptionalOrFail()
                 users.add(akUserEntity)
                 val akChatUserEntity = AkChatUserEntity()
@@ -103,7 +111,7 @@ class ChatServiceDefault(val userRepository: UserRepository,
                 akChatUserEntity.chat = akChatEntity
                 chatUserRepository.save(akChatUserEntity)
             }
-            return Chat.fromEntity(akChatEntity, users.filter { akUserEntity -> akUserEntity.id != user.id })
+            return Pair(Chat.fromEntity(akChatEntity, users.filter { akUserEntity -> akUserEntity.id != user.id }), true)
 
         } else {
             val lastLine = chatLineRepository.findByChatId(found.id, 1, 0).firstOrNull()
@@ -112,12 +120,12 @@ class ChatServiceDefault(val userRepository: UserRepository,
             if (lastLine != null) {
                 chat.lastMessage = ChatLine.fromEntity(lastLine, objectMapper)
             }
-            return chat
+            return Pair(chat, false)
         }
     }
 
     @Transactional
-    override fun getChatsByUser(user: User, excludeEmptyChats:Boolean): List<Chat> {
+    override fun getChatsByUser(user: User, excludeEmptyChats: Boolean): List<Chat> {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         val chats = userEntity.chats
         return chats.sortedByDescending { akChatEntity -> akChatEntity.createdAt }.mapNotNull {
@@ -130,7 +138,7 @@ class ChatServiceDefault(val userRepository: UserRepository,
             } else {
                 if (excludeEmptyChats) {
                     null
-                }else{
+                } else {
                     chat
                 }
             }

@@ -243,13 +243,17 @@ class UserServiceDefault(val userRepository: UserRepository,
 
         val createdAt: Timestamp = findUsersCloseToUser["CREATED_AT"] as Timestamp
 
+        val credits: Int = findUsersCloseToUser["CREDITS"] as Int
+
+        val creditsUpdatedAt: Timestamp = findUsersCloseToUser["CREDITS_UPDATED_AT"] as Timestamp
+
         val gender: Gender? = if (genderInt != null) Gender.values()[genderInt] else null
 
         val bio: String? = findUsersCloseToUser["BIO"] as?String
 
         val distance: Int = (findUsersCloseToUser["DISTANCE"] as Double).toInt()
 
-        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), bio, gender, enabled, lastSeen.toLocalDateTime(), createdAt.toLocalDateTime())
+        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), bio, gender, enabled, lastSeen.toLocalDateTime(), createdAt.toLocalDateTime(), credits, creditsUpdatedAt.toLocalDateTime())
 
         UserWithDistance(distance, user)
     }

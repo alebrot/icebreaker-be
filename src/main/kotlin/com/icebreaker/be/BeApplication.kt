@@ -171,4 +171,6 @@ class CoreProperties {
     var idMinLength: Int = 8
     var fake: Boolean = false
     var maxDistance: Int = 5000;
+    var rewardAmount: Int = 5
+    var rewardDuration: Int = 1440
 }

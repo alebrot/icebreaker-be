@@ -5,6 +5,7 @@ import com.icebreaker.be.controller.chat.ChatController
 import com.icebreaker.be.controller.chat.dto.*
 import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.ext.decodeToInt
+import com.icebreaker.be.facade.credit.CreditFacade
 import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.chat.ChatService
 import com.icebreaker.be.service.chat.model.MessageType
@@ -19,7 +20,8 @@ class ChatControllerDefault(val authService: AuthService,
                             val chatService: ChatService,
                             val pushService: PushService,
                             val imageProperties: ImageProperties,
-                            val hashids: Hashids) : ChatController {
+                            val hashids: Hashids,
+                            val creditFacade: CreditFacade) : ChatController {
 
 
     override fun notifyMessageReceived(request: NotifyMessageReceivedRequest): BaseResponse {
@@ -33,11 +35,16 @@ class ChatControllerDefault(val authService: AuthService,
     @Transactional
     override fun createInvitation(request: CreateInvitationRequest): CreateInvitationResponse {
         val userOrFail = authService.getUserOrFail()
+
         val userIds = request.userIds.map { hashids.decodeToInt(it) }
-        val chat = chatService.findOrCreateChat(userOrFail, userIds)
+
+        creditFacade.handleCreditsForNewChatCreation(userOrFail, userIds)
+
+        val chat = chatService.findOrCreateChat(userOrFail, userIds).first
         val sendMessage = chatService.sendMessage(userOrFail, chat.id, request.content, MessageType.INVITATION)
         chat.lastMessage = sendMessage
         chat.users.filter { it.id != userOrFail.id }.forEach { pushService.send(it, request.content, MessageType.INVITATION) }
+
         return CreateInvitationResponse(chat.toDto(imageProperties.host, hashids))
     }
 
@@ -50,7 +57,7 @@ class ChatControllerDefault(val authService: AuthService,
 
     override fun getUserMeChats(): GetUserMeChatsResponse {
         val userOrFail = authService.getUserOrFail()
-        val chats = chatService.getChatsByUser(userOrFail,true)
+        val chats = chatService.getChatsByUser(userOrFail, true)
         return GetUserMeChatsResponse(chats.map { it.toDto(imageProperties.host, hashids) })
     }
 
@@ -80,7 +87,12 @@ class ChatControllerDefault(val authService: AuthService,
     override fun findOrCreateChat(request: FindOrCreateChatRequest): FindOrCreateChatResponse {
         val userOrFail = authService.getUserOrFail()
         val userIds = request.userIds.map { hashids.decodeToInt(it) }
+
+        creditFacade.handleCreditsForNewChatCreation(userOrFail, userIds)
+
         val chat = chatService.findOrCreateChat(userOrFail, userIds)
-        return FindOrCreateChatResponse(chat.toDto(imageProperties.host, hashids))
+        return FindOrCreateChatResponse(chat.first.toDto(imageProperties.host, hashids))
     }
+
+
 }

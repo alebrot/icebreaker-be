@@ -61,3 +61,5 @@ core:
   id-min-length: 12
   fake: true
   max-distance: 10000
+  reward-amount: 5
+  reward-duration: 1

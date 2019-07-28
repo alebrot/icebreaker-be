@@ -24,7 +24,9 @@ data class User(val id: Int,
                 var gender: Gender?,
                 val enabled: Boolean,
                 var lastSeen: LocalDateTime = LocalDateTime.now(),
-                var createdAt: LocalDateTime) : Serializable {
+                var createdAt: LocalDateTime,
+                val credits: Int,
+                val creditsUpdatedAt: LocalDateTime) : Serializable {
     companion object
 
     val fullName: String = "$firstName $lastName"
@@ -64,8 +66,9 @@ fun User.Companion.fromEntity(userEntity: AkUserEntity): User {
             userEntity.gender,
             userEntity.enabled,
             userEntity.lastSeen.toLocalDateTime(),
-            userEntity.createdAt.toLocalDateTime()
-
+            userEntity.createdAt.toLocalDateTime(),
+            userEntity.credits,
+            userEntity.creditsUpdatedAt.toLocalDateTime()
     )
 }
 
