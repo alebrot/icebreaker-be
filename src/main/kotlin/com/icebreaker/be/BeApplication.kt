@@ -8,11 +8,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpMethod
-import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -22,9 +20,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -176,37 +171,4 @@ class CoreProperties {
     var idMinLength: Int = 8
     var fake: Boolean = false
     var maxDistance: Int = 5000;
-}
-
-
-@Configuration
-@Profile("prod")
-@EnableWebSocketMessageBroker
-class WebSocketConfig : WebSocketMessageBrokerConfigurer {
-    override fun configureMessageBroker(config: MessageBrokerRegistry) {
-        config.enableStompBrokerRelay("/chat")
-                .setRelayHost("localhost")
-                .setRelayPort(61613)
-                .setClientLogin("admin")
-                .setClientPasscode("admin");
-        config.setApplicationDestinationPrefixes("/app");
-    }
-
-    override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-        registry.addEndpoint("/chat-websocket").setAllowedOrigins("*").withSockJS()
-    }
-}
-
-@Configuration
-@Profile("dev")
-@EnableWebSocketMessageBroker
-class WebSocketConfigInMemory : WebSocketMessageBrokerConfigurer {
-    override fun configureMessageBroker(config: MessageBrokerRegistry) {
-        config.enableSimpleBroker("/chat")
-        config.setApplicationDestinationPrefixes("/app")
-    }
-
-    override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-        registry.addEndpoint("/chat-websocket").setAllowedOrigins("*").withSockJS()
-    }
 }
