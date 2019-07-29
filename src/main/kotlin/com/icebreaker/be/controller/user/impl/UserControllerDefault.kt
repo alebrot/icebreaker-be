@@ -8,6 +8,7 @@ import com.icebreaker.be.controller.user.UserController
 import com.icebreaker.be.controller.user.dto.*
 import com.icebreaker.be.ext.decodeToInt
 import com.icebreaker.be.service.auth.AuthService
+import com.icebreaker.be.service.credit.CreditServiceDefault
 import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.UserWithDistance
@@ -44,7 +45,8 @@ class UserControllerDefault(val authService: AuthService,
                             val consumerTokenServices: ConsumerTokenServices,
                             val userFacade: UserFacade,
                             val hashids: Hashids,
-                            val coreProperties: CoreProperties) : UserController {
+                            val coreProperties: CoreProperties,
+                            val creditServiceDefault: CreditServiceDefault) : UserController {
 
     override fun swapUserImage(imageId1: Int, imageId2: Int): GetUserMeResponse {
         validateImageId(imageId1)
@@ -215,6 +217,10 @@ class UserControllerDefault(val authService: AuthService,
             val userProfileImageName = userService.getUserProfileImageName(userOrFail)
             userOrFail.imgUrl = userProfileImageName
         }
+
+        val availableCredits = creditServiceDefault.getAvailableCredits(userOrFail)
+        userOrFail.creditsUpdatedAt = availableCredits.creditsUpdatedAt
+        userOrFail.credits = availableCredits.credits
 
         val completeUserDto = CompleteUserDto(userOrFail.toDto(imageProperties.host, hashids), authorities, images)
         return GetUserMeResponse(UserContextDto(completeUserDto))

@@ -65,7 +65,7 @@ class CreditServiceDefault(val userRepository: UserRepository, val corePropertie
             val toLocalDateTime = userEntity.creditsUpdatedAt.toLocalDateTime()
             val localDateTimeToGetReward = toLocalDateTime.plus(rewardDuration)
 
-            if (localDateTimeToGetReward.isAfter(LocalDateTime.now())) {//get reward
+            if (localDateTimeToGetReward.isBefore(LocalDateTime.now())) {//get reward
                 userEntity.credits = rewardAmount
                 userEntity.creditsUpdatedAt = Timestamp.valueOf(LocalDateTime.now())
             }

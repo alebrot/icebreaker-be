@@ -62,4 +62,4 @@ core:
   fake: true
   max-distance: 10000
   reward-amount: 5
-  reward-duration: 1
+  reward-duration: 5

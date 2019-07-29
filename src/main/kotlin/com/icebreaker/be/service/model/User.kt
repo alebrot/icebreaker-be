@@ -1,6 +1,7 @@
 package com.icebreaker.be.service.model
 
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH
+import com.icebreaker.be.controller.user.dto.CreditDto
 import com.icebreaker.be.controller.user.dto.UserDto
 import com.icebreaker.be.db.entity.AkUserEntity
 import org.hashids.Hashids
@@ -25,8 +26,8 @@ data class User(val id: Int,
                 val enabled: Boolean,
                 var lastSeen: LocalDateTime = LocalDateTime.now(),
                 var createdAt: LocalDateTime,
-                val credits: Int,
-                val creditsUpdatedAt: LocalDateTime) : Serializable {
+                var credits: Int,
+                var creditsUpdatedAt: LocalDateTime) : Serializable {
     companion object
 
     val fullName: String = "$firstName $lastName"
@@ -45,7 +46,7 @@ fun User.toDto(imageHost: String, hashids: Hashids): UserDto {
         null
     }
 
-    return UserDto(hashids.encode(this.id.toLong()), this.firstName, this.lastName, image, this.birthday, this.lastSeen, this.createdAt, this.bio, this.gender)
+    return UserDto(hashids.encode(this.id.toLong()), this.firstName, this.lastName, image, this.birthday, this.lastSeen, this.createdAt, this.bio, this.gender, CreditDto(this.credits, this.creditsUpdatedAt))
 }
 
 fun User.Companion.fromEntity(userEntity: AkUserEntity): User {

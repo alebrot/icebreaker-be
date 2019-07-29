@@ -12,7 +12,10 @@ data class UserDto(val id: String,
                    val lastSeen: LocalDateTime,
                    val createdAt: LocalDateTime,
                    val bio: String?,
-                   val gender: Gender?)
+                   val gender: Gender?,
+                   val credits: CreditDto)
+
+data class CreditDto(val credits: Int, val creditsUpdatedAt: LocalDateTime)
 
 data class CompleteUserDto(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<String>)
 data class CompleteUserDtoWithDistance(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<String>, val distance: Int?)
