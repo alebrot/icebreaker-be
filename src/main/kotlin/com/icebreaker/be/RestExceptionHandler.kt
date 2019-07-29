@@ -13,6 +13,6 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(CreditsNotAvailableException::class)
     fun handleCreditsNotAvailableException(
             ex: CreditsNotAvailableException): ResponseEntity<Any> {
-        return ResponseEntity(ex, HttpStatus.NOT_ACCEPTABLE)
+        return ResponseEntity(ex.localizedMessage, HttpStatus.NOT_ACCEPTABLE)
     }
 }
