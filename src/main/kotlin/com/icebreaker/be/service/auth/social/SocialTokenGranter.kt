@@ -1,7 +1,7 @@
 package com.icebreaker.be.service.auth.social
 
-import com.icebreaker.be.user.facade.UserFacade
-import com.icebreaker.be.user.social.SocialService
+import com.icebreaker.be.facade.user.UserFacade
+import com.icebreaker.be.service.social.SocialService
 import org.springframework.security.oauth2.provider.*
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices

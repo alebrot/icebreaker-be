@@ -1,13 +1,13 @@
-package com.icebreaker.be.user.facade.impl
+package com.icebreaker.be.facade.user.impl
 
 import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.auth.UserDetailsDefault
+import com.icebreaker.be.facade.user.UserFacade
 import com.icebreaker.be.service.file.FileFacade
 import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.service.model.User
-import com.icebreaker.be.user.UserService
-import com.icebreaker.be.user.facade.UserFacade
-import com.icebreaker.be.user.social.impl.SocialUser
+import com.icebreaker.be.service.social.impl.SocialUser
+import com.icebreaker.be.service.user.UserService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async

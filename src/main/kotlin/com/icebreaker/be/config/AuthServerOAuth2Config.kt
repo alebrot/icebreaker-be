@@ -1,10 +1,10 @@
 package com.icebreaker.be.config
 
 import com.icebreaker.be.ImageProperties
+import com.icebreaker.be.facade.user.UserFacade
 import com.icebreaker.be.service.auth.social.SocialTokenGranter
 import com.icebreaker.be.service.file.FileService
-import com.icebreaker.be.user.facade.UserFacade
-import com.icebreaker.be.user.social.SocialService
+import com.icebreaker.be.service.social.SocialService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager

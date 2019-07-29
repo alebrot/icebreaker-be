@@ -1,7 +1,7 @@
 package com.icebreaker.be.config
 
+import com.icebreaker.be.facade.user.UserFacade
 import com.icebreaker.be.service.auth.AuthService
-import com.icebreaker.be.user.facade.UserFacade
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.HandlerInterceptor
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry

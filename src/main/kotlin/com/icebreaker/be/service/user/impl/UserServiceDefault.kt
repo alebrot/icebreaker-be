@@ -1,4 +1,4 @@
-package com.icebreaker.be.user.impl
+package com.icebreaker.be.service.user.impl
 
 import com.icebreaker.be.CoreProperties
 import com.icebreaker.be.ImageProperties
@@ -12,8 +12,8 @@ import com.icebreaker.be.db.repository.*
 import com.icebreaker.be.ext.getIntInRange
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
 import com.icebreaker.be.service.model.*
-import com.icebreaker.be.user.UserService
-import com.icebreaker.be.user.social.impl.SocialUser
+import com.icebreaker.be.service.social.impl.SocialUser
+import com.icebreaker.be.service.user.UserService
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException

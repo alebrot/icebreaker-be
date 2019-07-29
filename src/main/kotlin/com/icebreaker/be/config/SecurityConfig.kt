@@ -1,6 +1,6 @@
 package com.icebreaker.be.config
 
-import com.icebreaker.be.user.UserService
+import com.icebreaker.be.service.user.UserService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod

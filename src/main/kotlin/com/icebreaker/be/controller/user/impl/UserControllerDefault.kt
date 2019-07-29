@@ -7,14 +7,14 @@ import com.icebreaker.be.controller.user.GET_IMAGE_PATH
 import com.icebreaker.be.controller.user.UserController
 import com.icebreaker.be.controller.user.dto.*
 import com.icebreaker.be.ext.decodeToInt
+import com.icebreaker.be.facade.user.UserFacade
 import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.credit.CreditServiceDefault
 import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.UserWithDistance
 import com.icebreaker.be.service.model.toDto
-import com.icebreaker.be.user.UserService
-import com.icebreaker.be.user.facade.UserFacade
+import com.icebreaker.be.service.user.UserService
 import org.hashids.Hashids
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType

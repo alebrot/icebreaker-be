@@ -1,9 +1,9 @@
-package com.icebreaker.be.user.social.impl
+package com.icebreaker.be.service.social.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.icebreaker.be.service.auth.social.SocialType
 import com.icebreaker.be.service.model.Gender
-import com.icebreaker.be.user.social.SocialService
+import com.icebreaker.be.service.social.SocialService
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import java.net.URI

@@ -1,8 +1,8 @@
-package com.icebreaker.be.user
+package com.icebreaker.be.service.user
 
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.UserWithDistance
-import com.icebreaker.be.user.social.impl.SocialUser
+import com.icebreaker.be.service.social.impl.SocialUser
 import org.springframework.security.core.userdetails.UserDetails
 import java.math.BigDecimal
 import java.time.LocalDate

@@ -1,7 +1,7 @@
-package com.icebreaker.be.user.facade
+package com.icebreaker.be.facade.user
 
 import com.icebreaker.be.service.model.User
-import com.icebreaker.be.user.social.impl.SocialUser
+import com.icebreaker.be.service.social.impl.SocialUser
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.multipart.MultipartFile
 
