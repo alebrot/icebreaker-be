@@ -142,6 +142,8 @@ class ChatServiceDefault(val userRepository: UserRepository,
                     chat
                 }
             }
+        }.sortedByDescending { chat ->
+            chat.lastMessage?.createdAt
         }
     }
 
