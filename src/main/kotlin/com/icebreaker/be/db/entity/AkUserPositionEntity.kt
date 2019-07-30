@@ -7,7 +7,7 @@ import java.sql.Timestamp
 import javax.persistence.*
 
 @Entity
-@Table(name = "AK_POSITION", schema = "PUBLIC")
+@Table(name = "AK_POSITION", schema = "kofify")
 class AkUserPositionEntity {
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)

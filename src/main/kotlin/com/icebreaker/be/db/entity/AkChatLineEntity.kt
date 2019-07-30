@@ -10,7 +10,7 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "AK_CHAT_LINE", schema = "PUBLIC")
+@Table(name = "AK_CHAT_LINE", schema = "kofify")
 class AkChatLineEntity {
 
     @get:Id

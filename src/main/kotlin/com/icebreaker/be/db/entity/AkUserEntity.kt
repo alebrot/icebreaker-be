@@ -11,7 +11,7 @@ import javax.persistence.*
 import kotlin.collections.ArrayList
 
 @Entity
-@Table(name = "AK_USER", schema = "PUBLIC")
+@Table(name = "AK_USER", schema = "kofify")
 class AkUserEntity {
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)
