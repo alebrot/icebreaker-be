@@ -1,7 +1,8 @@
 version: '3.7'
 services:
-  db:
-    image: mysql:8.0
+  ls:
+    image: khlebtsov/kofify-db:v1
+    container_name: kofify-db
     restart: always
     environment:
       MYSQL_DATABASE: 'kofify'
@@ -20,6 +21,15 @@ services:
       # Where our data will be persisted
     volumes:
       - kofify-db:/var/lib/mysql
+  activemq:
+    image: webcenter/activemq:5.14.3
+    container_name: kofify-activemq
+    ports:
+      - "8162:8161"
+      - "61617:61616"
+    environment:
+      ACTIVEMQ_ADMIN_LOGIN: "admin"
+      ACTIVEMQ_ADMIN_PASSWORD: "password"
 # Names our volume
 volumes:
   kofify-db:

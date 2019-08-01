@@ -14,9 +14,9 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
         config.enableStompBrokerRelay("/chat")
                 .setRelayHost("localhost")
-                .setRelayPort(61613)
+                .setRelayPort(61617)
                 .setClientLogin("admin")
-                .setClientPasscode("admin");
+                .setClientPasscode("password");
         config.setApplicationDestinationPrefixes("/app");
     }
 
