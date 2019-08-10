@@ -1,6 +1,6 @@
 # Build image:
 docker build -t khlebtsov/kofify-db:v1 .
-
+docker push khlebtsov/kofify-db:v1
 
 /apache-activemq-5.15.9/bin ./activemq start
 /apache-activemq-5.15.9/bin ./activemq stop
@@ -13,4 +13,4 @@ docker build -t khlebtsov/kofify-db:v1 .
 #If you want a fresh start for everything,
  docker system prune -a
  docker volume prune
- docker volume rm kofify-db
+ docker volume rm icebreaker-be_kofify-db
