@@ -111,8 +111,8 @@ class BeApplicationTests {
 @TestConfiguration
 @ComponentScan("com.icebreaker.be")
 class Config {
-    @Bean
-    fun mockedSimpMessageSendingOperations(): SimpMessageSendingOperations {
-        return mock(SimpMessageSendingOperations::class.java)
-    }
+//    @Bean
+//    fun mockedSimpMessageSendingOperations(): SimpMessageSendingOperations {
+//        return mock(SimpMessageSendingOperations::class.java)
+//    }
 }
