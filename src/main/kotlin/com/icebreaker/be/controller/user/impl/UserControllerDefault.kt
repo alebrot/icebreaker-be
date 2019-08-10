@@ -78,7 +78,7 @@ class UserControllerDefault(val authService: AuthService,
             userOrFail.gender = gender
         }
 
-        if (bio != null && gender != null) {
+        if (bio != null || gender != null) {
             userService.updateUser(userOrFail)
         }
 
