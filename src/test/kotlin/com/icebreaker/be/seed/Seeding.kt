@@ -20,6 +20,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.geo.Point
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
@@ -72,8 +75,8 @@ class Seeding() : BeApplicationTests() {
         //https://uinames.com/api/?region=italy&amount=100&gender=female&ext
         val milan = Point(45.4726663, 9.1859992)
 
-        val size = 50
-        val gender = "female"
+        val size = 20
+        val gender = "male"
 
 
         val (from, to) = if (gender == "female") {
@@ -95,15 +98,20 @@ class Seeding() : BeApplicationTests() {
 
         val objectMapper = ObjectMapper()
 
-        val forEntityIt = testRestTemplate.getForEntity(URI("https://uinames.com/api/?region=italy&amount=60&gender=$gender&ext"), String::class.java)
+        val headers = HttpHeaders()
+        headers.set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Safari/605.1.15")
+
+
+        val httpEntity = HttpEntity<Any>(headers)
+        val forEntityIt = testRestTemplate.exchange(URI("https://uinames.com/api/?region=italy&amount=10&gender=$gender&ext"), HttpMethod.GET, httpEntity, String::class.java)
         val jsonNodeIt = objectMapper.readTree(forEntityIt.body)
 
 
-        val forEntityRu = testRestTemplate.getForEntity(URI("https://uinames.com/api/?region=russia&amount=20&gender=$gender&ext"), String::class.java)
+        val forEntityRu = testRestTemplate.exchange(URI("https://uinames.com/api/?region=russia&amount=5&gender=$gender&ext"),HttpMethod.GET, httpEntity, String::class.java)
         val jsonNodeRu: JsonNode = objectMapper.readTree(forEntityRu.body)
 
 
-        val forEntityEn = testRestTemplate.getForEntity(URI("https://uinames.com/api/?region=england&amount=20&gender=$gender&ext"), String::class.java)
+        val forEntityEn = testRestTemplate.exchange(URI("https://uinames.com/api/?region=england&amount=5&gender=$gender&ext"),HttpMethod.GET, httpEntity, String::class.java)
         val jsonNodeEn = objectMapper.readTree(forEntityEn.body)
 
 
