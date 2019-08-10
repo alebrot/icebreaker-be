@@ -1,3 +1,4 @@
+# Build image:
 docker build -t khlebtsov/kofify-db:v1 .
 
 
@@ -8,3 +9,8 @@ docker build -t khlebtsov/kofify-db:v1 .
  docker exec kofify-db /usr/bin/mysqldump -u root --password=password kofify > backup.sql
 # Restore cat backup.sql | docker exec -i CONTAINER /usr/bin/mysql -u root --password=root DATABASE
  cat backup.sql | docker exec -i kofify-db /usr/bin/mysql -u root --password=password kofify
+
+#If you want a fresh start for everything,
+ docker system prune -a
+ docker volume prune
+ docker volume rm kofify-db
