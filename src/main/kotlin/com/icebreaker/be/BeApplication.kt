@@ -23,6 +23,7 @@ import org.springframework.web.client.RestTemplate
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import org.springframework.web.filter.CommonsRequestLoggingFilter
 
 @EnableAsync
 @SpringBootApplication
@@ -39,6 +40,15 @@ class BeApplication(val coreProperties: CoreProperties) {
     @Bean
     fun hashIds(): Hashids {
         return Hashids(coreProperties.idSalt, coreProperties.idMinLength)
+    }
+
+    @Bean
+    fun requestLoggingFilter(): CommonsRequestLoggingFilter {
+        val loggingFilter = CommonsRequestLoggingFilter()
+        loggingFilter.setIncludeClientInfo(true)
+        loggingFilter.setIncludeQueryString(true)
+        loggingFilter.setIncludePayload(false)
+        return loggingFilter
     }
 
 }
