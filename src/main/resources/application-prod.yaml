@@ -1,11 +1,11 @@
 server.port: 8080
-logging:
-  level:
-    org:
-      apache:
-        http: trace
-      springframework:
-        web: trace
+#logging:
+#  level:
+#    org:
+#      apache:
+#        http: debug
+#      springframework:
+#        web: debug
 #    logging.level.org.apache.http=trace
 #    logging.level.org.apache.http.wire=trace
 #    logging.level.org.springframework.web=trace
@@ -15,15 +15,18 @@ logging:
 # Threshold after which files are written to disk.
 spring:
   datasource:
+    testOnBorrow: true
+    validationQuery: "SELECT 1"
     url: "jdbc:mysql://localhost:2345/kofify"
     username: root
     password: "password"
   jpa:
+    open-in-view: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate.ddl-auto: none
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         use_sql_comments: true
         format_sql: true
     hibernate:
