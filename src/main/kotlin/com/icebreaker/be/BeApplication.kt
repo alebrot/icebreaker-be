@@ -180,6 +180,7 @@ class CoreProperties {
     lateinit var idSalt: String
     var idMinLength: Int = 8
     var fake: Boolean = false
+    lateinit var watchUserEmail: String
     var maxDistance: Int = 5000;
     var rewardAmount: Int = 5
     var rewardDuration: Int = 1440

@@ -70,6 +70,7 @@ core:
   id-salt: "21312lkmcmslkacasdchuasoimk1l23"
   id-min-length: 12
   fake: true
+  watch-user-email: email1@email.com
   max-distance: 10000
   reward-amount: 5
   reward-duration: 5

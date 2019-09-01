@@ -38,6 +38,8 @@ class UserServiceDefault(val userRepository: UserRepository,
                          val imageProperties: ImageProperties,
                          val coreProperties: CoreProperties) : UserService {
 
+    private val fakeEmailDomain = "@email.com"
+
     @Transactional
     override fun updateUser(user: User): User {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
@@ -51,6 +53,19 @@ class UserServiceDefault(val userRepository: UserRepository,
     override fun getUserById(userId: Int): User {
         val userEntity = userRepository.findById(userId).toKotlinNotOptionalOrFail()
         return User.fromEntity(userEntity)
+    }
+
+    override fun getUserByEmailOrFail(email: String): User {
+        val userEntity = userRepository.findByEmail(email)
+                ?: throw IllegalArgumentException("user with email $email not found")
+        return User.fromEntity(userEntity)
+    }
+
+    override fun getUserByEmail(email: String): User? {
+        return userRepository.findByEmail(email)?.let {
+            val fromEntity = User.fromEntity(it)
+            fromEntity
+        }
     }
 
     @Transactional
@@ -130,10 +145,15 @@ class UserServiceDefault(val userRepository: UserRepository,
     }
 
     override fun getFakeUsers(distanceInMeters: Int): List<UserWithDistance> {
-        return userRepository.findAllByEmailContaining("@email.com").map {
+
+        return userRepository.findAllByEmailContaining(fakeEmailDomain).map {
             val distance = Random().getIntInRange(1, distanceInMeters)
             UserWithDistance(distance, User.fromEntity(it))
         }.shuffled()
+    }
+
+    override fun isFakeUser(user: User): Boolean {
+        return user.email.contains(fakeEmailDomain)
     }
 
     @Transactional
