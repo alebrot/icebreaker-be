@@ -21,6 +21,7 @@ const val CREATE_USER_POSITION = "/users/position"
 
 const val CREATE_USER = "/public/users"
 const val GET_IMAGE_PATH = "/public/images/"
+const val GET_IMAGE_PATH_BLURRED = "/public/images/th/"
 
 interface UserController {
 

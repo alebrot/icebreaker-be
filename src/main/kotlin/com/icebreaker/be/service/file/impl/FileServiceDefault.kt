@@ -12,6 +12,9 @@ import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
 import java.awt.Image
 import java.awt.image.BufferedImage
+import java.awt.image.ConvolveOp
+import java.awt.image.Kernel
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.MalformedURLException
@@ -36,6 +39,13 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
         this.storageLocation = Paths.get(fileStorageProperties.uploadDir)
                 .toAbsolutePath()
                 .normalize()
+    }
+
+    override fun toByteArrayOutputStream(fileName: String, image: BufferedImage): ByteArrayOutputStream {
+        val ext = fileExtensionRegex.find(fileName)?.value ?: "jpeg"
+        val bao = ByteArrayOutputStream()
+        ImageIO.write(image, ext, bao)
+        return bao
     }
 
     override fun storeImage(path: Path, maxWidth: Int, maxHeight: Int): String {
@@ -117,6 +127,7 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
         return scaled
     }
 
+
     private fun scale1(img: BufferedImage, width: Int, height: Int): BufferedImage {
         return Scalr.resize(img, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
                 width, height, Scalr.OP_ANTIALIAS)
@@ -132,4 +143,19 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
         return scaled.toInputStream(ext)
     }
 
+    private fun blur1() {
+        var bufferedImage = BufferedImage(200, 200,
+                BufferedImage.TYPE_BYTE_INDEXED)
+
+        val kernel = Kernel(3, 3, floatArrayOf(1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f))
+        val op = ConvolveOp(kernel)
+        bufferedImage = op.filter(bufferedImage, null)
+    }
+
+    override fun blur(source: BufferedImage): BufferedImage {
+        val origWidth = source.width
+        val origHeight = source.height
+        val sourceImage = scale(source, 5, 5)
+        return scale(sourceImage, origWidth, origHeight)
+    }
 }

@@ -4,6 +4,7 @@ import com.icebreaker.be.CoreProperties
 import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH
+import com.icebreaker.be.controller.user.GET_IMAGE_PATH_BLURRED
 import com.icebreaker.be.controller.user.UserController
 import com.icebreaker.be.controller.user.dto.*
 import com.icebreaker.be.ext.decodeToInt
@@ -16,6 +17,7 @@ import com.icebreaker.be.service.model.UserWithDistance
 import com.icebreaker.be.service.model.toDto
 import com.icebreaker.be.service.user.UserService
 import org.hashids.Hashids
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -32,6 +34,8 @@ import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.io.IOException
 import java.math.BigDecimal
+import java.nio.file.Path
+import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 
@@ -154,6 +158,32 @@ class UserControllerDefault(val authService: AuthService,
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(resource)
     }
+
+
+    @GetMapping("$GET_IMAGE_PATH_BLURRED/{fileName:.+}")
+    fun downloadBlurredImage(@PathVariable fileName: String, request: HttpServletRequest): ResponseEntity<Resource> {
+
+        val path: Path = fileService.loadFileAsPath(fileName)
+                ?: throw IllegalArgumentException("Not valid fileName $fileName")
+
+        val image = ImageIO.read(path.toFile())
+
+        val blur = fileService.blur(image)
+
+        val contentType: String = try {
+            request.servletContext.getMimeType(path.toAbsolutePath().toString())
+        } catch (ex: IOException) {
+            "application/octet-stream"
+        }
+
+        val bao = fileService.toByteArrayOutputStream(fileName, blur)
+
+        val toByteArray = bao.toByteArray()
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(ByteArrayResource(toByteArray))
+    }
+
 
     override fun createUserPosition(createUserPositionRequest: CreateUserPositionRequest): BaseResponse {
         val userOrFail = authService.getUserOrFail()
