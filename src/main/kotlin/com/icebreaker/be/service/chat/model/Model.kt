@@ -3,6 +3,8 @@ package com.icebreaker.be.service.chat.model
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.icebreaker.be.controller.chat.dto.ChatDto
 import com.icebreaker.be.controller.chat.dto.ChatLineDto
+import com.icebreaker.be.controller.user.GET_IMAGE_PATH
+import com.icebreaker.be.controller.user.GET_IMAGE_PATH_BLURRED
 import com.icebreaker.be.db.entity.AkChatEntity
 import com.icebreaker.be.db.entity.AkChatLineEntity
 import com.icebreaker.be.db.entity.AkUserEntity
@@ -10,20 +12,21 @@ import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.fromEntity
 import com.icebreaker.be.service.model.toDto
 import org.hashids.Hashids
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.time.LocalDateTime
 
-data class Chat(val id: Int, val users: List<User>, var lastMessage: ChatLine? = null, val title: String? = null) {
+data class Chat(val id: Int, val users: List<User>, val enabled: Boolean?, val imageUrl: String?, var lastMessage: ChatLine? = null, val title: String? = null) {
     companion object {
-        fun fromEntity(entity: AkChatEntity): Chat {
+        fun fromEntity(entity: AkChatEntity, enabled: Boolean?, imageUrl: String?): Chat {
             val users = entity.users.map { u -> User.fromEntity(u) }
             val title: String = entity.title ?: users.joinToString(", ") { it.firstName }
-            return Chat(entity.id, users, null, title)
+            return Chat(entity.id, users, enabled, imageUrl, null, title)
         }
 
-        fun fromEntity(entity: AkChatEntity, usersEntity: List<AkUserEntity>): Chat {
+        fun fromEntity(entity: AkChatEntity, enabled: Boolean?, imageUrl: String?, usersEntity: List<AkUserEntity>): Chat {
             val users = usersEntity.map { u -> User.fromEntity(u) }
             val title: String = entity.title ?: users.joinToString(", ") { it.firstName }
-            return Chat(entity.id, users, null, title)
+            return Chat(entity.id, users, enabled, imageUrl, null, title)
         }
     }
 }
@@ -31,7 +34,19 @@ data class Chat(val id: Int, val users: List<User>, var lastMessage: ChatLine? =
 
 fun Chat.toDto(imageHost: String, hashids: Hashids): ChatDto {
     val users = this.users.map { user -> user.toDto(imageHost, hashids) }
-    return ChatDto(this.id, users, this.lastMessage?.toDto(imageHost, hashids), this.title)
+
+    val image = if (this.imageUrl != null) {
+        val getImagePath = if (this.enabled == true) GET_IMAGE_PATH else GET_IMAGE_PATH_BLURRED
+        ServletUriComponentsBuilder.fromHttpUrl(imageHost)
+                .path(getImagePath)
+                .path(this.imageUrl)
+                .toUriString()
+    } else {
+        null
+    }
+
+    return ChatDto(this.id, users, this.enabled
+            ?: false, image, this.lastMessage?.toDto(imageHost, hashids), this.title)
 }
 
 data class ChatLine(val id: Int, val user: User, val content: String, val readBy: Set<Int>, val createdAt: LocalDateTime, val updatedAt: LocalDateTime, val type: MessageType = MessageType.DEFAULT) {

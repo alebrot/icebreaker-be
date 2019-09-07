@@ -21,7 +21,9 @@ class AkChatUserEntity {
     @get:UpdateTimestamp
     @get:Column(name = "UPDATED_AT")
     var updatedAt: Timestamp? = null
-
+    @get:Basic
+    @get:Column(name = "ENABLED")
+    var enabled: Boolean = false
     @get:OneToOne(fetch = FetchType.LAZY)
     @get:JoinColumn(name = "USER_ID", referencedColumnName = "ID", nullable = false)
     var user: AkUserEntity? = null

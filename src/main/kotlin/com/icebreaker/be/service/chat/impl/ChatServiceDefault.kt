@@ -53,7 +53,7 @@ class ChatServiceDefault(val userRepository: UserRepository,
     override fun findChat(chatId: Int): Chat? {
         val chatEntity = chatRepository.findById(chatId).toKotlinOptional()
         if (chatEntity != null) {
-            return Chat.fromEntity(chatEntity)
+            return Chat.fromEntity(chatEntity, null, null)
         }
         return null
     }
@@ -61,7 +61,7 @@ class ChatServiceDefault(val userRepository: UserRepository,
     @Transactional
     override fun findChatOrFail(chatId: Int): Chat {
         val chatEntity = chatRepository.findById(chatId).toKotlinNotOptionalOrFail()
-        return Chat.fromEntity(chatEntity)
+        return Chat.fromEntity(chatEntity, null, null)
     }
 
     @Transactional
@@ -109,14 +109,18 @@ class ChatServiceDefault(val userRepository: UserRepository,
                 val akChatUserEntity = AkChatUserEntity()
                 akChatUserEntity.user = akUserEntity
                 akChatUserEntity.chat = akChatEntity
+                akChatUserEntity.enabled = user.id == akUserEntity.id
                 chatUserRepository.save(akChatUserEntity)
             }
-            return Pair(Chat.fromEntity(akChatEntity, users.filter { akUserEntity -> akUserEntity.id != user.id }), true)
+            return Pair(Chat.fromEntity(akChatEntity, true, null, users.filter { akUserEntity -> akUserEntity.id != user.id }), true)
 
         } else {
+            val chatUserEntity = chatUserRepository.findByChatIdAndUserId(found.id, user.id)
+                    ?: throw IllegalStateException("not found chat user entity by chat id ${found.id} user id ${user.id}")
+
             val lastLine = chatLineRepository.findByChatId(found.id, 1, 0).firstOrNull()
             val usersWithoutMe = found.users.filter { akUserEntity -> akUserEntity.id != user.id }
-            val chat = Chat.fromEntity(found, usersWithoutMe)
+            val chat = Chat.fromEntity(found, chatUserEntity.enabled, null, usersWithoutMe)
             if (lastLine != null) {
                 chat.lastMessage = ChatLine.fromEntity(lastLine, objectMapper)
             }
@@ -131,7 +135,18 @@ class ChatServiceDefault(val userRepository: UserRepository,
         return chats.sortedByDescending { akChatEntity -> akChatEntity.createdAt }.mapNotNull {
             val lastLine = chatLineRepository.findByChatId(it.id, 1, 0).firstOrNull()
 
-            val chat = Chat.fromEntity(it, it.users.filter { akUserEntity -> akUserEntity.id != user.id })
+            val chatUserEntity = chatUserRepository.findByChatIdAndUserId(it.id, user.id)
+                    ?: throw IllegalStateException("not found chat user entity by chat id ${it.id} user id ${user.id}")
+
+            val usersEntity = it.users.filter { akUserEntity -> akUserEntity.id != user.id }
+            val chatImageUrl = if (usersEntity.isNotEmpty()) {
+                val imgUrl = usersEntity[0].imgUrl
+                imgUrl
+            } else {
+                null
+            }
+
+            val chat = Chat.fromEntity(it, chatUserEntity.enabled, chatImageUrl, usersEntity)
             if (lastLine != null) {
                 chat.lastMessage = ChatLine.fromEntity(lastLine, objectMapper)
                 chat
