@@ -21,14 +21,8 @@ class CreditFacadeDefault(val creditService: CreditService, val chatService: Cha
     fun assertAvailableCredits(credits: Int, user: User) {
         val rewardCredits = creditService.getAvailableCredits(user).credits
         if (rewardCredits > 0 && rewardCredits - credits >= 0) {
-
         } else {
-            val rewardedCredits = creditService.rewardCredits(user)
-            if (rewardedCredits.credits > 0 && rewardedCredits.credits - credits >= 0) {
-
-            } else {
-                throw CreditsNotAvailableException("No credits available", credits)
-            }
+            throw CreditsNotAvailableException("No credits available", credits)
         }
     }
 

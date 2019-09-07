@@ -248,11 +248,14 @@ class UserControllerDefault(val authService: AuthService,
             userOrFail.imgUrl = userProfileImageName
         }
 
+        creditServiceDefault.rewardCredits(userOrFail)
+
         val availableCredits = creditServiceDefault.getAvailableCredits(userOrFail)
         userOrFail.creditsUpdatedAt = availableCredits.creditsUpdatedAt
         userOrFail.credits = availableCredits.credits
 
         val completeUserDto = CompleteUserDto(userOrFail.toDto(imageProperties.host, hashids), authorities, images)
+
         return GetUserMeResponse(UserContextDto(completeUserDto))
     }
 

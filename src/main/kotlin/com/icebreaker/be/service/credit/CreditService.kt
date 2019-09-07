@@ -60,16 +60,14 @@ class CreditServiceDefault(val userRepository: UserRepository, val corePropertie
 
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
 
-        if (userEntity.credits < rewardAmount) {
+        val toLocalDateTime = userEntity.creditsUpdatedAt.toLocalDateTime()
+        val localDateTimeToGetReward = toLocalDateTime.plus(rewardDuration)
 
-            val toLocalDateTime = userEntity.creditsUpdatedAt.toLocalDateTime()
-            val localDateTimeToGetReward = toLocalDateTime.plus(rewardDuration)
-
-            if (localDateTimeToGetReward.isBefore(LocalDateTime.now())) {//get reward
-                userEntity.credits = rewardAmount
-                userEntity.creditsUpdatedAt = Timestamp.valueOf(LocalDateTime.now())
-            }
+        if (localDateTimeToGetReward.isBefore(LocalDateTime.now())) {//get reward
+            userEntity.credits = userEntity.credits + rewardAmount
+            userEntity.creditsUpdatedAt = Timestamp.valueOf(LocalDateTime.now())
         }
+
         return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration)
     }
 
