@@ -15,7 +15,7 @@ import org.hashids.Hashids
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.time.LocalDateTime
 
-data class Chat(val id: Int, val users: List<User>, val enabled: Boolean?, val imageUrl: String?, var lastMessage: ChatLine? = null, val title: String? = null) {
+data class Chat(val id: Int, val users: List<User>, var enabled: Boolean?, val imageUrl: String?, var lastMessage: ChatLine? = null, val title: String? = null) {
     companion object {
         fun fromEntity(entity: AkChatEntity, enabled: Boolean?, imageUrl: String?): Chat {
             val users = entity.users.map { u -> User.fromEntity(u) }

@@ -162,6 +162,19 @@ class ChatServiceDefault(val userRepository: UserRepository,
         }
     }
 
+
+    override fun enableChat(chat: Chat, user: User): Chat {
+        val chatUserEntity = chatUserRepository.findByChatIdAndUserId(chat.id, user.id)
+                ?: throw IllegalStateException("not found chat user entity by chat id ${chat.id} user id ${user.id}")
+        if (!chatUserEntity.enabled) {
+            chatUserEntity.enabled = true
+            chatUserRepository.save(chatUserEntity)
+            chat.enabled = true
+        }
+
+        return chat
+    }
+
     @Transactional
     override fun getChatLinesByChatId(chatId: Int, limit: Int, offset: Int): List<ChatLine> {
         val chatLines = chatLineRepository.findByChatId(chatId, limit, offset).sortedBy { akChatLineEntity -> akChatLineEntity.createdAt }

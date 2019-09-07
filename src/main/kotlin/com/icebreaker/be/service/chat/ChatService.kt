@@ -14,4 +14,5 @@ interface ChatService {
     fun findChatOrFail(chatId: Int): Chat
     fun notifyMessageReceived(user: User, lineIds: List<Int>)
     fun isNewChat(user: User, userIds: List<Int>): Boolean
+    fun enableChat(chat: Chat, user: User): Chat
 }

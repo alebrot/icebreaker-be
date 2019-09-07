@@ -109,9 +109,11 @@ class ChatControllerDefault(val authService: AuthService,
 
         creditFacade.handleCreditsForNewChatCreation(userOrFail, userIds)
 
-        val chat = chatService.findOrCreateChat(userOrFail, userIds)
-        return FindOrCreateChatResponse(chat.first.toDto(imageProperties.host, hashids))
-    }
+        val chatPair = chatService.findOrCreateChat(userOrFail, userIds)
 
+        val chat = creditFacade.handleCreditsForDiscoveringChatRequest(userOrFail, chatPair.first)
+
+        return FindOrCreateChatResponse(chat.toDto(imageProperties.host, hashids))
+    }
 
 }
