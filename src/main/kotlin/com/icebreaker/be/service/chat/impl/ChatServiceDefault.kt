@@ -49,10 +49,9 @@ class ChatServiceDefault(val userRepository: UserRepository,
         }
     }
 
-
-    override fun assertUserBelongsToChat(chat: Chat, user: User) {
-        if (!chat.users.map(User::id).contains(user.id)) {
-            throw IllegalArgumentException("User ${user.id} doesn't belong to chat ${chat.id}")
+    private fun assertUserBelongsToChat(userId: Int, chat: AkChatEntity) {
+        if (!chat.users.map(AkUserEntity::id).contains(userId)) {
+            throw IllegalArgumentException("User ${userId} doesn't belong to chat ${chat.id}")
         }
     }
 
@@ -69,6 +68,31 @@ class ChatServiceDefault(val userRepository: UserRepository,
     override fun findChatOrFail(chatId: Int): Chat {
         val chatEntity = chatRepository.findById(chatId).toKotlinNotOptionalOrFail()
         return Chat.fromEntity(chatEntity, null, null)
+    }
+
+    @Transactional
+    override fun findChatOrFail(chatId: Int, userId: Int): Chat {
+        val chatEntity = chatRepository.findById(chatId).toKotlinNotOptionalOrFail()
+        assertUserBelongsToChat(userId, chatEntity)
+
+        val lastLine = chatLineRepository.findByChatId(chatId, 1, 0).firstOrNull()
+
+        val chatUserEntity = chatUserRepository.findByChatIdAndUserId(chatId, userId)
+                ?: throw IllegalStateException("not found chat user entity by chat id $chatId user id $userId")
+
+        val usersEntity = chatEntity.users.filter { akUserEntity -> akUserEntity.id != userId }
+        val chatImageUrl = if (usersEntity.isNotEmpty()) {
+            val imgUrl = usersEntity[0].imgUrl
+            imgUrl
+        } else {
+            null
+        }
+
+        val chat = Chat.fromEntity(chatEntity, chatUserEntity.enabled, chatImageUrl, usersEntity)
+        if (lastLine != null) {
+            chat.lastMessage = ChatLine.fromEntity(lastLine, objectMapper)
+        }
+        return chat
     }
 
     @Transactional

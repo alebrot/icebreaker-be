@@ -4,6 +4,7 @@ import com.icebreaker.be.service.chat.model.Chat
 import com.icebreaker.be.service.chat.model.ChatLine
 import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.model.User
+import org.springframework.transaction.annotation.Transactional
 
 interface ChatService {
     fun getChatsByUser(user: User, excludeEmptyChats: Boolean): List<Chat>
@@ -15,5 +16,5 @@ interface ChatService {
     fun notifyMessageReceived(user: User, lineIds: List<Int>)
     fun isNewChat(user: User, userIds: List<Int>): Boolean
     fun enableChat(chat: Chat, user: User): Chat
-    fun assertUserBelongsToChat(chat: Chat, user: User)
+    fun findChatOrFail(chatId: Int, userId: Int): Chat
 }

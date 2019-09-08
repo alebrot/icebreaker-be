@@ -37,8 +37,8 @@ class CreditFacadeDefault(val creditService: CreditService, val chatService: Cha
     override fun handleCreditsForDiscoveringChatRequest(user: User, chat: Chat): Chat {
         val newChat: Chat
         if (chat.enabled == false) {
-            newChat = chatService.enableChat(chat, user)
             assertAvailableCredits(creditsToDiscoverChatRequest, user)
+            newChat = chatService.enableChat(chat, user)
             creditService.removeCredits(creditsToDiscoverChatRequest, user)
         } else {
             newChat = chat

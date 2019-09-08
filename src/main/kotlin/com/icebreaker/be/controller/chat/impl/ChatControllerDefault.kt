@@ -118,9 +118,7 @@ class ChatControllerDefault(val authService: AuthService,
     override fun unlockChat(chatId: Int): ChatResponse {
         val userOrFail = authService.getUserOrFail()
 
-        val findChat = chatService.findChat(chatId) ?: throw IllegalArgumentException("Chat not found with id: $chatId")
-
-        chatService.assertUserBelongsToChat(findChat, userOrFail)
+        val findChat = chatService.findChatOrFail(chatId, userOrFail.id)
 
         val chat = creditFacade.handleCreditsForDiscoveringChatRequest(userOrFail, findChat)
         return ChatResponse(chat.toDto(imageProperties.host, hashids))

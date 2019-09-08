@@ -2,7 +2,7 @@ package com.icebreaker.be.controller
 
 import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.service.auth.AuthService
-import com.icebreaker.be.service.chat.ChatService
+import com.icebreaker.be.service.chat.impl.ChatServiceDefault
 import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.chat.model.toDto
 import com.icebreaker.be.service.push.PushService
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Controller
 @Controller
 class SocketController(val authService: AuthService,
                        val simpMessagingTemplate: SimpMessageSendingOperations,
-                       val chatService: ChatService,
+                       val chatService: ChatServiceDefault,
                        val pushService: PushService,
                        val imageProperties: ImageProperties,
                        val hashids: Hashids
