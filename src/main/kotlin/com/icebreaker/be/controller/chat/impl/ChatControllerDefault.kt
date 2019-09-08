@@ -28,7 +28,6 @@ class ChatControllerDefault(val authService: AuthService,
                             val userService: UserService,
                             val coreProperties: CoreProperties) : ChatController {
 
-
     override fun notifyMessageReceived(request: NotifyMessageReceivedRequest): BaseResponse {
         val lineIds = request.lineIds
         if (lineIds.isEmpty()) throw IllegalArgumentException("lineIds can not be empty")
@@ -115,5 +114,17 @@ class ChatControllerDefault(val authService: AuthService,
 
         return FindOrCreateChatResponse(chat.toDto(imageProperties.host, hashids))
     }
+
+    override fun unlockChat(chatId: Int): ChatResponse {
+        val userOrFail = authService.getUserOrFail()
+
+        val findChat = chatService.findChat(chatId) ?: throw IllegalArgumentException("Chat not found with id: $chatId")
+
+        chatService.assertUserBelongsToChat(findChat, userOrFail)
+
+        val chat = creditFacade.handleCreditsForDiscoveringChatRequest(userOrFail, findChat)
+        return ChatResponse(chat.toDto(imageProperties.host, hashids))
+    }
+
 
 }

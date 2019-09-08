@@ -49,7 +49,7 @@ class UserServiceDefault(val userRepository: UserRepository,
         val saved = userRepository.save(userEntity)
         return User.fromEntity(saved)
     }
-
+    @Transactional
     override fun getUserById(userId: Int): User {
         val userEntity = userRepository.findById(userId).toKotlinNotOptionalOrFail()
         return User.fromEntity(userEntity)

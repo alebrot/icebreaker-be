@@ -49,6 +49,13 @@ class ChatServiceDefault(val userRepository: UserRepository,
         }
     }
 
+
+    override fun assertUserBelongsToChat(chat: Chat, user: User) {
+        if (!chat.users.map(User::id).contains(user.id)) {
+            throw IllegalArgumentException("User ${user.id} doesn't belong to chat ${chat.id}")
+        }
+    }
+
     @Transactional
     override fun findChat(chatId: Int): Chat? {
         val chatEntity = chatRepository.findById(chatId).toKotlinOptional()

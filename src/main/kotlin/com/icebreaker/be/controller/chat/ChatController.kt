@@ -12,6 +12,7 @@ const val POST_CHAT_LINES = "/chats/{chatId}/lines"
 const val FIND_OR_CREATE_CHAT = "/chats"
 const val CREATE_INVITATION = "/invitations"
 const val POST_NOTIFY_MESSAGE_RECEIVED = "/lines"
+const val UNLOCK_CHAT = "/chats/{chatId}"
 
 @Validated
 interface ChatController {
@@ -24,6 +25,9 @@ interface ChatController {
 
     @PostMapping(FIND_OR_CREATE_CHAT)
     fun findOrCreateChat(@Valid @RequestBody request: FindOrCreateChatRequest): FindOrCreateChatResponse
+
+    @PostMapping(UNLOCK_CHAT)
+    fun unlockChat(@PathVariable chatId: Int): ChatResponse
 
     @PostMapping(CREATE_INVITATION)
     fun createInvitation(@Valid @RequestBody request: CreateInvitationRequest): CreateInvitationResponse
