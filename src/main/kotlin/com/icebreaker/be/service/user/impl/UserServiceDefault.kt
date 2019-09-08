@@ -143,7 +143,7 @@ class UserServiceDefault(val userRepository: UserRepository,
         val findUsersCloseToUser = userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble())
         return findUsersCloseToUser.map(mapper)
     }
-
+    @Transactional
     override fun getFakeUsers(distanceInMeters: Int): List<UserWithDistance> {
 
         return userRepository.findAllByEmailContaining(fakeEmailDomain).map {
