@@ -18,3 +18,6 @@ data class UpdateUserRequest(val bio: String?, val gender: Gender?, val imageIds
 
 
 class CreateUserResponse(val user: UserDto) : BaseResponse()
+
+
+class CreditResponse(val creditDto: CreditDto) : BaseResponse()

@@ -10,7 +10,7 @@ import com.icebreaker.be.controller.user.dto.*
 import com.icebreaker.be.ext.decodeToInt
 import com.icebreaker.be.facade.user.UserFacade
 import com.icebreaker.be.service.auth.AuthService
-import com.icebreaker.be.service.credit.CreditServiceDefault
+import com.icebreaker.be.service.credit.CreditService
 import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.UserWithDistance
@@ -50,7 +50,13 @@ class UserControllerDefault(val authService: AuthService,
                             val userFacade: UserFacade,
                             val hashids: Hashids,
                             val coreProperties: CoreProperties,
-                            val creditServiceDefault: CreditServiceDefault) : UserController {
+                            val creditService: CreditService
+) : UserController {
+    override fun admobReward(): CreditResponse {
+        val userOrFail = authService.getUserOrFail()
+        val rewardAdmobCredits = creditService.rewardAdmobCredits(userOrFail)
+        return CreditResponse(rewardAdmobCredits.toDto())
+    }
 
     override fun swapUserImage(imageId1: Int, imageId2: Int): GetUserMeResponse {
         validateImageId(imageId1)
@@ -248,9 +254,9 @@ class UserControllerDefault(val authService: AuthService,
             userOrFail.imgUrl = userProfileImageName
         }
 
-        creditServiceDefault.rewardCredits(userOrFail)
+        creditService.rewardCredits(userOrFail)
 
-        val availableCredits = creditServiceDefault.getAvailableCredits(userOrFail)
+        val availableCredits = creditService.getAvailableCredits(userOrFail)
         userOrFail.creditsUpdatedAt = availableCredits.creditsUpdatedAt
         userOrFail.credits = availableCredits.credits
 

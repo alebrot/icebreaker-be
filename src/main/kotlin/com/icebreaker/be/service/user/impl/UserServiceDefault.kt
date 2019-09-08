@@ -250,7 +250,7 @@ class UserServiceDefault(val userRepository: UserRepository,
         val passwordHash: String? = findUsersCloseToUser["PASSWORD_HASH"] as? String
         val firstName: String = findUsersCloseToUser["FIRST_NAME"] as String
         val lastName: String = findUsersCloseToUser["LAST_NAME"] as String
-        val imgUrl: String? = findUsersCloseToUser["IMG_URL"] as?String
+        val imgUrl: String? = findUsersCloseToUser["IMG_URL"] as? String
         val birthday: java.sql.Date = findUsersCloseToUser["BIRTHDAY"] as java.sql.Date
         val authorities: List<Authority> = ArrayList()
         val accountExpired: Boolean = findUsersCloseToUser["ACCOUNT_EXPIRED"] as Boolean
@@ -267,13 +267,17 @@ class UserServiceDefault(val userRepository: UserRepository,
 
         val creditsUpdatedAt: Timestamp = findUsersCloseToUser["CREDITS_UPDATED_AT"] as Timestamp
 
+        val admobCount: Int = findUsersCloseToUser["ADMOB_COUNT"] as Int
+
+        val admobUpdatedAt: Timestamp = findUsersCloseToUser["ADMOB_UPDATED_AT"] as Timestamp
+
         val gender: Gender? = if (genderInt != null) Gender.values()[genderInt] else null
 
-        val bio: String? = findUsersCloseToUser["BIO"] as?String
+        val bio: String? = findUsersCloseToUser["BIO"] as? String
 
         val distance: Int = (findUsersCloseToUser["DISTANCE"] as Double).toInt()
 
-        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), bio, gender, enabled, lastSeen.toLocalDateTime(), createdAt.toLocalDateTime(), credits, creditsUpdatedAt.toLocalDateTime())
+        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), bio, gender, enabled, lastSeen.toLocalDateTime(), createdAt.toLocalDateTime(), credits, creditsUpdatedAt.toLocalDateTime(), admobCount, admobUpdatedAt.toLocalDateTime())
 
         UserWithDistance(distance, user)
     }

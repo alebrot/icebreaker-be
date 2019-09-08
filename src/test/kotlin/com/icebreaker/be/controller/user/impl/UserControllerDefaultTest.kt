@@ -7,6 +7,7 @@ import com.icebreaker.be.db.repository.UserPositionRepository
 import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.service.chat.impl.ChatServiceDefault
 import org.junit.Assert
+import org.junit.Ignore
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -14,6 +15,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 internal class UserControllerDefaultTest : BeApplicationTests() {
+    @Ignore
     @Test
     fun getUserById() {
 //        authenticate()
@@ -29,7 +31,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
         Assert.assertNotNull(response.body)
         Assert.assertNotNull(response.body!!.user)
     }
-
+    @Ignore
     @Test
     fun getUserMe() {
         authenticate("email2@email.com", "password")
@@ -39,7 +41,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
         Assert.assertNotNull(response.body)
         Assert.assertNotNull(response.body!!.context)
     }
-
+    @Ignore
     @Test
     fun getAdminMe() {
         authenticate()
@@ -49,7 +51,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
         Assert.assertNotNull(response.body)
         Assert.assertNotNull(response.body!!.context)
     }
-
+    @Ignore
     @Test
     fun createUser() {
 
@@ -66,7 +68,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
 
         authenticate(email, password)
     }
-
+    @Ignore
     @Test
     fun getUserMeUsers() {
         authenticate()
@@ -77,7 +79,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
         Assert.assertNotNull(response.body!!.users)
     }
 
-
+    @Ignore
     @Test
     fun createUserPosition() {
         authenticate("email2@email.com", "password")

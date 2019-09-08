@@ -17,6 +17,7 @@ interface CreditService {
     fun removeCredits(credits: Int, user: User): Credit
     fun addCredits(credits: Int, user: User): Credit
     fun rewardCredits(user: User): Credit
+    fun rewardAdmobCredits(user: User): Credit
 }
 
 @Service
@@ -26,7 +27,7 @@ class CreditServiceDefault(val userRepository: UserRepository, val corePropertie
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         val rewardDuration = Duration.ofMinutes(coreProperties.rewardDuration.toLong())
         val rewardAmount = coreProperties.rewardAmount
-        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration)
+        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), 0)
     }
 
     @Transactional
@@ -36,7 +37,7 @@ class CreditServiceDefault(val userRepository: UserRepository, val corePropertie
         val rewardAmount = coreProperties.rewardAmount
         val result = userEntity.credits - credits
         userEntity.credits = max(0, result)
-        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration)
+        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), 0)
     }
 
     @Transactional
@@ -50,14 +51,39 @@ class CreditServiceDefault(val userRepository: UserRepository, val corePropertie
         val rewardAmount = coreProperties.rewardAmount
 
         userEntity.credits = userEntity.credits + credits
-        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration)
+        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), 0)
+
+    }
+
+    @Transactional
+    override fun rewardAdmobCredits(user: User): Credit {
+        val rewardDuration = Duration.ofMinutes(coreProperties.admobRewardDuration.toLong())
+        val admobRewardAmount = coreProperties.admobRewardAmount
+        val admobMax = coreProperties.admobMax
+        val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
+
+        val toLocalDateTime = userEntity.admobUpdatedAt.toLocalDateTime()
+        val localDateTimeToGetReward = toLocalDateTime.plus(rewardDuration)
+        if (userEntity.admobCount < admobMax || localDateTimeToGetReward.isBefore(LocalDateTime.now())) {//get reward
+            userEntity.credits = userEntity.credits + admobRewardAmount
+            userEntity.admobUpdatedAt = Timestamp.valueOf(LocalDateTime.now())
+
+            if (localDateTimeToGetReward.isBefore(LocalDateTime.now())) {
+                userEntity.admobCount = 0
+            } else {
+                userEntity.admobCount = userEntity.admobCount + 1
+            }
+
+        } else {
+            throw IllegalArgumentException("Not allowed to admob reward, exceeds limit $admobMax")
+        }
+        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), 0, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), admobRewardAmount)
     }
 
     @Transactional
     override fun rewardCredits(user: User): Credit {
         val rewardDuration = Duration.ofMinutes(coreProperties.rewardDuration.toLong())
         val rewardAmount = coreProperties.rewardAmount
-
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
 
         val toLocalDateTime = userEntity.creditsUpdatedAt.toLocalDateTime()
@@ -68,7 +94,7 @@ class CreditServiceDefault(val userRepository: UserRepository, val corePropertie
             userEntity.creditsUpdatedAt = Timestamp.valueOf(LocalDateTime.now())
         }
 
-        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration)
+        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), 0)
     }
 
 }

@@ -184,4 +184,7 @@ class CoreProperties {
     var maxDistance: Int = 5000;
     var rewardAmount: Int = 5
     var rewardDuration: Int = 1440
+    var admobRewardAmount: Int = 5
+    var admobMax: Int = 3
+    var admobRewardDuration: Int = 1440
 }

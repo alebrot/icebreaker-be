@@ -86,6 +86,14 @@ class AkUserEntity {
     @get:Column(name = "CREDITS_UPDATED_AT")
     var creditsUpdatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
+    @get:Basic
+    @get:Column(name = "ADMOB_COUNT")
+    var admobCount: Int = 0
+
+    @get:Basic
+    @get:Column(name = "ADMOB_UPDATED_AT")
+    var admobUpdatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+
     @get:ManyToMany(fetch = FetchType.LAZY)
     @get:JoinTable(name = "AK_USER_AUTHORITY", joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "ID")], inverseJoinColumns = [JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")])
     var authorities: Collection<AkAuthorityEntity> = ArrayList()

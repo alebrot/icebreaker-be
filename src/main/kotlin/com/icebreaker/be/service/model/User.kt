@@ -27,7 +27,10 @@ data class User(val id: Int,
                 var lastSeen: LocalDateTime = LocalDateTime.now(),
                 var createdAt: LocalDateTime,
                 var credits: Int,
-                var creditsUpdatedAt: LocalDateTime) : Serializable {
+                var creditsUpdatedAt: LocalDateTime,
+                var admobCount: Int,
+                var admobUpdatedAt: LocalDateTime
+) : Serializable {
     companion object
 
     val fullName: String = "$firstName $lastName"
@@ -46,7 +49,7 @@ fun User.toDto(imageHost: String, hashids: Hashids): UserDto {
         null
     }
 
-    return UserDto(hashids.encode(this.id.toLong()), this.firstName, this.lastName, image, this.birthday, this.lastSeen, this.createdAt, this.bio, this.gender, CreditDto(this.credits, this.creditsUpdatedAt))
+    return UserDto(hashids.encode(this.id.toLong()), this.firstName, this.lastName, image, this.birthday, this.lastSeen, this.createdAt, this.bio, this.gender, CreditDto(this.credits, this.creditsUpdatedAt, this.admobCount, this.admobUpdatedAt))
 }
 
 fun User.Companion.fromEntity(userEntity: AkUserEntity): User {
@@ -69,7 +72,10 @@ fun User.Companion.fromEntity(userEntity: AkUserEntity): User {
             userEntity.lastSeen.toLocalDateTime(),
             userEntity.createdAt.toLocalDateTime(),
             userEntity.credits,
-            userEntity.creditsUpdatedAt.toLocalDateTime()
+            userEntity.creditsUpdatedAt.toLocalDateTime(),
+            userEntity.admobCount,
+            userEntity.admobUpdatedAt.toLocalDateTime()
+
     )
 }
 
