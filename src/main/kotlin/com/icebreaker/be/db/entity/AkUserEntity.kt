@@ -113,6 +113,10 @@ class AkUserEntity {
     @get:JoinColumn(name = "PUSH_ID", referencedColumnName = "ID", nullable = true)
     var push: AkPushEntity? = null
 
+    @get:Basic
+    @get:Column(name = "INVITED_BY")
+    var invitedBy: Int? = null
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false

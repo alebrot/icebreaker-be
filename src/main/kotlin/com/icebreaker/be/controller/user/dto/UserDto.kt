@@ -13,7 +13,8 @@ data class UserDto(val id: String,
                    val createdAt: LocalDateTime,
                    val bio: String?,
                    val gender: Gender?,
-                   val credits: CreditDto)
+                   val credits: CreditDto,
+                   val invitedBy: String?)
 
 data class CreditDto(val credits: Int, val creditsUpdatedAt: LocalDateTime, val admobCount: Int, val admobUpdatedAt: LocalDateTime)
 

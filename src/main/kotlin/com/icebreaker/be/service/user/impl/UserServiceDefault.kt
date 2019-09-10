@@ -49,6 +49,7 @@ class UserServiceDefault(val userRepository: UserRepository,
         val saved = userRepository.save(userEntity)
         return User.fromEntity(saved)
     }
+
     @Transactional
     override fun getUserById(userId: Int): User {
         val userEntity = userRepository.findById(userId).toKotlinNotOptionalOrFail()
@@ -143,6 +144,7 @@ class UserServiceDefault(val userRepository: UserRepository,
         val findUsersCloseToUser = userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble())
         return findUsersCloseToUser.map(mapper)
     }
+
     @Transactional
     override fun getFakeUsers(distanceInMeters: Int): List<UserWithDistance> {
 
@@ -276,8 +278,9 @@ class UserServiceDefault(val userRepository: UserRepository,
         val bio: String? = findUsersCloseToUser["BIO"] as? String
 
         val distance: Int = (findUsersCloseToUser["DISTANCE"] as Double).toInt()
+        val invitedBy: Int? = findUsersCloseToUser["INVITED_BY"] as? Int
 
-        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), bio, gender, enabled, lastSeen.toLocalDateTime(), createdAt.toLocalDateTime(), credits, creditsUpdatedAt.toLocalDateTime(), admobCount, admobUpdatedAt.toLocalDateTime())
+        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), bio, gender, enabled, lastSeen.toLocalDateTime(), createdAt.toLocalDateTime(), credits, creditsUpdatedAt.toLocalDateTime(), admobCount, admobUpdatedAt.toLocalDateTime(), invitedBy)
 
         UserWithDistance(distance, user)
     }

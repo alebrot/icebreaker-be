@@ -73,7 +73,8 @@ core:
   watch-user-email: email1@email.com
   max-distance: 10000
   reward-amount: 5
-  reward-duration: 5
+  reward-duration: 60
   admob-reward-amount: 1
   admob-max: 3
-  admob-reward-duration: 5
+  admob-reward-duration: 60
+  reward-amount-for-invitation: 5

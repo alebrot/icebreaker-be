@@ -70,3 +70,4 @@ core:
   admob-reward-amount: 1
   admob-max: 3
   admob-reward-duration: 5
+  reward-amount-for-invitation: 5

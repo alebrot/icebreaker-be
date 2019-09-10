@@ -187,4 +187,5 @@ class CoreProperties {
     var admobRewardAmount: Int = 5
     var admobMax: Int = 3
     var admobRewardDuration: Int = 1440
+    var rewardAmountForInvitation: Int = 5
 }

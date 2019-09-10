@@ -19,15 +19,19 @@ const val GET_ADMIN_ME = "/admins/me"
 const val GET_USER_ME_USERS = "/users/me/users"
 const val CREATE_USER_POSITION = "/users/position"
 const val ADMOB_REWARD = "/users/me/admob"
-
+const val INVITE_REWARD = "/users/me/invite/{code}"
 const val CREATE_USER = "/public/users"
 const val GET_IMAGE_PATH = "/public/images/"
 const val GET_IMAGE_PATH_BLURRED = "/public/images/th/"
+
 
 interface UserController {
 
     @PostMapping(ADMOB_REWARD)
     fun admobReward(): CreditResponse
+
+    @PostMapping(INVITE_REWARD)
+    fun inviteReward(@PathVariable code: String): CreditResponse
 
     @PostMapping(UPLOAD_USER_IMAGE)
     fun uploadUserImage(@PathVariable imageId: Int, @RequestParam("image") file: MultipartFile): UploadUserImageResponse

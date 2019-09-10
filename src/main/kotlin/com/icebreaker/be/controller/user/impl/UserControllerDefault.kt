@@ -52,6 +52,16 @@ class UserControllerDefault(val authService: AuthService,
                             val coreProperties: CoreProperties,
                             val creditService: CreditService
 ) : UserController {
+
+
+    override fun inviteReward(@PathVariable code: String): CreditResponse {
+        val userOrFail = authService.getUserOrFail()
+        val invitedByUserId = hashids.decodeToInt(code)
+        val invitedBy = userService.getUserById(invitedByUserId)
+        val rewardCreditsForInvitedPerson = creditService.rewardCreditsForInvitedPerson(userOrFail, invitedBy)
+        return CreditResponse(rewardCreditsForInvitedPerson.toDto())
+    }
+
     override fun admobReward(): CreditResponse {
         val userOrFail = authService.getUserOrFail()
         val rewardAdmobCredits = creditService.rewardAdmobCredits(userOrFail)
@@ -246,21 +256,24 @@ class UserControllerDefault(val authService: AuthService,
     @PreAuthorize("hasAuthority('USER')")
     override fun getUserMe(): GetUserMeResponse {
         val userOrFail = authService.getUserOrFail()
-        val authorities = userOrFail.authorities.map { it.toDto() }
-        val images = userService.getImages(userOrFail)
 
-        if (userOrFail.imgUrl == null) {
-            val userProfileImageName = userService.getUserProfileImageName(userOrFail)
-            userOrFail.imgUrl = userProfileImageName
+        val user = userService.getUserById(userOrFail.id)
+
+        val authorities = user.authorities.map { it.toDto() }
+        val images = userService.getImages(user)
+
+        if (user.imgUrl == null) {
+            val userProfileImageName = userService.getUserProfileImageName(user)
+            user.imgUrl = userProfileImageName
         }
 
-        creditService.rewardCredits(userOrFail)
+        creditService.rewardCredits(user)
 
-        val availableCredits = creditService.getAvailableCredits(userOrFail)
-        userOrFail.creditsUpdatedAt = availableCredits.creditsUpdatedAt
-        userOrFail.credits = availableCredits.credits
+        val availableCredits = creditService.getAvailableCredits(user)
+        user.creditsUpdatedAt = availableCredits.creditsUpdatedAt
+        user.credits = availableCredits.credits
 
-        val completeUserDto = CompleteUserDto(userOrFail.toDto(imageProperties.host, hashids), authorities, images)
+        val completeUserDto = CompleteUserDto(user.toDto(imageProperties.host, hashids), authorities, images)
 
         return GetUserMeResponse(UserContextDto(completeUserDto))
     }

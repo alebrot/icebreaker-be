@@ -18,6 +18,7 @@ interface CreditService {
     fun addCredits(credits: Int, user: User): Credit
     fun rewardCredits(user: User): Credit
     fun rewardAdmobCredits(user: User): Credit
+    fun rewardCreditsForInvitedPerson(user: User, invitedByUser: User): Credit
 }
 
 @Service
@@ -95,6 +96,28 @@ class CreditServiceDefault(val userRepository: UserRepository, val corePropertie
         }
 
         return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), 0)
+    }
+
+    @Transactional
+    override fun rewardCreditsForInvitedPerson(user: User, invitedByUser: User): Credit {
+        if (invitedByUser.id < user.id) {
+
+            val rewardDuration = Duration.ofMinutes(coreProperties.rewardDuration.toLong())
+            val rewardAmount = coreProperties.rewardAmount
+
+            val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
+            val userEntityInvitedBy = userRepository.findById(invitedByUser.id).toKotlinNotOptionalOrFail()
+
+            val rewardAmountForInvitation = coreProperties.rewardAmountForInvitation
+
+            userEntity.credits = userEntity.credits + rewardAmountForInvitation
+            userEntityInvitedBy.credits = userEntity.credits + rewardAmountForInvitation
+
+            return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), 0)
+
+        } else {
+            throw IllegalArgumentException("Not valid")
+        }
     }
 
 }
