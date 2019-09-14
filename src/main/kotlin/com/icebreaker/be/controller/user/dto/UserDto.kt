@@ -1,6 +1,7 @@
 package com.icebreaker.be.controller.user.dto
 
 import com.icebreaker.be.service.model.Gender
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -13,10 +14,22 @@ data class UserDto(val id: String,
                    val createdAt: LocalDateTime,
                    val bio: String?,
                    val gender: Gender?,
-                   val credits: CreditDto,
+                   val credits: CreditDto?,
                    val invitedBy: String?)
 
-data class CreditDto(val credits: Int, val creditsUpdatedAt: LocalDateTime, val admobCount: Int, val admobUpdatedAt: LocalDateTime)
+data class AdmobCreditDto(val count: Int,
+                          val countMax: Int,
+                          val updatedAt: LocalDateTime,
+                          val rewardDuration: Duration,
+                          val reward: Int)
+
+data class InviteCreditDto(val rewardCredits: Int)
+data class LastSeenCreditDto(val rewardCredits: Int,
+                             val creditsUpdatedAt: LocalDateTime)
+
+data class CreditDto(val credits: Int, val lastSeenCredit: LastSeenCreditDto, val inviteCredit: InviteCreditDto, val admobCredit: AdmobCreditDto)
+
 
 data class CompleteUserDto(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<String>)
+
 data class CompleteUserDtoWithDistance(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<String>, val distance: Int?)

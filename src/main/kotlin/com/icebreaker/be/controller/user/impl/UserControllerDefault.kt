@@ -270,8 +270,7 @@ class UserControllerDefault(val authService: AuthService,
         creditService.rewardCredits(user)
 
         val availableCredits = creditService.getAvailableCredits(user)
-        user.creditsUpdatedAt = availableCredits.creditsUpdatedAt
-        user.credits = availableCredits.credits
+        user.credits = availableCredits
 
         val completeUserDto = CompleteUserDto(user.toDto(imageProperties.host, hashids), authorities, images)
 

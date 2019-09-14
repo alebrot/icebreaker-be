@@ -26,10 +26,7 @@ data class User(val id: Int,
                 val enabled: Boolean,
                 var lastSeen: LocalDateTime = LocalDateTime.now(),
                 var createdAt: LocalDateTime,
-                var credits: Int,
-                var creditsUpdatedAt: LocalDateTime,
-                var admobCount: Int,
-                var admobUpdatedAt: LocalDateTime,
+                var credits: Credit?,
                 val invitedBy: Int?
 ) : Serializable {
     companion object
@@ -52,7 +49,7 @@ fun User.toDto(imageHost: String, hashids: Hashids): UserDto {
 
     val invitedBy: String? = if (this.invitedBy != null) hashids.encode(this.invitedBy.toLong()) else null
 
-    return UserDto(hashids.encode(this.id.toLong()), this.firstName, this.lastName, image, this.birthday, this.lastSeen, this.createdAt, this.bio, this.gender, CreditDto(this.credits, this.creditsUpdatedAt, this.admobCount, this.admobUpdatedAt), invitedBy)
+    return UserDto(hashids.encode(this.id.toLong()), this.firstName, this.lastName, image, this.birthday, this.lastSeen, this.createdAt, this.bio, this.gender, this.credits?.toDto(), invitedBy)
 }
 
 fun User.Companion.fromEntity(userEntity: AkUserEntity): User {
@@ -74,10 +71,7 @@ fun User.Companion.fromEntity(userEntity: AkUserEntity): User {
             userEntity.enabled,
             userEntity.lastSeen.toLocalDateTime(),
             userEntity.createdAt.toLocalDateTime(),
-            userEntity.credits,
-            userEntity.creditsUpdatedAt.toLocalDateTime(),
-            userEntity.admobCount,
-            userEntity.admobUpdatedAt.toLocalDateTime(),
+            null,
             userEntity.invitedBy
     )
 }

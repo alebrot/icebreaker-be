@@ -1,10 +1,10 @@
 package com.icebreaker.be.service.credit
 
 import com.icebreaker.be.CoreProperties
+import com.icebreaker.be.db.entity.AkUserEntity
 import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
-import com.icebreaker.be.service.model.Credit
-import com.icebreaker.be.service.model.User
+import com.icebreaker.be.service.model.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
@@ -26,19 +26,15 @@ class CreditServiceDefault(val userRepository: UserRepository, val corePropertie
 
     override fun getAvailableCredits(user: User): Credit {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
-        val rewardDuration = Duration.ofMinutes(coreProperties.rewardDuration.toLong())
-        val rewardAmount = coreProperties.rewardAmount
-        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), 0)
+        return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
     }
 
     @Transactional
     override fun removeCredits(credits: Int, user: User): Credit {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
-        val rewardDuration = Duration.ofMinutes(coreProperties.rewardDuration.toLong())
-        val rewardAmount = coreProperties.rewardAmount
         val result = userEntity.credits - credits
         userEntity.credits = max(0, result)
-        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), 0)
+        return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
     }
 
     @Transactional
@@ -47,13 +43,8 @@ class CreditServiceDefault(val userRepository: UserRepository, val corePropertie
             throw IllegalArgumentException("credits $credits must be positive number")
         }
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
-
-        val rewardDuration = Duration.ofMinutes(coreProperties.rewardDuration.toLong())
-        val rewardAmount = coreProperties.rewardAmount
-
         userEntity.credits = userEntity.credits + credits
-        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), 0)
-
+        return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
     }
 
     @Transactional
@@ -78,13 +69,15 @@ class CreditServiceDefault(val userRepository: UserRepository, val corePropertie
         } else {
             throw IllegalArgumentException("Not allowed to admob reward, exceeds limit $admobMax")
         }
-        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), 0, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), admobRewardAmount)
+        return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
     }
 
     @Transactional
     override fun rewardCredits(user: User): Credit {
+
         val rewardDuration = Duration.ofMinutes(coreProperties.rewardDuration.toLong())
         val rewardAmount = coreProperties.rewardAmount
+
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
 
         val toLocalDateTime = userEntity.creditsUpdatedAt.toLocalDateTime()
@@ -95,29 +88,50 @@ class CreditServiceDefault(val userRepository: UserRepository, val corePropertie
             userEntity.creditsUpdatedAt = Timestamp.valueOf(LocalDateTime.now())
         }
 
-        return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), 0)
+        val admobCredit = getAdmobCredit(userEntity)
+        val lastSeenCredit = getLastSeenCredit(userEntity)
+        val inviteCredit = getInviteCredit()
+
+        return Credit(
+                userEntity.credits,
+                lastSeenCredit,
+                inviteCredit,
+                admobCredit)
     }
 
     @Transactional
     override fun rewardCreditsForInvitedPerson(user: User, invitedByUser: User): Credit {
-        if (invitedByUser.id < user.id) {
-
-            val rewardDuration = Duration.ofMinutes(coreProperties.rewardDuration.toLong())
-            val rewardAmount = coreProperties.rewardAmount
-
+        if (user.invitedBy == null && invitedByUser.id < user.id) {
             val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
             val userEntityInvitedBy = userRepository.findById(invitedByUser.id).toKotlinNotOptionalOrFail()
-
             val rewardAmountForInvitation = coreProperties.rewardAmountForInvitation
 
             userEntity.credits = userEntity.credits + rewardAmountForInvitation
             userEntityInvitedBy.credits = userEntity.credits + rewardAmountForInvitation
 
-            return Credit(userEntity.credits, userEntity.creditsUpdatedAt.toLocalDateTime(), rewardAmount, rewardDuration, userEntity.admobCount, userEntity.admobUpdatedAt.toLocalDateTime(), 0)
+            return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
 
         } else {
             throw IllegalArgumentException("Not valid")
         }
+    }
+
+    private fun getInviteCredit(): InviteCredit {
+        val rewardAmountForInvitation = coreProperties.rewardAmountForInvitation
+        return InviteCredit(rewardAmountForInvitation)
+    }
+
+    private fun getLastSeenCredit(userEntity: AkUserEntity): LastSeenCredit {
+        val rewardDuration = Duration.ofMinutes(coreProperties.rewardDuration.toLong())
+        val rewardAmount = coreProperties.rewardAmount
+        return LastSeenCredit(rewardAmount, rewardDuration, userEntity.creditsUpdatedAt.toLocalDateTime())
+    }
+
+    private fun getAdmobCredit(userEntity: AkUserEntity): AdmobCredit {
+        val admobRewardDuration = Duration.ofMinutes(coreProperties.admobRewardDuration.toLong())
+        val admobRewardAmount = coreProperties.admobRewardAmount
+        val admobMax = coreProperties.admobMax
+        return AdmobCredit(userEntity.admobCount, admobMax, userEntity.admobUpdatedAt.toLocalDateTime(), admobRewardDuration, admobRewardAmount)
     }
 
 }

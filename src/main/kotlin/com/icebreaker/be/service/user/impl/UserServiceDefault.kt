@@ -265,13 +265,13 @@ class UserServiceDefault(val userRepository: UserRepository,
 
         val createdAt: Timestamp = findUsersCloseToUser["CREATED_AT"] as Timestamp
 
-        val credits: Int = findUsersCloseToUser["CREDITS"] as Int
-
-        val creditsUpdatedAt: Timestamp = findUsersCloseToUser["CREDITS_UPDATED_AT"] as Timestamp
-
-        val admobCount: Int = findUsersCloseToUser["ADMOB_COUNT"] as Int
-
-        val admobUpdatedAt: Timestamp = findUsersCloseToUser["ADMOB_UPDATED_AT"] as Timestamp
+//        val credits: Int = findUsersCloseToUser["CREDITS"] as Int
+//
+//        val creditsUpdatedAt: Timestamp = findUsersCloseToUser["CREDITS_UPDATED_AT"] as Timestamp
+//
+//        val admobCount: Int = findUsersCloseToUser["ADMOB_COUNT"] as Int
+//
+//        val admobUpdatedAt: Timestamp = findUsersCloseToUser["ADMOB_UPDATED_AT"] as Timestamp
 
         val gender: Gender? = if (genderInt != null) Gender.values()[genderInt] else null
 
@@ -280,7 +280,7 @@ class UserServiceDefault(val userRepository: UserRepository,
         val distance: Int = (findUsersCloseToUser["DISTANCE"] as Double).toInt()
         val invitedBy: Int? = findUsersCloseToUser["INVITED_BY"] as? Int
 
-        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), bio, gender, enabled, lastSeen.toLocalDateTime(), createdAt.toLocalDateTime(), credits, creditsUpdatedAt.toLocalDateTime(), admobCount, admobUpdatedAt.toLocalDateTime(), invitedBy)
+        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), bio, gender, enabled, lastSeen.toLocalDateTime(), createdAt.toLocalDateTime(), null, invitedBy)
 
         UserWithDistance(distance, user)
     }
