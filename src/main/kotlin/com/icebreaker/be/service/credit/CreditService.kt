@@ -1,7 +1,9 @@
 package com.icebreaker.be.service.credit
 
 import com.icebreaker.be.CoreProperties
+import com.icebreaker.be.db.entity.AkCreditLogEntity
 import com.icebreaker.be.db.entity.AkUserEntity
+import com.icebreaker.be.db.repository.CreditLogRepository
 import com.icebreaker.be.db.repository.ProductRepository
 import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
@@ -15,18 +17,20 @@ import kotlin.math.max
 
 interface CreditService {
     fun getAvailableCredits(user: User): Credit
-    fun removeCredits(credits: Int, user: User): Credit
     fun addCredits(credits: Int, user: User): Credit
     fun rewardCredits(user: User): Credit
     fun rewardAdmobCredits(user: User): Credit
     fun rewardCreditsForInvitedPerson(user: User, invitedByUser: User): Credit
     fun getProducts(store: Store): List<Product>
+    fun removeCreditsForChatCreation(credits: Int, user: User): Credit
+    fun removeCreditsForChatDiscovery(credits: Int, user: User): Credit
 }
 
 @Service
 class CreditServiceDefault(val userRepository: UserRepository,
                            val coreProperties: CoreProperties,
-                           val productRepository: ProductRepository) : CreditService {
+                           val productRepository: ProductRepository,
+                           val creditLogRepository: CreditLogRepository) : CreditService {
 
     override fun getProducts(store: Store): List<Product> {
         return productRepository.findAllByStoreOrderById(store).map { Product.fromEntity(it) }
@@ -37,11 +41,25 @@ class CreditServiceDefault(val userRepository: UserRepository,
         return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
     }
 
+
     @Transactional
-    override fun removeCredits(credits: Int, user: User): Credit {
+    override fun removeCreditsForChatCreation(credits: Int, user: User): Credit {
+        val userEntity = removeCredits(user, credits)
+        logCredits(userEntity, CreditType.CREATE_CHAT, "removes $credits credits for chat creation")
+        return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
+    }
+
+    private fun removeCredits(user: User, credits: Int): AkUserEntity {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         val result = userEntity.credits - credits
         userEntity.credits = max(0, result)
+        return userEntity
+    }
+
+    @Transactional
+    override fun removeCreditsForChatDiscovery(credits: Int, user: User): Credit {
+        val userEntity = removeCredits(user, credits)
+        logCredits(userEntity, CreditType.DISCOVER_CHAT, "removes $credits credits for chat discovery")
         return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
     }
 
@@ -52,6 +70,9 @@ class CreditServiceDefault(val userRepository: UserRepository,
         }
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         userEntity.credits = userEntity.credits + credits
+
+        logCredits(userEntity, CreditType.PURCHASE, "bought $credits credits")
+
         return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
     }
 
@@ -74,6 +95,8 @@ class CreditServiceDefault(val userRepository: UserRepository,
                 userEntity.admobCount = userEntity.admobCount + 1
             }
 
+            logCredits(userEntity, CreditType.ADMOB, "rewarded $admobRewardAmount credits")
+
         } else {
             throw IllegalArgumentException("Not allowed to admob reward, exceeds limit $admobMax")
         }
@@ -94,6 +117,7 @@ class CreditServiceDefault(val userRepository: UserRepository,
         if (localDateTimeToGetReward.isBefore(LocalDateTime.now())) {//get reward
             userEntity.credits = userEntity.credits + rewardAmount
             userEntity.creditsUpdatedAt = Timestamp.valueOf(LocalDateTime.now())
+            logCredits(userEntity, CreditType.LAST_SEEN, "rewarded $rewardAmount credits")
         }
 
         val admobCredit = getAdmobCredit(userEntity)
@@ -117,11 +141,22 @@ class CreditServiceDefault(val userRepository: UserRepository,
             userEntity.credits = userEntity.credits + rewardAmountForInvitation
             userEntityInvitedBy.credits = userEntity.credits + rewardAmountForInvitation
 
+            logCredits(userEntity, CreditType.INVITE, "rewarded $rewardAmountForInvitation credits thanks to ${userEntityInvitedBy.id}")
+            logCredits(userEntityInvitedBy, CreditType.INVITE, "rewarded $rewardAmountForInvitation credits for user ${userEntity.id} invitation")
+
             return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
 
         } else {
             throw IllegalArgumentException("Not valid")
         }
+    }
+
+    private fun logCredits(userEntity: AkUserEntity, type: CreditType, description: String?) {
+        val akCreditLogEntity = AkCreditLogEntity()
+        akCreditLogEntity.creditType = type
+        akCreditLogEntity.user = userEntity
+        akCreditLogEntity.description = description
+        creditLogRepository.save(akCreditLogEntity)
     }
 
     private fun getInviteCredit(): InviteCredit {

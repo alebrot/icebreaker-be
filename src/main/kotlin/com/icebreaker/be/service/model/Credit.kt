@@ -50,6 +50,16 @@ fun Credit.toDto(): CreditDto {
     return CreditDto(this.credits, this.lastSeenCredit.toDto(), this.inviteCredit.toDto(), this.admobCredit.toDto())
 }
 
+enum class CreditType {
+    PURCHASE,
+    INVITE,
+    LAST_SEEN,
+    ADMOB,
+    DISCOVER_CHAT,
+    CREATE_CHAT
+}
+
+
 fun AdmobCredit.toDto(): AdmobCreditDto {
     return AdmobCreditDto(this.count, this.countMax,
             this.updatedAt,
