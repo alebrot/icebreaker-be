@@ -3,6 +3,7 @@ package com.icebreaker.be.controller.chat.impl
 import com.icebreaker.be.CoreProperties
 import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.controller.chat.ChatController
+import com.icebreaker.be.controller.chat.HEADER_PLATFORMS
 import com.icebreaker.be.controller.chat.dto.*
 import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.ext.decodeToInt
@@ -11,11 +12,13 @@ import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.chat.ChatService
 import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.chat.model.toDto
+import com.icebreaker.be.service.model.Store
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.push.PushService
 import com.icebreaker.be.service.user.UserService
 import org.hashids.Hashids
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -37,12 +40,12 @@ class ChatControllerDefault(val authService: AuthService,
     }
 
     @Transactional
-    override fun createInvitation(request: CreateInvitationRequest): CreateInvitationResponse {
+    override fun createInvitation(request: CreateInvitationRequest, @RequestHeader(HEADER_PLATFORMS) platforms: String): CreateInvitationResponse {
         val userOrFail = authService.getUserOrFail()
 
         val userIds = request.userIds.map { hashids.decodeToInt(it) }
 
-        creditFacade.handleCreditsForNewChatCreation(userOrFail, userIds)
+        creditFacade.handleCreditsForNewChatCreation(userOrFail, userIds, Store.fromHeader(platforms))
 
         val chat = chatService.findOrCreateChat(userOrFail, userIds).first
         val sendMessage = chatService.sendMessage(userOrFail, chat.id, request.content, MessageType.INVITATION)
@@ -102,25 +105,25 @@ class ChatControllerDefault(val authService: AuthService,
         return GetChatLinesResponse(chatLinesByChatId.map { it.toDto(imageProperties.host, hashids) })
     }
 
-    override fun findOrCreateChat(request: FindOrCreateChatRequest): FindOrCreateChatResponse {
+    override fun findOrCreateChat(request: FindOrCreateChatRequest, @RequestHeader(HEADER_PLATFORMS) platforms: String): FindOrCreateChatResponse {
         val userOrFail = authService.getUserOrFail()
         val userIds = request.userIds.map { hashids.decodeToInt(it) }
 
-        creditFacade.handleCreditsForNewChatCreation(userOrFail, userIds)
+        creditFacade.handleCreditsForNewChatCreation(userOrFail, userIds, Store.fromHeader(platforms))
 
         val chatPair = chatService.findOrCreateChat(userOrFail, userIds)
 
-        val chat = creditFacade.handleCreditsForDiscoveringChatRequest(userOrFail, chatPair.first)
+        val chat = creditFacade.handleCreditsForDiscoveringChatRequest(userOrFail, chatPair.first, Store.fromHeader(platforms))
 
         return FindOrCreateChatResponse(chat.toDto(imageProperties.host, hashids))
     }
 
-    override fun unlockChat(chatId: Int): ChatResponse {
+    override fun unlockChat(chatId: Int, @RequestHeader(HEADER_PLATFORMS) platforms: String): ChatResponse {
         val userOrFail = authService.getUserOrFail()
 
         val findChat = chatService.findChatOrFail(chatId, userOrFail.id)
 
-        val chat = creditFacade.handleCreditsForDiscoveringChatRequest(userOrFail, findChat)
+        val chat = creditFacade.handleCreditsForDiscoveringChatRequest(userOrFail, findChat, Store.fromHeader(platforms))
         return ChatResponse(chat.toDto(imageProperties.host, hashids))
     }
 

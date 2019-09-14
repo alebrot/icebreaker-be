@@ -13,6 +13,7 @@ const val FIND_OR_CREATE_CHAT = "/chats"
 const val CREATE_INVITATION = "/invitations"
 const val POST_NOTIFY_MESSAGE_RECEIVED = "/lines"
 const val UNLOCK_CHAT = "/chats/{chatId}"
+const val HEADER_PLATFORMS = "platforms"
 
 @Validated
 interface ChatController {
@@ -24,13 +25,13 @@ interface ChatController {
     fun getChatLines(@PathVariable chatId: Int, @RequestParam("limit") limit: Int?, @RequestParam("offset") offset: Int?): GetChatLinesResponse
 
     @PostMapping(FIND_OR_CREATE_CHAT)
-    fun findOrCreateChat(@Valid @RequestBody request: FindOrCreateChatRequest): FindOrCreateChatResponse
+    fun findOrCreateChat(@Valid @RequestBody request: FindOrCreateChatRequest, @RequestHeader(HEADER_PLATFORMS) platforms: String): FindOrCreateChatResponse
 
     @PostMapping(UNLOCK_CHAT)
-    fun unlockChat(@PathVariable chatId: Int): ChatResponse
+    fun unlockChat(@PathVariable chatId: Int, @RequestHeader(HEADER_PLATFORMS) platforms: String): ChatResponse
 
     @PostMapping(CREATE_INVITATION)
-    fun createInvitation(@Valid @RequestBody request: CreateInvitationRequest): CreateInvitationResponse
+    fun createInvitation(@Valid @RequestBody request: CreateInvitationRequest, @RequestHeader(HEADER_PLATFORMS) platforms: String): CreateInvitationResponse
 
     @PostMapping(POST_CHAT_LINES)
     fun sendMessage(@PathVariable chatId: Int, @RequestBody request: SendMessageRequest)

@@ -2,6 +2,7 @@ package com.icebreaker.be.service.credit
 
 import com.icebreaker.be.CoreProperties
 import com.icebreaker.be.db.entity.AkUserEntity
+import com.icebreaker.be.db.repository.ProductRepository
 import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
 import com.icebreaker.be.service.model.*
@@ -19,10 +20,17 @@ interface CreditService {
     fun rewardCredits(user: User): Credit
     fun rewardAdmobCredits(user: User): Credit
     fun rewardCreditsForInvitedPerson(user: User, invitedByUser: User): Credit
+    fun getProducts(store: Store): List<Product>
 }
 
 @Service
-class CreditServiceDefault(val userRepository: UserRepository, val coreProperties: CoreProperties) : CreditService {
+class CreditServiceDefault(val userRepository: UserRepository,
+                           val coreProperties: CoreProperties,
+                           val productRepository: ProductRepository) : CreditService {
+
+    override fun getProducts(store: Store): List<Product> {
+        return productRepository.findAllByStoreOrderById(store).map { Product.fromEntity(it) }
+    }
 
     override fun getAvailableCredits(user: User): Credit {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()

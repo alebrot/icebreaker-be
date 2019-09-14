@@ -1,11 +1,34 @@
 package com.icebreaker.be.service.model
 
-import com.icebreaker.be.controller.user.dto.AdmobCreditDto
-import com.icebreaker.be.controller.user.dto.CreditDto
-import com.icebreaker.be.controller.user.dto.InviteCreditDto
-import com.icebreaker.be.controller.user.dto.LastSeenCreditDto
+import com.icebreaker.be.controller.user.dto.*
+import com.icebreaker.be.db.entity.AkProductEntity
 import java.time.Duration
 import java.time.LocalDateTime
+
+
+data class Product(val id: Int, val name: String, val description: String?) {
+    companion object
+}
+
+enum class Store {
+    ANDROID,
+    IOS;
+
+    companion object {
+        fun fromHeader(platforms: String): Store {
+            return if (platforms.contains("android")) Store.ANDROID else Store.IOS
+        }
+    }
+}
+
+fun Product.toDto(): ProductDto {
+    return ProductDto(this.id, this.name, this.description)
+}
+
+fun Product.Companion.fromEntity(entity: AkProductEntity): Product {
+    return Product(entity.id, entity.name
+            ?: throw IllegalStateException("product name can not be null"), entity.description)
+}
 
 data class AdmobCredit(
         val count: Int,
@@ -21,7 +44,6 @@ data class LastSeenCredit(val rewardCredits: Int,
                           val creditsUpdatedAt: LocalDateTime
 )
 
-
 data class Credit(val credits: Int, val lastSeenCredit: LastSeenCredit, val inviteCredit: InviteCredit, val admobCredit: AdmobCredit)
 
 fun Credit.toDto(): CreditDto {
@@ -36,7 +58,7 @@ fun AdmobCredit.toDto(): AdmobCreditDto {
 }
 
 fun LastSeenCredit.toDto(): LastSeenCreditDto {
-    return LastSeenCreditDto(this.rewardCredits, this.creditsUpdatedAt)
+    return LastSeenCreditDto(this.rewardCredits, this.rewardDuration, this.creditsUpdatedAt)
 }
 
 fun InviteCredit.toDto(): InviteCreditDto {

@@ -25,6 +25,7 @@ data class AdmobCreditDto(val count: Int,
 
 data class InviteCreditDto(val rewardCredits: Int)
 data class LastSeenCreditDto(val rewardCredits: Int,
+                             val rewardDuration: Duration,
                              val creditsUpdatedAt: LocalDateTime)
 
 data class CreditDto(val credits: Int, val lastSeenCredit: LastSeenCreditDto, val inviteCredit: InviteCreditDto, val admobCredit: AdmobCreditDto)
@@ -33,3 +34,5 @@ data class CreditDto(val credits: Int, val lastSeenCredit: LastSeenCreditDto, va
 data class CompleteUserDto(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<String>)
 
 data class CompleteUserDtoWithDistance(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<String>, val distance: Int?)
+
+data class ProductDto(val id: Int, val name: String, val description: String?)
