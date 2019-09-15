@@ -45,7 +45,7 @@ class CreditServiceDefault(val userRepository: UserRepository,
     @Transactional
     override fun removeCreditsForChatCreation(credits: Int, user: User): Credit {
         val userEntity = removeCredits(user, credits)
-        logCredits(userEntity, CreditType.CREATE_CHAT, "removes $credits credits for chat creation")
+        logCredits(userEntity, credits, CreditType.CREATE_CHAT, CreditOperation.REMOVE, "removes $credits credits for chat creation")
         return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
     }
 
@@ -59,7 +59,7 @@ class CreditServiceDefault(val userRepository: UserRepository,
     @Transactional
     override fun removeCreditsForChatDiscovery(credits: Int, user: User): Credit {
         val userEntity = removeCredits(user, credits)
-        logCredits(userEntity, CreditType.DISCOVER_CHAT, "removes $credits credits for chat discovery")
+        logCredits(userEntity, credits, CreditType.DISCOVER_CHAT, CreditOperation.REMOVE, "removes $credits credits for chat discovery")
         return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
     }
 
@@ -71,7 +71,7 @@ class CreditServiceDefault(val userRepository: UserRepository,
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         userEntity.credits = userEntity.credits + credits
 
-        logCredits(userEntity, CreditType.PURCHASE, "bought $credits credits")
+        logCredits(userEntity, credits, CreditType.PURCHASE, CreditOperation.ADD, "bought $credits credits")
 
         return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
     }
@@ -95,7 +95,7 @@ class CreditServiceDefault(val userRepository: UserRepository,
                 userEntity.admobCount = userEntity.admobCount + 1
             }
 
-            logCredits(userEntity, CreditType.ADMOB, "rewarded $admobRewardAmount credits")
+            logCredits(userEntity, admobRewardAmount, CreditType.ADMOB, CreditOperation.ADD, "rewarded $admobRewardAmount credits")
 
         } else {
             throw IllegalArgumentException("Not allowed to admob reward, exceeds limit $admobMax")
@@ -117,7 +117,7 @@ class CreditServiceDefault(val userRepository: UserRepository,
         if (localDateTimeToGetReward.isBefore(LocalDateTime.now())) {//get reward
             userEntity.credits = userEntity.credits + rewardAmount
             userEntity.creditsUpdatedAt = Timestamp.valueOf(LocalDateTime.now())
-            logCredits(userEntity, CreditType.LAST_SEEN, "rewarded $rewardAmount credits")
+            logCredits(userEntity, rewardAmount, CreditType.LAST_SEEN, CreditOperation.ADD, "rewarded $rewardAmount credits")
         }
 
         val admobCredit = getAdmobCredit(userEntity)
@@ -141,8 +141,8 @@ class CreditServiceDefault(val userRepository: UserRepository,
             userEntity.credits = userEntity.credits + rewardAmountForInvitation
             userEntityInvitedBy.credits = userEntity.credits + rewardAmountForInvitation
 
-            logCredits(userEntity, CreditType.INVITE, "rewarded $rewardAmountForInvitation credits thanks to ${userEntityInvitedBy.id}")
-            logCredits(userEntityInvitedBy, CreditType.INVITE, "rewarded $rewardAmountForInvitation credits for user ${userEntity.id} invitation")
+            logCredits(userEntity, rewardAmountForInvitation, CreditType.INVITED_BY, CreditOperation.ADD, "was invited by ${userEntityInvitedBy.id} and rewarded $rewardAmountForInvitation credits")
+            logCredits(userEntityInvitedBy, rewardAmountForInvitation, CreditType.INVITE, CreditOperation.ADD, "invited user ${userEntity.id} and rewarded $rewardAmountForInvitation credits")
 
             return Credit(userEntity.credits, getLastSeenCredit(userEntity), getInviteCredit(), getAdmobCredit(userEntity))
 
@@ -151,11 +151,13 @@ class CreditServiceDefault(val userRepository: UserRepository,
         }
     }
 
-    private fun logCredits(userEntity: AkUserEntity, type: CreditType, description: String?) {
+    private fun logCredits(userEntity: AkUserEntity, amount: Int, type: CreditType, operation: CreditOperation, description: String?) {
         val akCreditLogEntity = AkCreditLogEntity()
         akCreditLogEntity.creditType = type
         akCreditLogEntity.user = userEntity
         akCreditLogEntity.description = description
+        akCreditLogEntity.creditOperation = operation
+        akCreditLogEntity.amount = amount
         creditLogRepository.save(akCreditLogEntity)
     }
 

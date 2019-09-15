@@ -53,10 +53,16 @@ fun Credit.toDto(): CreditDto {
 enum class CreditType {
     PURCHASE,
     INVITE,
+    INVITED_BY,
     LAST_SEEN,
     ADMOB,
     DISCOVER_CHAT,
     CREATE_CHAT
+}
+
+enum class CreditOperation {
+    ADD,
+    REMOVE
 }
 
 
