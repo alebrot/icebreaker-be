@@ -1,11 +1,11 @@
-server.port: 1234
-logging:
-  level:
-    org:
-      apache:
-        http: trace
-      springframework:
-        web: trace
+server.port: 8080
+#logging:
+#  level:
+#    org:
+#      apache:
+#        http: debug
+#      springframework:
+#        web: debug
 #    logging.level.org.apache.http=trace
 #    logging.level.org.apache.http.wire=trace
 #    logging.level.org.springframework.web=trace
@@ -15,15 +15,18 @@ logging:
 # Threshold after which files are written to disk.
 spring:
   datasource:
+    testOnBorrow: true
+    validationQuery: "SELECT 1"
     url: "jdbc:mysql://localhost:2345/kofify"
     username: root
     password: "password"
   jpa:
+    open-in-view: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate.ddl-auto: none
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         use_sql_comments: true
         format_sql: true
     hibernate:
@@ -46,7 +49,7 @@ image:
   maxHeight: 1226
   profileMaxWidth: 500
   profileMaxHeight: 500
-  host: "http://localhost:8080"
+  host: "http://10.30.31.131 :8080"
 
 push:
   secret: MWFhMDUyMDUtMjE5Ny00MWI1LTg2MmUtNjE1Y2E3MzY2YmRl
@@ -60,6 +63,14 @@ core:
   id-salt: "21312lkmcmslkacasdchuasoimk1l23"
   id-min-length: 12
   fake: true
+  watch-user-email: email1@email.com
   max-distance: 10000
   reward-amount: 5
   reward-duration: 5
+  admob-reward-amount: 1
+  admob-max: 3
+  admob-reward-duration: 5
+  reward-amount-for-invitation: 5
+  android-in-app-purchase-account-file-path: "../api-5777316785406961495-557788-779e6d379e75.json"
+  mobile-app-name: Kofify
+  mobile-app-package: com.kofify.app

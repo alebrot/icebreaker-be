@@ -6,6 +6,8 @@ import com.icebreaker.be.controller.user.dto.*
 import com.icebreaker.be.db.repository.UserPositionRepository
 import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.service.chat.impl.ChatServiceDefault
+import com.icebreaker.be.service.credit.CreditServiceDefault
+import com.icebreaker.be.service.user.impl.UserServiceDefault
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
@@ -31,6 +33,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
         Assert.assertNotNull(response.body)
         Assert.assertNotNull(response.body!!.user)
     }
+
     @Ignore
     @Test
     fun getUserMe() {
@@ -41,6 +44,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
         Assert.assertNotNull(response.body)
         Assert.assertNotNull(response.body!!.context)
     }
+
     @Ignore
     @Test
     fun getAdminMe() {
@@ -51,6 +55,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
         Assert.assertNotNull(response.body)
         Assert.assertNotNull(response.body!!.context)
     }
+
     @Ignore
     @Test
     fun createUser() {
@@ -68,6 +73,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
 
         authenticate(email, password)
     }
+
     @Ignore
     @Test
     fun getUserMeUsers() {
@@ -100,7 +106,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
     @Autowired
     lateinit var chatServiceDefault: ChatServiceDefault
 
-//    @Test
+    //    @Test
 //    fun fdfdyf() {
 //        ssdsfsd()
 ////        findByUserId.u
@@ -119,4 +125,15 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
 //
 //        val chatsByUser = chatServiceImpl.getChatsByUser(model)
 //    }
+    @Autowired
+    lateinit var creditServiceDefault: CreditServiceDefault
+
+    @Autowired
+    lateinit var userServiceDefault: UserServiceDefault
+
+    @Test
+    fun name() {
+        val user = userServiceDefault.getUserById(1)
+        val purchaseAndroid = creditServiceDefault.purchaseAndroid(user, "", "")
+    }
 }

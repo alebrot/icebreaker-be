@@ -188,4 +188,7 @@ class CoreProperties {
     var admobMax: Int = 3
     var admobRewardDuration: Int = 1440
     var rewardAmountForInvitation: Int = 5
+    lateinit var androidInAppPurchaseAccountFilePath: String
+    lateinit var mobileAppName: String
+    lateinit var mobileAppPackage: String
 }

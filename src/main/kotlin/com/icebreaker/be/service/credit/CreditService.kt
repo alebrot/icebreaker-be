@@ -1,8 +1,8 @@
 package com.icebreaker.be.service.credit
 
+//import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
-//import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.androidpublisher.AndroidPublisher
@@ -26,9 +26,6 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.math.max
-import com.google.api.client.http.javanet.NetHttpTransport
-import com.sun.javafx.application.PlatformImpl.setApplicationName
-
 
 
 interface CreditService {
@@ -99,9 +96,9 @@ class CreditServiceDefault(val userRepository: UserRepository,
     @Transactional
     fun purchaseAndroid(user: User, productId: String, userPurchaseToken: String): Credit {
         val amount = 10//get from product
-        val applicationName: String = "testing app name"
-        val packageName: String = "package.name.test"
-        val serviceAccountKeyFilePath = "<service-account-key-file>.json"
+        val applicationName: String = coreProperties.mobileAppName
+        val packageName: String = coreProperties.mobileAppPackage
+        val serviceAccountKeyFilePath = coreProperties.androidInAppPurchaseAccountFilePath//.json
 
         try {
             val credentials: GoogleCredential = GoogleCredential
