@@ -2,6 +2,7 @@ package com.icebreaker.be.db.entity
 
 import com.icebreaker.be.service.model.CreditOperation
 import com.icebreaker.be.service.model.CreditType
+import com.icebreaker.be.service.model.Store
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.sql.Timestamp
@@ -26,6 +27,15 @@ class AkCreditLogEntity {
     @get:Basic
     @get:Column(name = "CREDIT_OPERATION")
     var creditOperation: CreditOperation? = null
+
+    @get:Enumerated(EnumType.ORDINAL)
+    @get:Basic
+    @get:Column(name = "STORE")
+    var store: Store? = null
+
+    @get:Basic
+    @get:Column(name = "PAYLOAD")
+    var payload: String? = null
 
     @get:Basic
     @get:Column(name = "AMOUNT")

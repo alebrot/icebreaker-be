@@ -26,7 +26,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation( "org.springframework.boot:spring-boot-starter-activemq")
+    implementation("org.springframework.boot:spring-boot-starter-activemq")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -45,8 +45,9 @@ dependencies {
     implementation("org.webjars:jquery:3.1.0")
     implementation("net.coobird:thumbnailator:0.4.8")
     implementation("org.hashids:hashids:1.0.3")
-
-
+    implementation("com.google.apis:google-api-services-androidpublisher:v3-rev103-1.25.0")
+//    implementation("com.google.api-client:google-api-client:1.30.2")
+    implementation("com.google.auth:google-auth-library-oauth2-http:0.17.1")
 }
 
 tasks.withType<KotlinCompile> {

@@ -32,7 +32,7 @@ class CreditFacadeDefault(val creditService: CreditService, val chatService: Cha
         val newChat = chatService.isNewChat(user, userIds)
         if (newChat) {
             assertAvailableCredits(creditsToCreateChatRequired, user, store)
-            creditService.removeCreditsForChatCreation(creditsToCreateChatRequired, user)
+            creditService.removeCreditsForChatCreation(creditsToCreateChatRequired, user, store)
         }
     }
 
@@ -41,7 +41,7 @@ class CreditFacadeDefault(val creditService: CreditService, val chatService: Cha
         if (chat.enabled == false) {
             assertAvailableCredits(creditsToDiscoverChatRequest, user, store)
             newChat = chatService.enableChat(chat, user)
-            creditService.removeCreditsForChatDiscovery(creditsToDiscoverChatRequest, user)
+            creditService.removeCreditsForChatDiscovery(creditsToDiscoverChatRequest, user,store)
         } else {
             newChat = chat
         }
