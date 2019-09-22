@@ -74,3 +74,4 @@ core:
   android-in-app-purchase-account-file-path: "../api-5777316785406961495-557788-779e6d379e75.json"
   mobile-app-name: Kofify
   mobile-app-package: com.kofify.app
+  ios-in-app-purchase-validation-url: https://buy.itunes.apple.com/verifyReceipt

@@ -191,4 +191,5 @@ class CoreProperties {
     lateinit var androidInAppPurchaseAccountFilePath: String
     lateinit var mobileAppName: String
     lateinit var mobileAppPackage: String
+    lateinit var iosInAppPurchaseValidationUrl: String
 }

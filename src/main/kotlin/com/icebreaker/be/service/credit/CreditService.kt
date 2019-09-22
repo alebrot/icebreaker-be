@@ -1,6 +1,7 @@
 package com.icebreaker.be.service.credit
 
 //import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
@@ -18,8 +19,14 @@ import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
 import com.icebreaker.be.service.model.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.boot.configurationprocessor.json.JSONObject
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.client.RestTemplate
 import java.io.FileInputStream
 import java.sql.Timestamp
 import java.time.Duration
@@ -44,7 +51,8 @@ class CreditServiceDefault(val userRepository: UserRepository,
                            val coreProperties: CoreProperties,
                            val productRepository: ProductRepository,
                            val creditLogRepository: CreditLogRepository,
-                           val objectMapper: ObjectMapper) : CreditService {
+                           val objectMapper: ObjectMapper,
+                           val restTemplate: RestTemplate) : CreditService {
 
     val log: Logger = LoggerFactory.getLogger(CreditServiceDefault::class.java)
 
@@ -127,12 +135,101 @@ class CreditServiceDefault(val userRepository: UserRepository,
             val writeValueAsString = objectMapper.writeValueAsString(payload)
             return addCredits(amount, user, Store.ANDROID, writeValueAsString)
         } catch (exc: Exception) {
-            throw IllegalArgumentException("purchase failed")
+            throw IllegalArgumentException("Android Purchase failed for user ${user.id}")
         }
 
 //        This will give the relevant purchase and throw error if the purchase is not found.
 //        Verify the purchase with the corresponding purchase on the client side.
 //        Also save it in a database for future validations and checks.
+    }
+
+    val receipt = "{\\n\\t\"signature\" = \"[exactly_1320_characters]\";\\n\\t\"purchase-info\" =\n" +
+            "\"[exactly_868_characters]\";\\n\\t\"environment\" = \"Sandbox\";\\n\\t\"pod\" =\n" +
+            "\"100\";\\n\\t\"signing-status\" = \"0\";\\n}"
+
+    //https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html
+    fun purchaseIos(user: User, receiptData: String): Credit {
+        val password: String? = null//password - Only used for receipts that contain auto-renewable subscriptions. Your app’s shared secret (a hexadecimal string).
+        val excludeOldTransactions = true
+        val receiptDataEncoded = String(Base64.getEncoder().encode(receiptData.toByteArray()))
+
+        val amount = 10
+
+        class Body(@get:JsonProperty("receipt-data") val receiptDataEncoded: String,
+                   @get:JsonProperty("password") val password: String?,
+                   @get:JsonProperty("exclude-old-transactions") val excludeOldTransactions: Boolean)
+
+        val body = Body(receiptDataEncoded, password, excludeOldTransactions)
+
+        val httpHeaders = HttpHeaders()
+        httpHeaders.set("Content-Type", "application/json; charset=UTF-8")
+
+        val url = coreProperties.iosInAppPurchaseValidationUrl
+
+        try {
+            val response: ResponseEntity<String> = restTemplate.postForEntity(url, HttpEntity(body, httpHeaders), String::class.java)
+            if (response.statusCode == HttpStatus.OK) {
+
+                val jsonObject = JSONObject(response.body)
+                when (val status = jsonObject.getInt("status")) {
+                    0 -> {
+                        val receipt = jsonObject.getJSONObject("receipt")
+
+                        val productId = receipt.getString("product_id")
+                        val quantity = receipt.getInt("quantity")
+                        val transactionId = receipt.getString("transaction_id")
+                        val purchaseDate = receipt.getString("purchase_date")
+                        val expiresDate = receipt.getString("expires_date")
+                        val isTrialPeriod = receipt.getBoolean("is_trial_period")
+
+                        log.info("IOS $status The valid $receipt. Active subscription for ${user.id}")
+
+//                        data class Payload(val productId: String, val quantity: Int, val transactionId: String, val purchaseDate: String, val expiresDate: String, val isTrialPeriod: Boolean)
+//                        val payload = Payload(productId, quantity, transactionId, purchaseDate, expiresDate, isTrialPeriod)
+
+                        val writeValueAsString = objectMapper.writeValueAsString(Pair(receiptData, response.body))
+
+                        return addCredits(amount, user, Store.IOS, writeValueAsString)
+                    }
+                    21000 -> {
+                        log.warn("IOS $status The App Store could not read the JSON object you provided.")
+                    }
+                    21002 -> {
+                        log.warn("IOS $status The data in the receipt-data property was malformed or missing.")
+                    }
+                    21003 -> {
+                        log.warn("IOS $status The receipt could not be authenticated.")
+                    }
+                    21004 -> {
+                        log.warn("IOS $status The shared secret you provided does not match the shared secret on file for your account.")
+                    }
+                    21005 -> {
+                        log.warn("IOS $status The receipt server is not currently available.")
+                    }
+                    21006 -> {
+                        log.warn("IOS $status This receipt is valid but the subscription has expired. When this status code is returned to your server, the receipt data is also decoded and returned as part of the response. Only returned for iOS 6 style transaction receipts for auto-renewable subscriptions.")
+                    }
+                    21007 -> {
+                        log.warn("IOS $status This receipt is from the test environment, but it was sent to the production environment for verification. Send it to the test environment instead.")
+                    }
+                    21008 -> {
+                        log.warn("IOS $status This receipt is from the production environment, but it was sent to the test environment for verification. Send it to the production environment instead.")
+                    }
+                    21010 -> {
+                        log.warn("IOS $status This receipt could not be authorized. Treat this the same as if a purchase was never made.")
+                    }
+                    else -> {
+                        log.warn("IOS $status : Internal data access error.")
+                    }
+                }
+
+            } else {
+                log.error("IOS failed to verify purchase for user ${user.id}")
+            }
+        } catch (e: Exception) {
+            log.error("IOS failed to verify purchase for user ${user.id}")
+        }
+        throw IllegalArgumentException("Ios Purchase failed for user ${user.id}")
     }
 
     @Transactional

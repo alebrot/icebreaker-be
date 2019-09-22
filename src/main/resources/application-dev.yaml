@@ -1,4 +1,4 @@
-server.port: 1234
+server.port: 8080
 #logging:
 #  level:
 #    org:
@@ -14,13 +14,6 @@ server.port: 1234
 
 # Threshold after which files are written to disk.
 spring:
-  #  datasource:
-  #    url: "jdbc:h2:~/testDb;Mode=MySQL;DATABASE_TO_UPPER=TRUE;AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;"
-  #    platform: h2
-  #    continue-on-error: true
-  #    username: sa
-  #    password: ""
-  #    driver-class-name: org.h2.Driver
   datasource:
     testOnBorrow: true
     validationQuery: "SELECT 1"
@@ -33,7 +26,7 @@ spring:
     hibernate.ddl-auto: none
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         use_sql_comments: true
         format_sql: true
     hibernate:
@@ -56,7 +49,7 @@ image:
   maxHeight: 1226
   profileMaxWidth: 500
   profileMaxHeight: 500
-  host: "http://10.30.30.133:1234"
+  host: "http://10.30.31.131 :8080"
 
 push:
   secret: MWFhMDUyMDUtMjE5Ny00MWI1LTg2MmUtNjE1Y2E3MzY2YmRl
@@ -73,11 +66,12 @@ core:
   watch-user-email: email1@email.com
   max-distance: 10000
   reward-amount: 5
-  reward-duration: 60
+  reward-duration: 5
   admob-reward-amount: 1
   admob-max: 3
-  admob-reward-duration: 60
+  admob-reward-duration: 5
   reward-amount-for-invitation: 5
-  android-in-app-purchase-account-file-path: "./api-5777316785406961495-557788-779e6d379e75.json"
+  android-in-app-purchase-account-file-path: "../api-5777316785406961495-557788-779e6d379e75.json"
   mobile-app-name: Kofify
   mobile-app-package: com.kofify.app
+  ios-in-app-purchase-validation-url: https://sandbox.itunes.apple.com/verifyReceipt
