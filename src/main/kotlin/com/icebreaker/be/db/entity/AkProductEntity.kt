@@ -20,6 +20,10 @@ class AkProductEntity {
     var name: String? = null
 
     @get:Basic
+    @get:Column(name = "PRODUCT_ID", unique = true)
+    var productId: String? = null
+
+    @get:Basic
     @get:CreationTimestamp
     @get:Column(name = "CREATED_AT")
     var createdAt: Timestamp? = null
@@ -37,6 +41,10 @@ class AkProductEntity {
     @get:Basic
     @get:Column(name = "DESCRIPTION")
     var description: String? = null
+
+    @get:Basic
+    @get:Column(name = "CREDITS")
+    var credits: Int = 0
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -132,8 +132,21 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
     lateinit var userServiceDefault: UserServiceDefault
 
     @Test
-    fun name() {
+    fun purchaseAndroid() {
         val user = userServiceDefault.getUserById(1)
-        val purchaseAndroid = creditServiceDefault.purchaseAndroid(user, "", "")
+        val purchaseAndroid = creditServiceDefault.purchaseAndroid(user, "sdsdsd", "")
     }
+
+
+
+    @Test
+    fun purchaseIos() {
+        val receipt = "{\\n\\t\"signature\" = \"[exactly_1320_characters]\";\\n\\t\"purchase-info\" =\n" +
+                "\"[exactly_868_characters]\";\\n\\t\"environment\" = \"Sandbox\";\\n\\t\"pod\" =\n" +
+                "\"100\";\\n\\t\"signing-status\" = \"0\";\\n}"
+        val user = userServiceDefault.getUserById(1)
+        val purchaseIos = creditServiceDefault.purchaseIos(user, receipt)
+
+    }
+
 }

@@ -44,6 +44,8 @@ interface CreditService {
     fun getProducts(store: Store): List<Product>
     fun removeCreditsForChatCreation(credits: Int, user: User, store: Store): Credit
     fun removeCreditsForChatDiscovery(credits: Int, user: User, store: Store): Credit
+    fun purchaseAndroid(user: User, productId: String, userPurchaseToken: String): Credit
+    fun purchaseIos(user: User, receiptData: String): Credit
 }
 
 @Service
@@ -102,8 +104,10 @@ class CreditServiceDefault(val userRepository: UserRepository,
     }
 
     @Transactional
-    fun purchaseAndroid(user: User, productId: String, userPurchaseToken: String): Credit {
-        val amount = 10//get from product
+    override fun purchaseAndroid(user: User, productId: String, userPurchaseToken: String): Credit {
+        val product = productRepository.findByProductId(productId)
+                ?: throw IllegalArgumentException("Invalid product Id $productId")
+        val amount = product.credits//get from product
         val applicationName: String = coreProperties.mobileAppName
         val packageName: String = coreProperties.mobileAppPackage
         val serviceAccountKeyFilePath = coreProperties.androidInAppPurchaseAccountFilePath//.json
@@ -143,17 +147,12 @@ class CreditServiceDefault(val userRepository: UserRepository,
 //        Also save it in a database for future validations and checks.
     }
 
-    val receipt = "{\\n\\t\"signature\" = \"[exactly_1320_characters]\";\\n\\t\"purchase-info\" =\n" +
-            "\"[exactly_868_characters]\";\\n\\t\"environment\" = \"Sandbox\";\\n\\t\"pod\" =\n" +
-            "\"100\";\\n\\t\"signing-status\" = \"0\";\\n}"
-
     //https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html
-    fun purchaseIos(user: User, receiptData: String): Credit {
+    @Transactional
+    override fun purchaseIos(user: User, receiptData: String): Credit {
         val password: String? = null//password - Only used for receipts that contain auto-renewable subscriptions. Your app’s shared secret (a hexadecimal string).
         val excludeOldTransactions = true
         val receiptDataEncoded = String(Base64.getEncoder().encode(receiptData.toByteArray()))
-
-        val amount = 10
 
         class Body(@get:JsonProperty("receipt-data") val receiptDataEncoded: String,
                    @get:JsonProperty("password") val password: String?,
@@ -171,7 +170,8 @@ class CreditServiceDefault(val userRepository: UserRepository,
             if (response.statusCode == HttpStatus.OK) {
 
                 val jsonObject = JSONObject(response.body)
-                when (val status = jsonObject.getInt("status")) {
+                val status = jsonObject.getInt("status")
+                when (status) {
                     0 -> {
                         val receipt = jsonObject.getJSONObject("receipt")
 
@@ -183,6 +183,10 @@ class CreditServiceDefault(val userRepository: UserRepository,
                         val isTrialPeriod = receipt.getBoolean("is_trial_period")
 
                         log.info("IOS $status The valid $receipt. Active subscription for ${user.id}")
+
+                        val product = productRepository.findByProductId(productId)
+                                ?: throw IllegalArgumentException("Invalid product Id $productId")
+                        val amount = product.credits//get from product
 
 //                        data class Payload(val productId: String, val quantity: Int, val transactionId: String, val purchaseDate: String, val expiresDate: String, val isTrialPeriod: Boolean)
 //                        val payload = Payload(productId, quantity, transactionId, purchaseDate, expiresDate, isTrialPeriod)

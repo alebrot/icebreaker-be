@@ -1,5 +1,6 @@
 package com.icebreaker.be.controller.user
 
+import com.icebreaker.be.controller.chat.HEADER_PLATFORMS
 import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.dto.*
 import org.springframework.security.oauth2.provider.OAuth2Authentication
@@ -18,6 +19,7 @@ const val UPLOAD_USER_PROFILE_IMAGE = "/users/me/image"
 const val GET_ADMIN_ME = "/admins/me"
 const val GET_USER_ME_USERS = "/users/me/users"
 const val CREATE_USER_POSITION = "/users/position"
+const val BUY_REWARD = "/users/me/buy"
 const val ADMOB_REWARD = "/users/me/admob"
 const val INVITE_REWARD = "/users/me/invite/{code}"
 const val CREATE_USER = "/public/users"
@@ -26,6 +28,9 @@ const val GET_IMAGE_PATH_BLURRED = "/public/images/th/"
 
 
 interface UserController {
+
+    @PostMapping(BUY_REWARD)
+    fun buyReward(@RequestBody request: CreditRequest, @RequestHeader(HEADER_PLATFORMS) platforms: String): CreditResponse
 
     @PostMapping(ADMOB_REWARD)
     fun admobReward(): CreditResponse

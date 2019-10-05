@@ -6,4 +6,5 @@ import org.springframework.data.repository.CrudRepository
 
 interface ProductRepository : CrudRepository<AkProductEntity, Int> {
     fun findAllByStoreOrderById(store: Store): List<AkProductEntity>
+    fun findByProductId(productId: String): AkProductEntity?
 }

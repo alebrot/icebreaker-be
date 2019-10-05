@@ -20,4 +20,6 @@ data class UpdateUserRequest(val bio: String?, val gender: Gender?, val imageIds
 class CreateUserResponse(val user: UserDto) : BaseResponse()
 
 
-class CreditResponse(val creditDto: CreditDto) : BaseResponse()
+data class CreditResponse(val creditDto: CreditDto) : BaseResponse()
+
+data class CreditRequest(val transactionId: String?, val signature: String?, val receipt: String?)

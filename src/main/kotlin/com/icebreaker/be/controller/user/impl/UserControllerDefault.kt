@@ -1,12 +1,5 @@
 package com.icebreaker.be.controller.user.impl
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-import com.google.api.client.http.HttpTransport
-import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.services.androidpublisher.AndroidPublisher
-import com.google.api.services.androidpublisher.AndroidPublisherScopes
-import com.google.api.services.androidpublisher.model.ProductPurchase
 import com.icebreaker.be.CoreProperties
 import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.controller.core.dto.BaseResponse
@@ -19,9 +12,7 @@ import com.icebreaker.be.facade.user.UserFacade
 import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.credit.CreditService
 import com.icebreaker.be.service.file.FileService
-import com.icebreaker.be.service.model.User
-import com.icebreaker.be.service.model.UserWithDistance
-import com.icebreaker.be.service.model.toDto
+import com.icebreaker.be.service.model.*
 import com.icebreaker.be.service.user.UserService
 import org.hashids.Hashids
 import org.springframework.core.io.ByteArrayResource
@@ -39,16 +30,12 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
-import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 import java.math.BigDecimal
 import java.nio.file.Path
-import java.util.*
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
-import kotlin.collections.ArrayList
 
 
 @RestController
@@ -63,6 +50,28 @@ class UserControllerDefault(val authService: AuthService,
                             val coreProperties: CoreProperties,
                             val creditService: CreditService
 ) : UserController {
+
+
+    override fun buyReward(request: CreditRequest, platforms: String): CreditResponse {
+        val userOrFail = authService.getUserOrFail()
+        val store = Store.fromHeader(platforms)
+        val credit: Credit = when (store) {
+            Store.ANDROID -> {
+                val token = request.signature ?: throw IllegalArgumentException("signature must not be null")
+                val productId = request.transactionId
+                        ?: throw IllegalArgumentException("transactionId must not be null")
+                creditService.purchaseAndroid(userOrFail, productId, token)
+
+            }
+            Store.IOS -> {
+                val receipt = request.receipt ?: throw IllegalArgumentException("receipt must not be null")
+                creditService.purchaseIos(userOrFail, receipt)
+
+            }
+        }
+
+        return CreditResponse(credit.toDto())
+    }
 
 
     override fun inviteReward(@PathVariable code: String): CreditResponse {
