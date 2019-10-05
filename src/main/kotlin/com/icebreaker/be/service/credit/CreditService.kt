@@ -167,7 +167,7 @@ class CreditServiceDefault(val userRepository: UserRepository,
 
         try {
             val response: ResponseEntity<String> = restTemplate.postForEntity(url, HttpEntity(body, httpHeaders), String::class.java)
-            if (response.statusCode == HttpStatus.OK) {
+            if (response.statusCode == HttpStatus.OK && response.body != null) {
 
                 val jsonObject = JSONObject(response.body)
                 val status = jsonObject.getInt("status")
