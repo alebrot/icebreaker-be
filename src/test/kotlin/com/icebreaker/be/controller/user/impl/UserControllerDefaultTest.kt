@@ -134,7 +134,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
     @Test
     fun purchaseAndroid() {
         val user = userServiceDefault.getUserById(1)
-        val purchaseAndroid = creditServiceDefault.purchaseAndroid(user, "android.test.purchased", "")
+        val purchaseAndroid = creditServiceDefault.purchaseAndroid(user, "android.test.purchased", "xzczxczxc")
     }
 
 

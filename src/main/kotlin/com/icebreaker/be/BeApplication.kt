@@ -130,7 +130,7 @@ class CorsConfig {
             response.setHeader("Access-Control-Allow-Credentials", "true")
             response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE")
             response.setHeader("Access-Control-Max-Age", "3600")
-            response.setHeader("Access-Control-Allow-Headers", "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN")
+            response.setHeader("Access-Control-Allow-Headers", "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, platforms")
 
             if ("OPTIONS" == (request.method)) {
                 response.status = HttpServletResponse.SC_OK
