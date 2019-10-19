@@ -22,10 +22,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.filter.CommonsRequestLoggingFilter
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import org.springframework.web.filter.CommonsRequestLoggingFilter
 
 @EnableAsync
 @SpringBootApplication
@@ -67,6 +67,8 @@ class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
 
     val securedReadScope = "#oauth2.hasScope('read')"
 
+    val securedActuatorScope = "#oauth2.hasScope('actuator')"
+
     val securedWriteScope = "#oauth2.hasScope('write')"
 
     val securedPattern = "/**"
@@ -80,6 +82,7 @@ class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
                 .antMatchers(securedPattern)
                 .and()
                 .authorizeRequests()
+                .antMatchers("/actuator/**").access(securedActuatorScope)
                 .antMatchers("/public/**").permitAll()
                 .antMatchers(HttpMethod.POST, securedPattern).access(securedWriteScope)//"#oauth2.hasScope('write')"
                 .anyRequest().access(securedReadScope)

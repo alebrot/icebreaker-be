@@ -196,7 +196,7 @@ class UserControllerDefault(val authService: AuthService,
     }
 
 
-    @GetMapping("$GET_IMAGE_PATH_BLURRED/{fileName:.+}")
+    @GetMapping("$GET_IMAGE_PATH_BLURRED{fileName:.+}")
     fun downloadBlurredImage(@PathVariable fileName: String, request: HttpServletRequest): ResponseEntity<Resource> {
 
         val path: Path = fileService.loadFileAsPath(fileName)
