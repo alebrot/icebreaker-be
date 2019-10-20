@@ -13,6 +13,7 @@ const val GET_USER_BY_ID = "/users/{userId}"
 const val POST_LOGOUT = "/users/me/logout"
 const val GET_USER_ME = "/users/me"
 const val POST_USER_ME = "/users/me"
+const val DELETE_USER_ME = "/users/me"
 const val GET_PRODUCTS = "/users/me/products"
 const val UPLOAD_USER_IMAGE = "/users/me/images/{imageId}"
 const val SWAP_USER_IMAGE = "/users/me/images/from/{imageId1}/to/{imageId2}"
@@ -71,6 +72,9 @@ interface UserController {
 
     @PostMapping(CREATE_USER)
     fun createUser(@Valid @RequestBody request: CreateUserRequest): CreateUserResponse
+
+    @DeleteMapping(DELETE_USER_ME)
+    fun deleteUser(@RequestBody request: DeleteUserRequest): BaseResponse
 
     @PostMapping(POST_USER_ME)
     fun updateUser(@Valid @RequestBody request: UpdateUserRequest): GetUserMeResponse

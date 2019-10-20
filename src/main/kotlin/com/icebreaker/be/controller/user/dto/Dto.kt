@@ -14,6 +14,8 @@ data class CreateUserRequest(@Email val email: String,
                              @NotEmpty val password: String,
                              @NotNull val birthday: LocalDate) : BaseRequest()
 
+data class DeleteUserRequest(val reason: String?): BaseRequest()
+
 data class UpdateUserRequest(val bio: String?, val gender: Gender?, val imageIds: List<Int>?)
 
 

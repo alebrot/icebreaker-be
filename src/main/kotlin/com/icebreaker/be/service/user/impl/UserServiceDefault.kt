@@ -4,10 +4,7 @@ import com.icebreaker.be.CoreProperties
 import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.auth.UserDetailsDefault
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH
-import com.icebreaker.be.db.entity.AkSocialEntity
-import com.icebreaker.be.db.entity.AkUserEntity
-import com.icebreaker.be.db.entity.AkUserImageEntity
-import com.icebreaker.be.db.entity.AkUserPositionEntity
+import com.icebreaker.be.db.entity.*
 import com.icebreaker.be.db.repository.*
 import com.icebreaker.be.ext.getIntInRange
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
@@ -30,6 +27,7 @@ import kotlin.math.min
 
 @Service
 class UserServiceDefault(val userRepository: UserRepository,
+                         val deletedUserRepository: DeletedUserRepository,
                          val passwordEncoder: PasswordEncoder,
                          val authorityRepository: AuthorityRepository,
                          val socialRepository: SocialRepository,
@@ -178,6 +176,29 @@ class UserServiceDefault(val userRepository: UserRepository,
         akUserEntity.birthday = java.sql.Date.valueOf(birthday)
         val saved = userRepository.save(akUserEntity)
         return User.fromEntity(saved)
+    }
+
+    @Transactional
+    override fun deleteUser(user: User, reason: String?) {
+
+        val akUserEntity = userRepository.findByEmail(user.email)
+                ?: throw IllegalArgumentException("User with ${user.email} not found")
+        val akDeletedUserEntity = AkDeletedUserEntity()
+        akDeletedUserEntity.firstName = akUserEntity.firstName
+        akDeletedUserEntity.lastName = akUserEntity.lastName
+        akDeletedUserEntity.email = akUserEntity.email
+        akDeletedUserEntity.bio = akUserEntity.bio
+        akDeletedUserEntity.birthday = akUserEntity.birthday
+        akDeletedUserEntity.userCreatedAt = akUserEntity.createdAt
+        akDeletedUserEntity.userUpdatedAt = akUserEntity.updatedAt
+        akDeletedUserEntity.reason = reason
+        akDeletedUserEntity.credits = akUserEntity.credits
+        akDeletedUserEntity.creditsUpdatedAt = akUserEntity.creditsUpdatedAt
+        akDeletedUserEntity.gender = akUserEntity.gender
+        akDeletedUserEntity.invitedBy = akUserEntity.invitedBy
+
+        deletedUserRepository.save(akDeletedUserEntity)
+        userRepository.delete(akUserEntity)
     }
 
     @Transactional

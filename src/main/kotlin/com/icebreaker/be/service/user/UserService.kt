@@ -4,6 +4,7 @@ import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.UserWithDistance
 import com.icebreaker.be.service.social.impl.SocialUser
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -26,4 +27,5 @@ interface UserService {
     fun isFakeUser(user: User): Boolean
     fun getUserByEmail(email: String): User?
     fun getUserByEmailOrFail(email: String): User
+    fun deleteUser(user: User, reason: String?)
 }

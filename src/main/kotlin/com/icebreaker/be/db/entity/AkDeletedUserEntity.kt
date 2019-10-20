@@ -8,11 +8,10 @@ import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
-import kotlin.collections.ArrayList
 
 @Entity
-@Table(name = "AK_USER", schema = "kofify")
-class AkUserEntity {
+@Table(name = "AK_DELETED_USER", schema = "kofify")
+class AkDeletedUserEntity {
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)
     @get:Column(name = "ID")
@@ -41,30 +40,6 @@ class AkUserEntity {
     var bio: String? = null
 
     @get:Basic
-    @get:Column(name = "IMG_URL")
-    var imgUrl: String? = null
-
-    @get:Basic
-    @get:Column(name = "PASSWORD_HASH")
-    var passwordHash: String? = null
-
-    @get:Basic
-    @get:Column(name = "ACCOUNT_EXPIRED")
-    var accountExpired: Boolean = false
-
-    @get:Basic
-    @get:Column(name = "ACCOUNT_LOCKED")
-    var accountLocked: Boolean = false
-
-    @get:Basic
-    @get:Column(name = "CREDENTIALS_EXPIRED")
-    var credentialsExpired: Boolean = false
-
-    @get:Basic
-    @get:Column(name = "ENABLED")
-    var enabled: Boolean = true
-
-    @get:Basic
     @get:CreationTimestamp
     @get:Column(name = "CREATED_AT")
     var createdAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
@@ -75,52 +50,35 @@ class AkUserEntity {
     var updatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
     @get:Basic
-    @get:Column(name = "LAST_SEEN")
-    var lastSeen: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+    @get:CreationTimestamp
+    @get:Column(name = "USER_CREATED_AT")
+    var userCreatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+
+    @get:Basic
+    @get:UpdateTimestamp
+    @get:Column(name = "USER_UPDATED_AT")
+    var userUpdatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
     @get:Basic
     @get:Column(name = "CREDITS")
-    var credits: Int = 5
+    var credits: Int = 0
 
     @get:Basic
     @get:Column(name = "CREDITS_UPDATED_AT")
     var creditsUpdatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
     @get:Basic
-    @get:Column(name = "ADMOB_COUNT")
-    var admobCount: Int = 0
-
-    @get:Basic
-    @get:Column(name = "ADMOB_UPDATED_AT")
-    var admobUpdatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
-
-    @get:ManyToMany(fetch = FetchType.LAZY)
-    @get:JoinTable(name = "AK_USER_AUTHORITY", joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "ID")], inverseJoinColumns = [JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")])
-    var authorities: Collection<AkAuthorityEntity> = ArrayList()
-
-    @get:ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
-    var chats: Collection<AkChatEntity> = ArrayList()
-
-    @get:OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    var images: Collection<AkUserImageEntity> = ArrayList()
-
-    @get:OneToOne(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "POSITION_ID", referencedColumnName = "ID", nullable = true)
-    var position: AkUserPositionEntity? = null
-
-
-    @get:OneToOne(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "PUSH_ID", referencedColumnName = "ID", nullable = true)
-    var push: AkPushEntity? = null
-
-    @get:Basic
     @get:Column(name = "INVITED_BY")
     var invitedBy: Int? = null
+
+    @get:Basic
+    @get:Column(name = "REASON")
+    var reason: String? = null
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
-        val that = other as AkUserEntity?
+        val that = other as AkDeletedUserEntity?
         return id == that!!.id &&
                 firstName == that.firstName &&
                 lastName == that.lastName &&
@@ -132,4 +90,6 @@ class AkUserEntity {
     override fun hashCode(): Int {
         return Objects.hash(id, firstName, lastName, email, createdAt, updatedAt)
     }
+
+
 }

@@ -51,6 +51,11 @@ class UserControllerDefault(val authService: AuthService,
                             val creditService: CreditService
 ) : UserController {
 
+    override fun deleteUser(request: DeleteUserRequest): BaseResponse {
+        val userOrFail = authService.getUserOrFail()
+        userService.deleteUser(userOrFail, request.reason)
+        return BaseResponse()
+    }
 
     override fun getProducts(platforms: String): GetProductsResponse {
         val store = Store.fromHeader(platforms)

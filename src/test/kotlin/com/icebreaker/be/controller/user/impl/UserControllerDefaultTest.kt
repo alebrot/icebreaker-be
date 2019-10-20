@@ -1,6 +1,7 @@
 package com.icebreaker.be.controller.user.impl
 
 import com.icebreaker.be.BeApplicationTests
+import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.*
 import com.icebreaker.be.controller.user.dto.*
 import com.icebreaker.be.db.repository.UserPositionRepository
@@ -12,6 +13,8 @@ import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -60,7 +63,7 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
     @Test
     fun createUser() {
 
-        val email = "test@email.com"
+        val email = "test1@email.com"
         val password = "password"
         val createUserRequest = CreateUserRequest(email, "new firstname", "new lastname", password, LocalDate.now().minusYears(20))
 
@@ -71,7 +74,12 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
         Assert.assertNotNull(responseEntity.body!!.user.id)
 
 
+        val deleteUserRequest = DeleteUserRequest("reason")
         authenticate(email, password)
+
+        val exchange = testRestTemplate.exchange(DELETE_USER_ME, HttpMethod.DELETE, HttpEntity(deleteUserRequest), BaseResponse::class.java)
+        assert(exchange.statusCode==HttpStatus.OK)
+
     }
 
     @Ignore
@@ -131,14 +139,14 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
     @Autowired
     lateinit var userServiceDefault: UserServiceDefault
 
+    @Ignore
     @Test
     fun purchaseAndroid() {
         val user = userServiceDefault.getUserById(1)
         val purchaseAndroid = creditServiceDefault.purchaseAndroid(user, "android.test.purchased", "xzczxczxc")
     }
 
-
-
+    @Ignore
     @Test
     fun purchaseIos() {
         val receipt = "{\\n\\t\"signature\" = \"[exactly_1320_characters]\";\\n\\t\"purchase-info\" =\n" +
@@ -146,7 +154,6 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
                 "\"100\";\\n\\t\"signing-status\" = \"0\";\\n}"
         val user = userServiceDefault.getUserById(1)
         val purchaseIos = creditServiceDefault.purchaseIos(user, receipt)
-
     }
 
 }
