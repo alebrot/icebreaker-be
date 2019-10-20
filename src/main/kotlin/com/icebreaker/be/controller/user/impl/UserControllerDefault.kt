@@ -53,6 +53,7 @@ class UserControllerDefault(val authService: AuthService,
 
     override fun deleteUser(request: DeleteUserRequest): BaseResponse {
         val userOrFail = authService.getUserOrFail()
+        userFacade.deleteAllUserImages(userOrFail)
         userService.deleteUser(userOrFail, request.reason)
         return BaseResponse()
     }
