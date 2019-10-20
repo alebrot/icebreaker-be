@@ -14,7 +14,7 @@ data class UserDto(val id: String,
                    val createdAt: LocalDateTime,
                    val bio: String?,
                    val gender: Gender?,
-                   val credits: CreditDto?,
+                   val credit: CreditDto?,
                    val invitedBy: String?)
 
 data class AdmobCreditDto(val count: Int,
