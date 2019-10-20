@@ -78,7 +78,10 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
         authenticate(email, password)
 
         val exchange = testRestTemplate.exchange(DELETE_USER_ME, HttpMethod.DELETE, HttpEntity(deleteUserRequest), BaseResponse::class.java)
-        assert(exchange.statusCode==HttpStatus.OK)
+        assert(exchange.statusCode == HttpStatus.OK)
+
+        val logout = testRestTemplate.exchange(POST_LOGOUT, HttpMethod.POST, HttpEntity(null, null), BaseResponse::class.java)
+        assert(logout.statusCode == HttpStatus.OK)
 
     }
 
