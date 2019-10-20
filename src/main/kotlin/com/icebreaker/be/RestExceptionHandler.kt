@@ -2,6 +2,7 @@ package com.icebreaker.be
 
 import com.icebreaker.be.controller.user.dto.ProductDto
 import com.icebreaker.be.exception.CreditsNotAvailableException
+import com.icebreaker.be.exception.FileNotFoundException
 import com.icebreaker.be.service.model.toDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,6 +20,11 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
         val products = ex.products.map { it.toDto() }
         val creditsNotAvailable = CreditsNotAvailableError("${ex.localizedMessage}, required credits: ${ex.requiredCredits}", products)
         return ResponseEntity(creditsNotAvailable, HttpStatus.NOT_ACCEPTABLE)
+    }
+
+    @ExceptionHandler(FileNotFoundException::class)
+    fun handleFileNotFoundException(ex: FileNotFoundException): ResponseEntity<Any> {
+        return ResponseEntity(ex.message, HttpStatus.NOT_FOUND)
     }
 }
 

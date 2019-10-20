@@ -14,7 +14,7 @@ data class CreateUserRequest(@Email val email: String,
                              @NotEmpty val password: String,
                              @NotNull val birthday: LocalDate) : BaseRequest()
 
-data class DeleteUserRequest(val reason: String?): BaseRequest()
+data class DeleteUserRequest(val reason: String?) : BaseRequest()
 
 data class UpdateUserRequest(val bio: String?, val gender: Gender?, val imageIds: List<Int>?)
 
@@ -22,7 +22,7 @@ data class UpdateUserRequest(val bio: String?, val gender: Gender?, val imageIds
 class CreateUserResponse(val user: UserDto) : BaseResponse()
 
 
-data class CreditResponse(val creditDto: CreditDto) : BaseResponse()
+data class CreditResponse(val credit: CreditDto) : BaseResponse()
 
 data class CreditRequest(val transactionId: String?, val signature: String?, val receipt: String?)
 
