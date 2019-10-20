@@ -50,12 +50,10 @@ class AkDeletedUserEntity {
     var updatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
     @get:Basic
-    @get:CreationTimestamp
     @get:Column(name = "USER_CREATED_AT")
     var userCreatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
     @get:Basic
-    @get:UpdateTimestamp
     @get:Column(name = "USER_UPDATED_AT")
     var userUpdatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
