@@ -11,8 +11,6 @@ import javax.servlet.http.HttpServletResponse
 
 @Configuration
 class WebMvcConfig(val authService: AuthService, val userFacade: UserFacade) : WebMvcConfigurer {
-    //@Autowired
-    //MinimalInterceptor minimalInterceptor;
 
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(object : HandlerInterceptor {

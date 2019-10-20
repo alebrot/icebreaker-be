@@ -1,6 +1,7 @@
 package com.icebreaker.be.service.file.impl
 
 import com.icebreaker.be.FileStorageProperties
+import com.icebreaker.be.exception.FileNotFoundException
 import com.icebreaker.be.ext.toInputStream
 import com.icebreaker.be.service.file.FileService
 import net.coobird.thumbnailator.Thumbnails
@@ -94,10 +95,11 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
             return if (resource.exists()) {
                 resource
             } else {
-                throw IllegalStateException("File not found $fileName")
+                throw FileNotFoundException("File not found $fileName")
             }
         } catch (ex: MalformedURLException) {
-            throw IllegalStateException("File not found $fileName", ex)
+            throw FileNotFoundException("File not found $fileName")
+//            throw IllegalStateException("File not found $fileName", ex)
         }
     }
 
