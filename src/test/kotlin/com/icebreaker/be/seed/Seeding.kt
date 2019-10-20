@@ -16,6 +16,7 @@ import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.service.model.Gender
 import net.coobird.thumbnailator.Thumbnails
 import org.junit.Assert
+import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -76,6 +77,7 @@ class Seeding() : BeApplicationTests() {
     val profileMaxWidth = 500
     val profileMaxHeight = 500
 
+    @Ignore
     @Test
     fun process() {
 //https://uinames.com
