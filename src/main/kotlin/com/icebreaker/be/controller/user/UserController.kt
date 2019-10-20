@@ -13,6 +13,7 @@ const val GET_USER_BY_ID = "/users/{userId}"
 const val POST_LOGOUT = "/users/me/logout"
 const val GET_USER_ME = "/users/me"
 const val POST_USER_ME = "/users/me"
+const val GET_PRODUCTS = "/users/me/products"
 const val UPLOAD_USER_IMAGE = "/users/me/images/{imageId}"
 const val SWAP_USER_IMAGE = "/users/me/images/from/{imageId1}/to/{imageId2}"
 const val UPLOAD_USER_PROFILE_IMAGE = "/users/me/image"
@@ -28,6 +29,10 @@ const val GET_IMAGE_PATH_BLURRED = "/public/images/th/"
 
 
 interface UserController {
+
+
+    @GetMapping(GET_PRODUCTS)
+    fun getProducts(@RequestHeader(HEADER_PLATFORMS) platforms: String): GetProductsResponse
 
     @PostMapping(BUY_REWARD)
     fun buyReward(@RequestBody request: CreditRequest, @RequestHeader(HEADER_PLATFORMS) platforms: String): CreditResponse

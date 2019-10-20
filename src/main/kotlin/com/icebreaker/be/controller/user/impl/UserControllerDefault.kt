@@ -52,6 +52,13 @@ class UserControllerDefault(val authService: AuthService,
 ) : UserController {
 
 
+    override fun getProducts(platforms: String): GetProductsResponse {
+        val store = Store.fromHeader(platforms)
+        val products = creditService.getProducts(store)
+        val productsDto = products.map { it.toDto() }
+        return GetProductsResponse(productsDto)
+    }
+
     override fun buyReward(request: CreditRequest, platforms: String): CreditResponse {
         val userOrFail = authService.getUserOrFail()
         val store = Store.fromHeader(platforms)

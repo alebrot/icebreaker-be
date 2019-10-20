@@ -6,7 +6,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 
 
-data class Product(val id: Int, val name: String, val description: String?) {
+data class Product(val id: Int, val productId: String, val name: String, val description: String?) {
     companion object
 }
 
@@ -22,12 +22,16 @@ enum class Store {
 }
 
 fun Product.toDto(): ProductDto {
-    return ProductDto(this.id, this.name, this.description)
+    return ProductDto(this.id, this.productId, this.name, this.description)
 }
 
 fun Product.Companion.fromEntity(entity: AkProductEntity): Product {
-    return Product(entity.id, entity.name
-            ?: throw IllegalStateException("product name can not be null"), entity.description)
+    return Product(
+            entity.id,
+            entity.productId ?: throw IllegalStateException("product id can not be null"),
+            entity.name ?: throw IllegalStateException("product name can not be null"),
+            entity.description
+    )
 }
 
 data class AdmobCredit(

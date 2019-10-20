@@ -23,3 +23,5 @@ class CreateUserResponse(val user: UserDto) : BaseResponse()
 data class CreditResponse(val creditDto: CreditDto) : BaseResponse()
 
 data class CreditRequest(val transactionId: String?, val signature: String?, val receipt: String?)
+
+data class GetProductsResponse(val products: List<ProductDto>) : BaseResponse()

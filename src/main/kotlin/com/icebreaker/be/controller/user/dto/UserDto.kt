@@ -35,4 +35,4 @@ data class CompleteUserDto(val user: UserDto, val authorities: List<AuthorityDto
 
 data class CompleteUserDtoWithDistance(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<String>, val distance: Int?)
 
-data class ProductDto(val id: Int, val name: String, val description: String?)
+data class ProductDto(val id: Int, val productId: String, val name: String, val description: String?)
