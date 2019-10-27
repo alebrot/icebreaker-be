@@ -26,6 +26,12 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleFileNotFoundException(ex: FileNotFoundException): ResponseEntity<Any> {
         return ResponseEntity(ex.message, HttpStatus.NOT_FOUND)
     }
+
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<Any> {
+        return ResponseEntity(ex.message, HttpStatus.BAD_REQUEST)
+    }
+
 }
 
 
