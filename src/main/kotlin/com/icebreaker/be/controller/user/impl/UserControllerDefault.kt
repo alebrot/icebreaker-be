@@ -7,6 +7,7 @@ import com.icebreaker.be.controller.user.GET_IMAGE_PATH
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH_BLURRED
 import com.icebreaker.be.controller.user.UserController
 import com.icebreaker.be.controller.user.dto.*
+import com.icebreaker.be.ext.Paginator
 import com.icebreaker.be.ext.decodeToInt
 import com.icebreaker.be.facade.user.UserFacade
 import com.icebreaker.be.service.auth.AuthService
@@ -242,18 +243,41 @@ class UserControllerDefault(val authService: AuthService,
 
     override fun getUserMeUsers(distance: Int,
                                 latitude: BigDecimal?,
-                                longitude: BigDecimal?): GetUserMeUsersResponse {
+                                longitude: BigDecimal?,
+                                limit: Int?,
+                                offset: Int?): GetUserMeUsersResponse {
+
+        val defaultLimit = 10;
+        val defaultOffset = 0;
+
+        val limitSafe: Int = if ((limit ?: defaultLimit) !in 0..defaultLimit) defaultLimit else (limit ?: defaultLimit)
+        val offsetSafe: Int = if (offset ?: defaultOffset < 0) defaultOffset else offset ?: defaultOffset
+
         val userOrFail = authService.getUserOrFail()
 
-        val usersCloseToUser: List<UserWithDistance> = if (latitude != null && longitude != null) {
-            userService.getUsersCloseToUserPosition(userOrFail, distance, latitude, longitude)
+
+        val usersCloseToUser: List<UserWithDistance> = if (coreProperties.fake) {
+
+            val realUsersProvider = { l: Int, o: Int ->
+                if (latitude != null && longitude != null) {
+                    userService.getUsersCloseToUserPosition(userOrFail, distance, latitude, longitude, limitSafe, offsetSafe)
+                } else {
+                    userService.getUsersCloseToUser(userOrFail, distance, limitSafe, offsetSafe)
+                }
+            }
+            val fakeUsersProvider = { l: Int, o: Int -> userService.getFakeUsers(distance, l, o) }
+
+            Paginator.paginate(limitSafe, offsetSafe, realUsersProvider, fakeUsersProvider)
+
         } else {
-            userService.getUsersCloseToUser(userOrFail, distance)
+            if (latitude != null && longitude != null) {
+                userService.getUsersCloseToUserPosition(userOrFail, distance, latitude, longitude, limitSafe, offsetSafe)
+            } else {
+                userService.getUsersCloseToUser(userOrFail, distance, limitSafe, offsetSafe)
+            }
         }
 
-        val fakeUsers = if (coreProperties.fake) userService.getFakeUsers(distance) else emptyList()
-
-        val mapped = ArrayList(usersCloseToUser).union(fakeUsers.filter { it.user.id != userOrFail.id }).distinctBy { it.user.id }
+        val mapped = usersCloseToUser.distinctBy { it.user.id }
                 .map {
                     UserWithDistanceDto(it.distance, it.user.toDto(imageProperties.host, hashids))
                 }
@@ -261,6 +285,7 @@ class UserControllerDefault(val authService: AuthService,
         return GetUserMeUsersResponse(mapped.size, mapped)
     }
 
+    //limit/2 limit-firstlist.size
     @Transactional
     override fun createUser(@Valid @RequestBody request: CreateUserRequest): CreateUserResponse {
         val user: User = userService.createUser(

@@ -65,7 +65,9 @@ interface UserController {
     @GetMapping(GET_USER_ME_USERS)
     fun getUserMeUsers(@RequestParam("distance") distance: Int,
                        @RequestParam("latitude") latitude: BigDecimal?,
-                       @RequestParam("longitude") longitude: BigDecimal?): GetUserMeUsersResponse
+                       @RequestParam("longitude") longitude: BigDecimal?,
+                       limit: Int?,
+                       offset: Int?): GetUserMeUsersResponse
 
     @GetMapping(GET_ADMIN_ME)
     fun getAdminMe(): GetAdminMeResponse

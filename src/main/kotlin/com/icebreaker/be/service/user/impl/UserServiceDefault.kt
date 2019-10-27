@@ -131,22 +131,21 @@ class UserServiceDefault(val userRepository: UserRepository,
     }
 
     @Transactional
-    override fun getUsersCloseToUser(user: User, distanceInMeters: Int): List<UserWithDistance> {
+    override fun getUsersCloseToUser(user: User, distanceInMeters: Int, limit: Int, offset: Int): List<UserWithDistance> {
         val distance = min(distanceInMeters, coreProperties.maxDistance)
-        val findUsersCloseToUser = userRepository.findUsersCloseToUser(user.id, distance)
+        val findUsersCloseToUser = userRepository.findUsersCloseToUser(user.id, distance, limit, offset, fakeEmailDomain)
         return findUsersCloseToUser.map(mapper)
     }
 
     @Transactional
-    override fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal): List<UserWithDistance> {
-        val findUsersCloseToUser = userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble())
+    override fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal, limit: Int, offset: Int): List<UserWithDistance> {
+        val findUsersCloseToUser = userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), limit, offset, fakeEmailDomain)
         return findUsersCloseToUser.map(mapper)
     }
 
     @Transactional
-    override fun getFakeUsers(distanceInMeters: Int): List<UserWithDistance> {
-
-        return userRepository.findAllByEmailContaining(fakeEmailDomain).map {
+    override fun getFakeUsers(distanceInMeters: Int, limit: Int, offset: Int): List<UserWithDistance> {
+        return userRepository.findAllByEmailContaining(fakeEmailDomain, limit, offset).map {
             val distance = Random().getIntInRange(1, distanceInMeters)
             UserWithDistance(distance, User.fromEntity(it))
         }.shuffled()
