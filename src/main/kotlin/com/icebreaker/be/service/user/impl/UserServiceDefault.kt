@@ -7,6 +7,7 @@ import com.icebreaker.be.controller.user.GET_IMAGE_PATH
 import com.icebreaker.be.db.entity.*
 import com.icebreaker.be.db.repository.*
 import com.icebreaker.be.ext.getIntInRange
+import com.icebreaker.be.ext.toBoolean
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
 import com.icebreaker.be.service.model.*
 import com.icebreaker.be.service.social.impl.SocialUser
@@ -133,13 +134,21 @@ class UserServiceDefault(val userRepository: UserRepository,
     @Transactional
     override fun getUsersCloseToUser(user: User, distanceInMeters: Int, limit: Int, offset: Int): List<UserWithDistance> {
         val distance = min(distanceInMeters, coreProperties.maxDistance)
-        val findUsersCloseToUser = userRepository.findUsersCloseToUser(user.id, distance, limit, offset, fakeEmailDomain)
+        val findUsersCloseToUser = if (coreProperties.fake) {
+            userRepository.findUsersCloseToUserWithFakeUsers(user.id, distance, limit, offset)
+        } else {
+            userRepository.findUsersCloseToUser(user.id, distance, limit, offset)
+        }
         return findUsersCloseToUser.map(mapper)
     }
 
     @Transactional
     override fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal, limit: Int, offset: Int): List<UserWithDistance> {
-        val findUsersCloseToUser = userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), limit, offset, fakeEmailDomain)
+        val findUsersCloseToUser = if (coreProperties.fake) {
+            userRepository.findUsersCloseToUserPositionWithFakeUsers(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), limit, offset)
+        } else {
+            userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), limit, offset)
+        }
         return findUsersCloseToUser.map(mapper)
     }
 
@@ -275,10 +284,10 @@ class UserServiceDefault(val userRepository: UserRepository,
         val imgUrl: String? = findUsersCloseToUser["IMG_URL"] as? String
         val birthday: java.sql.Date = findUsersCloseToUser["BIRTHDAY"] as java.sql.Date
         val authorities: List<Authority> = ArrayList()
-        val accountExpired: Boolean = findUsersCloseToUser["ACCOUNT_EXPIRED"] as Boolean
-        val accountLocked: Boolean = findUsersCloseToUser["ACCOUNT_LOCKED"] as Boolean
-        val credentialsExpired = findUsersCloseToUser["CREDENTIALS_EXPIRED"] as Boolean
-        val enabled: Boolean = findUsersCloseToUser["ENABLED"] as Boolean
+        val accountExpired: Byte = findUsersCloseToUser["ACCOUNT_EXPIRED"] as Byte
+        val accountLocked: Byte = findUsersCloseToUser["ACCOUNT_LOCKED"] as Byte
+        val credentialsExpired: Byte = findUsersCloseToUser["CREDENTIALS_EXPIRED"] as Byte
+        val enabled: Byte = findUsersCloseToUser["ENABLED"] as Byte
         val genderInt: Int? = findUsersCloseToUser["GENDER"] as? Int
 
         val lastSeen: Timestamp = findUsersCloseToUser["LAST_SEEN"] as Timestamp
@@ -300,7 +309,7 @@ class UserServiceDefault(val userRepository: UserRepository,
         val distance: Int = (findUsersCloseToUser["DISTANCE"] as Double).toInt()
         val invitedBy: Int? = findUsersCloseToUser["INVITED_BY"] as? Int
 
-        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired, accountLocked, credentialsExpired, birthday.toLocalDate(), bio, gender, enabled, lastSeen.toLocalDateTime(), createdAt.toLocalDateTime(), null, invitedBy)
+        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired.toBoolean(), accountLocked.toBoolean(), credentialsExpired.toBoolean(), birthday.toLocalDate(), bio, gender, enabled.toBoolean(), lastSeen.toLocalDateTime(), createdAt.toLocalDateTime(), null, invitedBy)
 
         UserWithDistance(distance, user)
     }

@@ -7,7 +7,6 @@ import com.icebreaker.be.controller.user.GET_IMAGE_PATH
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH_BLURRED
 import com.icebreaker.be.controller.user.UserController
 import com.icebreaker.be.controller.user.dto.*
-import com.icebreaker.be.ext.Paginator
 import com.icebreaker.be.ext.decodeToInt
 import com.icebreaker.be.facade.user.UserFacade
 import com.icebreaker.be.service.auth.AuthService
@@ -247,7 +246,7 @@ class UserControllerDefault(val authService: AuthService,
                                 limit: Int?,
                                 offset: Int?): GetUserMeUsersResponse {
 
-        val defaultLimit = 10;
+        val defaultLimit = 6;
         val defaultOffset = 0;
 
         val limitSafe: Int = if ((limit ?: defaultLimit) !in 0..defaultLimit) defaultLimit else (limit ?: defaultLimit)
@@ -255,32 +254,15 @@ class UserControllerDefault(val authService: AuthService,
 
         val userOrFail = authService.getUserOrFail()
 
-
-        val usersCloseToUser: List<UserWithDistance> = if (coreProperties.fake) {
-
-            val realUsersProvider = { l: Int, o: Int ->
-                if (latitude != null && longitude != null) {
-                    userService.getUsersCloseToUserPosition(userOrFail, distance, latitude, longitude, limitSafe, offsetSafe)
-                } else {
-                    userService.getUsersCloseToUser(userOrFail, distance, limitSafe, offsetSafe)
-                }
-            }
-            val fakeUsersProvider = { l: Int, o: Int -> userService.getFakeUsers(distance, l, o) }
-
-            Paginator.paginate(limitSafe, offsetSafe, realUsersProvider, fakeUsersProvider)
-
+        val usersCloseToUser: List<UserWithDistance> = if (latitude != null && longitude != null) {
+            userService.getUsersCloseToUserPosition(userOrFail, distance, latitude, longitude, limitSafe, offsetSafe)
         } else {
-            if (latitude != null && longitude != null) {
-                userService.getUsersCloseToUserPosition(userOrFail, distance, latitude, longitude, limitSafe, offsetSafe)
-            } else {
-                userService.getUsersCloseToUser(userOrFail, distance, limitSafe, offsetSafe)
-            }
+            userService.getUsersCloseToUser(userOrFail, distance, limitSafe, offsetSafe)
         }
 
-        val mapped = usersCloseToUser.distinctBy { it.user.id }
-                .map {
-                    UserWithDistanceDto(it.distance, it.user.toDto(imageProperties.host, hashids))
-                }
+        val mapped = usersCloseToUser.map {
+            UserWithDistanceDto(it.distance, it.user.toDto(imageProperties.host, hashids))
+        }
 
         return GetUserMeUsersResponse(mapped.size, mapped)
     }

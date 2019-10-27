@@ -23,3 +23,10 @@ class Paginator {
     }
 }
 
+
+fun Byte.toBoolean(): Boolean {
+    return when (this) {
+        1.toByte() -> true
+        else -> false
+    }
+}
