@@ -50,9 +50,10 @@ mysql> SHOW GRANTS;
  SET GLOBAL sql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'
 
 
- move file from local to remote:
+move file from local to remote:
  scp be-0.0.1-SNAPSHOT.jar root@209.250.239.44:/root/app
-
+download log from server
+    scp root@209.250.239.44:/root/app/out/logs/app.log app.log
 
 
 
