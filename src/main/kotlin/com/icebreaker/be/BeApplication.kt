@@ -167,6 +167,14 @@ class ImageProperties {
     lateinit var host: String
 }
 
+@Configuration
+@ConfigurationProperties(prefix = "websocket")
+class WebSocketProperties {
+    lateinit var relayHost: String
+    var relayPort: Int = 61617
+    lateinit var clientLogin: String
+    lateinit var clientPasscode: String
+}
 
 @Configuration
 @ConfigurationProperties(prefix = "push")

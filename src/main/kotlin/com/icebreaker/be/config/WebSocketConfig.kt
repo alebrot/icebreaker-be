@@ -1,5 +1,6 @@
 package com.icebreaker.be.config
 
+import com.icebreaker.be.WebSocketProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
@@ -10,13 +11,13 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @Profile("prod")
 @EnableWebSocketMessageBroker
-class WebSocketConfig : WebSocketMessageBrokerConfigurer {
+class WebSocketConfig(val webSocketProperties: WebSocketProperties) : WebSocketMessageBrokerConfigurer {
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
         config.enableStompBrokerRelay("/chat")
-                .setRelayHost("localhost")
-                .setRelayPort(61617)
-                .setClientLogin("admin")
-                .setClientPasscode("password");
+                .setRelayHost(webSocketProperties.relayHost)
+                .setRelayPort(webSocketProperties.relayPort)
+                .setClientLogin(webSocketProperties.clientLogin)
+                .setClientPasscode(webSocketProperties.clientPasscode);
         config.setApplicationDestinationPrefixes("/app");
     }
 
