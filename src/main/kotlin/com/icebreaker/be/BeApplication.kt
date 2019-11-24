@@ -1,6 +1,8 @@
 package com.icebreaker.be
 
+import com.icebreaker.be.config.mdc.MdcRequestLoggingFilter
 import com.icebreaker.be.extra.LoggingRequestInterceptor
+import com.icebreaker.be.service.auth.AuthService
 import org.hashids.Hashids
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -22,7 +24,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.filter.CommonsRequestLoggingFilter
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -31,7 +34,7 @@ import javax.servlet.http.HttpServletResponse
 @SpringBootApplication
 @EnableConfigurationProperties(FileStorageProperties::class, ImageProperties::class, PushProperties::class, CoreProperties::class)
 @EnableTransactionManagement
-class BeApplication(val coreProperties: CoreProperties) {
+class BeApplication(val coreProperties: CoreProperties, val authService: AuthService) {
     @Bean
     fun restTemplate(): RestTemplate {
         val restTemplate = RestTemplate(BufferingClientHttpRequestFactory(SimpleClientHttpRequestFactory()))
@@ -45,12 +48,17 @@ class BeApplication(val coreProperties: CoreProperties) {
     }
 
     @Bean
-    fun requestLoggingFilter(): CommonsRequestLoggingFilter {
-        val loggingFilter = CommonsRequestLoggingFilter()
+    fun requestLoggingFilter(): MdcRequestLoggingFilter {
+        val loggingFilter = MdcRequestLoggingFilter(authService)
         loggingFilter.setIncludeClientInfo(true)
         loggingFilter.setIncludeQueryString(true)
         loggingFilter.setIncludePayload(false)
         return loggingFilter
+    }
+
+    @Bean
+    fun taskExecutor(): Executor {
+        return Executors.newFixedThreadPool(10);
     }
 
 }

@@ -68,3 +68,7 @@ detach from session
 ctrl+a+d
 
 screen -S 23536 -X quit
+
+
+# Check ports
+    sudo lsof -i -P -n | grep LISTEN
