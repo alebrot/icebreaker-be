@@ -72,3 +72,6 @@ screen -S 23536 -X quit
 
 # Check ports
     sudo lsof -i -P -n | grep LISTEN
+
+# Truncate file
+    truncate -s 0
