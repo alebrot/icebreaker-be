@@ -17,7 +17,7 @@
         <file>${LOGS}/app.log</file>
         <encoder
                 class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>%d %-5level [%t] %logger{10} [%X{userId}] [%X{userSessionId}] %m%n</Pattern>
+            <Pattern>%d %-5level [%t] %logger{10} [%X{userId}] [%X{userSessionId}] %m%n%ex{5}</Pattern>
         </encoder>
 
         <rollingPolicy

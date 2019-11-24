@@ -6,7 +6,7 @@ import org.slf4j.MDC
 import org.springframework.web.filter.AbstractRequestLoggingFilter
 import javax.servlet.http.HttpServletRequest
 
-class MdcRequestLoggingFilter(val authService: AuthService) : AbstractRequestLoggingFilter() {
+class MdcRequestLoggingFilter(private val authService: AuthService) : AbstractRequestLoggingFilter() {
     override fun shouldLog(request: HttpServletRequest): Boolean {
         return logger.isInfoEnabled
     }
@@ -14,7 +14,7 @@ class MdcRequestLoggingFilter(val authService: AuthService) : AbstractRequestLog
     override fun beforeRequest(request: HttpServletRequest, message: String) {
 
         val header: String? = request.getHeader("Authorization")
-        val encodedHeader = if (header != null && header.contains("Bearer")) DigestUtils.sha256Hex(header) else ""
+        val encodedHeader = if (header != null && header.contains("Bearer")) DigestUtils.sha1Hex(header) else ""
         MDC.put("userSessionId", encodedHeader)
 
         val user = authService.getUser()
