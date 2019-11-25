@@ -12,16 +12,11 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import org.springframework.http.HttpMethod
 import org.springframework.http.client.BufferingClientHttpRequestFactory
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.scheduling.annotation.EnableAsync
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer
-import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter
-import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.web.client.RestTemplate
 import java.util.concurrent.Executor
@@ -65,37 +60,6 @@ class BeApplication(val coreProperties: CoreProperties, val authService: AuthSer
 
 fun main(args: Array<String>) {
     runApplication<BeApplication>(*args)
-}
-
-@Configuration
-@EnableResourceServer
-class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
-
-    val resourceId = "resource-server-rest-api"
-
-    val securedReadScope = "#oauth2.hasScope('read')"
-
-    val securedActuatorScope = "#oauth2.hasScope('actuator')"
-
-    val securedWriteScope = "#oauth2.hasScope('write')"
-
-    val securedPattern = "/**"
-
-    override fun configure(resources: ResourceServerSecurityConfigurer) {
-        resources.resourceId(resourceId)
-    }
-
-    override fun configure(http: HttpSecurity) {
-        http.requestMatchers()
-                .antMatchers(securedPattern)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/actuator/**").access(securedActuatorScope)
-                .antMatchers("/public/**").permitAll()
-                .antMatchers(HttpMethod.POST, securedPattern).access(securedWriteScope)//"#oauth2.hasScope('write')"
-                .anyRequest().access(securedReadScope)
-    }
-
 }
 
 

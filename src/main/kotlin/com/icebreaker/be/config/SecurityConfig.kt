@@ -23,6 +23,7 @@ class SecurityConfig(val userService: UserService, val passwordEncoder: Password
 
     override fun configure(http: HttpSecurity) {
         super.configure(http.csrf().disable())
+        // TODO fix
         http.authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/path/to/allow").permitAll()
 
     }
