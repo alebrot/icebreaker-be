@@ -18,7 +18,6 @@ const val GET_PRODUCTS = "/users/me/products"
 const val UPLOAD_USER_IMAGE = "/users/me/images/{imageId}"
 const val SWAP_USER_IMAGE = "/users/me/images/from/{imageId1}/to/{imageId2}"
 const val UPLOAD_USER_PROFILE_IMAGE = "/users/me/image"
-const val GET_ADMIN_ME = "/admins/me"
 const val GET_USER_ME_USERS = "/users/me/users"
 const val CREATE_USER_POSITION = "/users/position"
 const val BUY_REWARD = "/users/me/buy"
@@ -68,9 +67,6 @@ interface UserController {
                        @RequestParam("longitude") longitude: BigDecimal?,
                        limit: Int?,
                        offset: Int?): GetUserMeUsersResponse
-
-    @GetMapping(GET_ADMIN_ME)
-    fun getAdminMe(): GetAdminMeResponse
 
     @PostMapping(CREATE_USER)
     fun createUser(@Valid @RequestBody request: CreateUserRequest): CreateUserResponse

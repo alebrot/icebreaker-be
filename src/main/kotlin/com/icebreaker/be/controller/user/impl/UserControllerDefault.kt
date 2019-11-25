@@ -1,6 +1,5 @@
 package com.icebreaker.be.controller.user.impl
 
-import com.icebreaker.be.CoreProperties
 import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH
@@ -47,7 +46,6 @@ class UserControllerDefault(val authService: AuthService,
                             val consumerTokenServices: ConsumerTokenServices,
                             val userFacade: UserFacade,
                             val hashids: Hashids,
-                            val coreProperties: CoreProperties,
                             val creditService: CreditService
 ) : UserController {
 
@@ -316,14 +314,4 @@ class UserControllerDefault(val authService: AuthService,
 
         return GetUserMeResponse(UserContextDto(completeUserDto))
     }
-
-    @PreAuthorize("hasAuthority('ADMIN')")
-    override fun getAdminMe(): GetAdminMeResponse {
-        val userOrFail = authService.getUserOrFail()
-        val authorities = userOrFail.authorities.map { it.toDto() }
-        val images = userService.getImages(userOrFail)
-        val completeUserDto = CompleteUserDto(userOrFail.toDto(imageProperties.host, hashids), authorities, images)
-        return GetAdminMeResponse(AdminContextDto(completeUserDto))
-    }
-
 }

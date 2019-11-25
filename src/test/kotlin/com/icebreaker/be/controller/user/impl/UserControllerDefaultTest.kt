@@ -50,17 +50,6 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
 
     @Ignore
     @Test
-    fun getAdminMe() {
-        authenticate()
-        val response = testRestTemplate.getForEntity(GET_ADMIN_ME, GetAdminMeResponse::class.java)
-        Assert.assertNotNull(response)
-        Assert.assertEquals(response.statusCode, HttpStatus.OK)
-        Assert.assertNotNull(response.body)
-        Assert.assertNotNull(response.body!!.context)
-    }
-
-    @Ignore
-    @Test
     fun createUser() {
 
         val email = "email1@email.com"
