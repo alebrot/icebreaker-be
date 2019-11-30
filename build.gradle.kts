@@ -16,6 +16,8 @@ repositories {
 }
 
 dependencies {
+    implementation ("javax.activation:activation:1.1.1")
+    implementation ("javax.mail:mail:1.4.7")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

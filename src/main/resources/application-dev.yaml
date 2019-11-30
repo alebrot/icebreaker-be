@@ -17,7 +17,7 @@ spring:
   datasource:
     testOnBorrow: true
     validationQuery: "SELECT 1"
-    url: "jdbc:mysql://0.0.0.0:2345/kofify"
+    url: "jdbc:mysql://0.0.0.0:3306/kofify"
     username: root
     password: "password"
   jpa:
