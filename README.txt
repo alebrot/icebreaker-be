@@ -74,4 +74,27 @@ screen -S 23536 -X quit
     sudo lsof -i -P -n | grep LISTEN
 
 # Truncate file
-    truncate -s 0
+    truncate -s 0 app.log
+
+
+# Config server
+
+sudo useradd -s /usr/sbin/nologin springboot
+sudo passwd springboot
+# login as user
+su - springboot -s /bin/bash
+
+chown springboot:springboot be.jar
+chmod 500 be.jar
+#make your jar file as immutable using the change attribute (chattr) command.
+sudo chattr +i be.jar
+
+#be.service place
+/etc/systemd/system
+#when replace file
+systemctl daemon-reload
+
+# enable Spring Boot application at system startup
+sudo systemctl enable be.service
+# log
+journalctl -u be

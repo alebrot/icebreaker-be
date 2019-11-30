@@ -43,13 +43,13 @@ spring:
 ## File Storage Properties
 # All files uploaded through the REST API will be stored in this directory
 file:
-  upload-dir: /Users/alexey/IdeaProjects/imgs
+  upload-dir: /home/springboot/app/imgs
 image:
   maxWidth: 1080
   maxHeight: 1226
   profileMaxWidth: 500
   profileMaxHeight: 500
-  host: "http://172.20.10.4:8080"
+  host: "http://kofify.com"
 
 push:
   secret: MWFhMDUyMDUtMjE5Ny00MWI1LTg2MmUtNjE1Y2E3MzY2YmRl

@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.icebreaker"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
@@ -16,8 +16,8 @@ repositories {
 }
 
 dependencies {
-    implementation ("javax.activation:activation:1.1.1")
-    implementation ("javax.mail:mail:1.4.7")
+    implementation("javax.activation:activation:1.1.1")
+    implementation("javax.mail:mail:1.4.7")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

@@ -1,0 +1,13 @@
+[Unit]
+Description=Kofify app
+After=syslog.target
+
+[Service]
+User=springboot
+ExecStart=java -Xms256m -Xmx512m -Dspring.profiles.active=prod -jar /var/springboot/app/be.jar
+SuccessExitStatus=143
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
