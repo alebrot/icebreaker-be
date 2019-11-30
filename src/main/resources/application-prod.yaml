@@ -43,7 +43,7 @@ spring:
 ## File Storage Properties
 # All files uploaded through the REST API will be stored in this directory
 file:
-  upload-dir: /var/springboot/app
+  upload-dir: /var/springboot/app/imgs
 image:
   maxWidth: 1080
   maxHeight: 1226
