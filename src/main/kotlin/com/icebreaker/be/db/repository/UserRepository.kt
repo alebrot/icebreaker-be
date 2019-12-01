@@ -29,4 +29,7 @@ interface UserRepository : CrudRepository<AkUserEntity, Int> {
     @Query(value = "SELECT COUNT(AK_USER.ID) AS COUNT, AK_USER.CREDITS AS CREDITS  FROM AK_USER GROUP BY AK_USER.CREDITS ORDER BY AK_USER.CREDITS DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
     fun countUsersByAvailablePoints(@Param("limit") limit: Int, @Param("offset") offset: Int): List<Map<String, Int>>
 
+    @Query(value = "SELECT COUNT(DATE(LAST_SEEN)) AS COUNT, DATE(LAST_SEEN) AS DATE FROM AK_USER GROUP BY DATE(LAST_SEEN) ORDER BY DATE(LAST_SEEN) DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
+    fun countOnlineUsersByDate(@Param("limit") limit: Int, @Param("offset") offset: Int): List<Map<String, Any>>
+
 }
