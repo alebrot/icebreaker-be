@@ -3,6 +3,8 @@ package com.icebreaker.be.service.admin
 import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.service.admin.model.UserByAvailablePoint
 import com.icebreaker.be.service.admin.model.UserByDate
+import com.icebreaker.be.service.model.User
+import com.icebreaker.be.service.model.fromEntity
 import org.springframework.stereotype.Service
 import java.math.BigInteger
 
@@ -10,6 +12,7 @@ import java.math.BigInteger
 interface DashboardService {
     fun countUsersByAvailablePoints(): List<UserByAvailablePoint>
     fun countOnlineUsersByDate(): List<UserByDate>
+    fun getNewUsers(): List<User>
 }
 
 const val defaultLimit = 6;
@@ -32,5 +35,12 @@ class DashboardServiceDefault(val userRepository: UserRepository) : DashboardSer
             UserByDate(count.toInt(), date.toLocalDate())
         }
     }
+
+    override fun getNewUsers(): List<User> {
+        return userRepository.getNewUsers(defaultLimit, defaultOffset).map {
+            User.fromEntity(it)
+        }
+    }
+
 
 }
