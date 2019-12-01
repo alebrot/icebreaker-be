@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.util.*
@@ -284,11 +285,11 @@ class UserServiceDefault(val userRepository: UserRepository,
         val imgUrl: String? = findUsersCloseToUser["IMG_URL"] as? String
         val birthday: java.sql.Date = findUsersCloseToUser["BIRTHDAY"] as java.sql.Date
         val authorities: List<Authority> = ArrayList()
-        val accountExpired: Byte = findUsersCloseToUser["ACCOUNT_EXPIRED"] as Byte
-        val accountLocked: Byte = findUsersCloseToUser["ACCOUNT_LOCKED"] as Byte
-        val credentialsExpired: Byte = findUsersCloseToUser["CREDENTIALS_EXPIRED"] as Byte
-        val enabled: Byte = findUsersCloseToUser["ENABLED"] as Byte
-        val genderInt: Int? = findUsersCloseToUser["GENDER"] as? Int
+        val accountExpired: Integer = findUsersCloseToUser["ACCOUNT_EXPIRED"] as Integer
+        val accountLocked: Integer = findUsersCloseToUser["ACCOUNT_LOCKED"] as Integer
+        val credentialsExpired: Integer = findUsersCloseToUser["CREDENTIALS_EXPIRED"] as Integer
+        val enabled: Integer = findUsersCloseToUser["ENABLED"] as Integer
+        val genderInt: BigInteger? = findUsersCloseToUser["GENDER"] as? BigInteger
 
         val lastSeen: Timestamp = findUsersCloseToUser["LAST_SEEN"] as Timestamp
 
@@ -302,14 +303,14 @@ class UserServiceDefault(val userRepository: UserRepository,
 //
 //        val admobUpdatedAt: Timestamp = findUsersCloseToUser["ADMOB_UPDATED_AT"] as Timestamp
 
-        val gender: Gender? = if (genderInt != null) Gender.values()[genderInt] else null
+        val gender: Gender? = if (genderInt != null) Gender.values()[genderInt.toInt()] else null
 
         val bio: String? = findUsersCloseToUser["BIO"] as? String
 
         val distance: Int = (findUsersCloseToUser["DISTANCE"] as Double).toInt()
         val invitedBy: Int? = findUsersCloseToUser["INVITED_BY"] as? Int
 
-        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired.toBoolean(), accountLocked.toBoolean(), credentialsExpired.toBoolean(), birthday.toLocalDate(), bio, gender, enabled.toBoolean(), lastSeen.toLocalDateTime(), createdAt.toLocalDateTime(), null, invitedBy)
+        val user = User(id, email, passwordHash, firstName, lastName, imgUrl, authorities, accountExpired.toByte().toBoolean(), accountLocked.toByte().toBoolean(), credentialsExpired.toByte().toBoolean(), birthday.toLocalDate(), bio, gender, enabled.toByte().toBoolean(), lastSeen.toLocalDateTime(), createdAt.toLocalDateTime(), null, invitedBy)
 
         UserWithDistance(distance, user)
     }
