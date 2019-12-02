@@ -98,3 +98,15 @@ systemctl daemon-reload
 sudo systemctl enable be.service
 # log
 journalctl -u be
+
+
+
+#SSH
+
+ssh-keygen -t rsa
+cat ~/.ssh/id_rsa.pub
+# backup ~/.ssh/id_rsa
+ssh-copy-id root@209.250.239.44
+# /usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/Users/alexey/.ssh/id_rsa.pub"
+# /usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+# /usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
