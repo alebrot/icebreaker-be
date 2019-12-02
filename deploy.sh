@@ -9,11 +9,11 @@ scp "$FROM_FILE_PATH" $MACHINE:$TO_FILE_PATH
 echo "Uploading completed"
 
 ssh $MACHINE /bin/bash << HERE
+  echo "Changing owner and access permissions"
   chown springboot:springboot $TO_FILE_PATH
   chmod 500 $TO_FILE_PATH
-  echo "Changed owner and access permissions"
   echo "Restarting service"
   systemctl restart be
-  sleep 15
+  sleep 20
   systemctl status be | tail -5
 HERE
