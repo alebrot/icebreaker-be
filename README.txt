@@ -110,3 +110,8 @@ ssh-copy-id root@209.250.239.44
 # /usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/Users/alexey/.ssh/id_rsa.pub"
 # /usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
 # /usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+
+
+#SSL
+#Generate certificate dev
+    keytool -genkeypair -alias mycert -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore mycert.p12 -validity 3650
