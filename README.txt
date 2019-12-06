@@ -135,7 +135,11 @@ IMPORTANT NOTES:
 
 
 #convert to PKCS
-openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out mycert.p12 -name mycert -CAfile chain.pem -caname root -password pass:password
+cd /etc/letsencrypt/live/kofify.com
+openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out mycert.p12 -name "mycert" -CAfile chain.pem -caname root -password pass:password
+mv /etc/letsencrypt/live/kofify.com/mycert.p12 /var/springboot/app/mycert.p12
+chown springboot:springboot /var/springboot/app/mycert.p12
+chmod 500 /var/springboot/app/mycert.p12
 
 #Swap Enabling
 sudo fallocate -l 1G /swapfile
@@ -146,3 +150,23 @@ sudo swapon --show
 
 
 
+#iptables
+iptables -t nat -L --line-numbers
+#delete rule
+iptables -t nat -D PREROUTING {line number}
+
+# You should should see in the output entries for 80, 443, 8080,and 8443.
+iptables -L -n
+
+#if not then execute
+sudo iptables -I INPUT 1 -p tcp --dport 8443 -j ACCEPT
+sudo iptables -I INPUT 1 -p tcp --dport 8080 -j ACCEPT
+sudo iptables -I INPUT 1 -p tcp --dport 443 -j ACCEPT
+sudo iptables -I INPUT 1 -p tcp --dport 80 -j ACCEPT
+
+Once traffic on the required ports are allowed, you can run the command to forward port 80 traffic to 8080, and port 443 traffic to 8443. The commands look like this:
+sudo iptables -t nat -I PREROUTING -p tcp --destination-port 443 -j REDIRECT --to-ports 8443
+sudo iptables -t nat -I PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-ports 8080
+
+#saving
+sudo iptables-save > /etc/iptables.rules
