@@ -285,11 +285,11 @@ class UserServiceDefault(val userRepository: UserRepository,
         val imgUrl: String? = findUsersCloseToUser["IMG_URL"] as? String
         val birthday: java.sql.Date = findUsersCloseToUser["BIRTHDAY"] as java.sql.Date
         val authorities: List<Authority> = ArrayList()
-        val accountExpired: Integer = findUsersCloseToUser["ACCOUNT_EXPIRED"] as Integer
-        val accountLocked: Integer = findUsersCloseToUser["ACCOUNT_LOCKED"] as Integer
-        val credentialsExpired: Integer = findUsersCloseToUser["CREDENTIALS_EXPIRED"] as Integer
-        val enabled: Integer = findUsersCloseToUser["ENABLED"] as Integer
-        val genderInt: BigInteger? = findUsersCloseToUser["GENDER"] as? BigInteger
+        val accountExpired: Int = findUsersCloseToUser["ACCOUNT_EXPIRED"] as Int
+        val accountLocked: Int = findUsersCloseToUser["ACCOUNT_LOCKED"] as Int
+        val credentialsExpired: Int = findUsersCloseToUser["CREDENTIALS_EXPIRED"] as Int
+        val enabled: Int = findUsersCloseToUser["ENABLED"] as Int
+        val genderInt: Int? = findUsersCloseToUser["GENDER"] as? Int
 
         val lastSeen: Timestamp = findUsersCloseToUser["LAST_SEEN"] as Timestamp
 
