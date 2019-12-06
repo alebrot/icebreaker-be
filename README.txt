@@ -115,3 +115,34 @@ ssh-copy-id root@209.250.239.44
 #SSL
 #Generate certificate dev
     keytool -genkeypair -alias mycert -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore mycert.p12 -validity 3650
+
+#Prod
+wget https://dl.eff.org/certbot-auto
+mv certbot-auto /usr/local/bin/certbot-auto
+sudo chown root /usr/local/bin/certbot-auto
+sudo chmod 0755 /usr/local/bin/certbot-auto
+sudo /usr/local/bin/certbot-auto certonly --standalone
+
+IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/kofify.com/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/kofify.com/privkey.pem
+   Your cert will expire on 2020-03-05. To obtain a new or tweaked
+   version of this certificate in the future, simply run certbot-auto
+   again. To non-interactively renew *all* of your certificates, run
+   "certbot-auto renew"
+
+
+#convert to PKCS
+openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out mycert.p12 -name mycert -CAfile chain.pem -caname root -password pass:password
+
+#Swap Enabling
+sudo fallocate -l 1G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+sudo swapon --show
+
+
+
