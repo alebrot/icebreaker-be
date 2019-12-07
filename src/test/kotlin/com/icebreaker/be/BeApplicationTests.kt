@@ -2,6 +2,7 @@ package com.icebreaker.be
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.junit.Assert
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
@@ -21,7 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 
-
+@Ignore
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Config::class])
 class BeApplicationTests {

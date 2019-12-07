@@ -45,7 +45,7 @@ import javax.imageio.ImageIO
 import javax.sql.DataSource
 
 //@RunWith(SpringRunner::class)
-
+@Ignore
 class Seeding() : BeApplicationTests() {
 
     companion object {
