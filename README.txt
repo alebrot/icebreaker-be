@@ -1,3 +1,6 @@
+#restart docker
+systemctl restart docker
+
 # Build image:
 docker build -t khlebtsov/kofify-db:v1 .
 docker push khlebtsov/kofify-db:v1
@@ -170,3 +173,6 @@ sudo iptables -t nat -I PREROUTING -p tcp --destination-port 80 -j REDIRECT --to
 
 #saving
 sudo iptables-save > /etc/iptables.rules
+
+#restore
+iptables-restore < /etc/iptables.rules
