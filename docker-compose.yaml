@@ -25,11 +25,13 @@ services:
     image: webcenter/activemq:5.14.3
     container_name: kofify-activemq
     ports:
-      - "8162:8161"
-      - "61617:61616"
+      - "8161:8161"
+      - "61616:61616"
     environment:
       ACTIVEMQ_ADMIN_LOGIN: "admin"
       ACTIVEMQ_ADMIN_PASSWORD: "password"
+      ACTIVEMQ_CONFIG_MINMEMORY: 128
+      ACTIVEMQ_CONFIG_MAXMEMORY: 256
 # Names our volume
 volumes:
   kofify-db:
