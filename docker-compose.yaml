@@ -25,8 +25,11 @@ services:
     image: webcenter/activemq:5.14.3
     container_name: kofify-activemq
     ports:
+      # 8161 web console
+      # 61613 stomp
+      # 61614 ws
       - "8161:8161"
-      - "61616:61616"
+      - "61613:61613"
     environment:
       ACTIVEMQ_ADMIN_LOGIN: "admin"
       ACTIVEMQ_ADMIN_PASSWORD: "password"

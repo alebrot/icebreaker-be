@@ -68,7 +68,7 @@ push:
 
 websocket:
   relay-host: 127.0.0.1
-  relay-port: 61616
+  relay-port: 61613
   client-login: admin
   client-passcode: password
 
