@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x #echo on
 
 LETS_ENCRYPT_PATH=/etc/letsencrypt/live/kofify.com
 TO_CERT_JAVA_FILE=/var/springboot/app/mycert.p12
