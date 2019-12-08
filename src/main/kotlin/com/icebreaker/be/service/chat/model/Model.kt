@@ -73,5 +73,6 @@ enum class MessageType {
 
 
 fun ChatLine.toDto(imageHost: String, hashids: Hashids): ChatLineDto {
-    return ChatLineDto(this.id, this.user.toDto(imageHost, hashids), this.content, this.readBy, this.createdAt, this.type)
+    val readBy = this.readBy.map { hashids.encode(it.toLong()) }.toSet()
+    return ChatLineDto(this.id, this.user.toDto(imageHost, hashids), this.content, readBy, this.createdAt, this.type)
 }
