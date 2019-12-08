@@ -10,7 +10,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 
 @Configuration
-@Profile("prod")
+@Profile("!prod")
 @EnableWebSocketMessageBroker
 class WebSocketConfigInMemory : WebSocketMessageBrokerConfigurer {
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
@@ -24,7 +24,7 @@ class WebSocketConfigInMemory : WebSocketMessageBrokerConfigurer {
 }
 
 @Configuration
-@Profile("!prod")
+@Profile("prod")
 @EnableWebSocketMessageBroker
 class WebSocketConfig(val webSocketProperties: WebSocketProperties) : WebSocketMessageBrokerConfigurer {
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
