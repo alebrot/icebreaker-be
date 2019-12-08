@@ -126,6 +126,9 @@ sudo chown root /usr/local/bin/certbot-auto
 sudo chmod 0755 /usr/local/bin/certbot-auto
 sudo /usr/local/bin/certbot-auto certonly --standalone
 
+#renew
+/usr/local/bin/certbot-auto renew --dry-run
+
 IMPORTANT NOTES:
  - Congratulations! Your certificate and chain have been saved at:
    /etc/letsencrypt/live/kofify.com/fullchain.pem
