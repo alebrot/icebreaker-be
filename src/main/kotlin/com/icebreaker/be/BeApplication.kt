@@ -15,6 +15,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.http.client.BufferingClientHttpRequestFactory
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.scheduling.annotation.EnableAsync
+import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.transaction.annotation.EnableTransactionManagement
@@ -25,6 +26,7 @@ import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+@EnableScheduling
 @EnableAsync
 @SpringBootApplication
 @EnableConfigurationProperties(FileStorageProperties::class, ImageProperties::class, PushProperties::class, CoreProperties::class)

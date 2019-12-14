@@ -15,4 +15,5 @@ interface UserFacade {
     fun swapUserImage(userOrFail: User, imageId1: Int, imageId2: Int): List<String>
     fun updateUserImages(userOrFail: User, imageIds: List<Int>): List<String>
     fun deleteAllUserImages(user: User)
+    fun updateUserLastSeenForFakeUsers()
 }

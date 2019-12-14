@@ -27,4 +27,6 @@ interface UserService {
     fun getUserByEmail(email: String): User?
     fun getUserByEmailOrFail(email: String): User
     fun deleteUser(user: User, reason: String?)
+    fun getRealUsersOnlineCount(): Int
+    fun getFakeUsers(limit: Int, offset: Int): List<User>
 }

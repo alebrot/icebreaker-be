@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
+import kotlin.math.min
 
 @Service
 class UserFacadeDefault(val userService: UserService,
@@ -143,6 +144,17 @@ class UserFacadeDefault(val userService: UserService,
     override fun updateUserLastSeen(user: User) {
         user.lastSeen = LocalDateTime.now()
         userService.updateUser(user)
+    }
+
+    override fun updateUserLastSeenForFakeUsers() {
+        if (userService.getRealUsersOnlineCount() > 0) {
+            val fakeUsers = userService.getFakeUsers(50, 0)
+            val subList = fakeUsers.shuffled().subList(0, min(fakeUsers.count(), 20))
+            for (user in subList) {
+                updateUserLastSeen(user)
+            }
+            logger.info("LastSeen updated for users, count {}", subList.size)
+        }
     }
 
     override fun updateFirstUserPhotoIfNecessary(file: MultipartFile, user: User) {

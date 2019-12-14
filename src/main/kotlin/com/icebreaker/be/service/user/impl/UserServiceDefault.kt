@@ -20,9 +20,10 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.sql.Timestamp
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.min
@@ -39,6 +40,12 @@ class UserServiceDefault(val userRepository: UserRepository,
                          val coreProperties: CoreProperties) : UserService {
 
     private val fakeEmailDomain = "@email.com"
+
+
+    override fun getRealUsersOnlineCount(): Int {
+        val now = LocalDateTime.now().minusMinutes(1)
+        return userRepository.countAllByEmailNotContainingAndLastSeenAfter(fakeEmailDomain, Timestamp.valueOf(now))
+    }
 
     @Transactional
     override fun updateUser(user: User): User {
@@ -151,6 +158,13 @@ class UserServiceDefault(val userRepository: UserRepository,
             userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), limit, offset)
         }
         return findUsersCloseToUser.map(mapper)
+    }
+
+    @Transactional
+    override fun getFakeUsers(limit: Int, offset: Int): List<User> {
+        return userRepository.findAllByEmailContaining(fakeEmailDomain, limit, offset).map {
+            User.fromEntity(it)
+        }
     }
 
     @Transactional

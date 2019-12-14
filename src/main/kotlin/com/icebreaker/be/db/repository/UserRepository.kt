@@ -4,9 +4,16 @@ import com.icebreaker.be.db.entity.AkUserEntity
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
+import java.sql.Timestamp
 
 interface UserRepository : CrudRepository<AkUserEntity, Int> {
     fun findByEmail(email: String): AkUserEntity?
+
+    @Query(value = "SELECT *FROM AK_USER WHERE EMAIL LIKE CONCAT('%',:email,'%') LIMIT :limit OFFSET :offset", nativeQuery = true)
+    fun countAllByEmailContaining(@Param("email") email: String, @Param("limit") limit: Int, @Param("offset") offset: Int): List<AkUserEntity>
+
+    fun countAllByEmailNotContainingAndLastSeenAfter(email: String, lastSeen: Timestamp): Int
+    fun getAllByEmailNotContainingAndLastSeenAfter(email: String, lastSeen: Timestamp): List<AkUserEntity>
 
     @Query(value = "SELECT *FROM AK_USER WHERE EMAIL LIKE CONCAT('%',:email,'%') LIMIT :limit OFFSET :offset", nativeQuery = true)
     fun findAllByEmailContaining(@Param("email") email: String, @Param("limit") limit: Int, @Param("offset") offset: Int): List<AkUserEntity>
