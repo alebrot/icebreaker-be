@@ -191,3 +191,13 @@ iptables-restore < /etc/iptables.rules
             <transportConnector name="mqtt" uri="mqtt://0.0.0.0:1883?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
             <transportConnector name="ws" uri="ws://0.0.0.0:61614?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
         </transportConnectors>
+
+
+
+#cron
+
+https://crontab.guru/#0_0_1_2/2_*
+
+At 00:00 on day-of-month 1 in every 2nd month.
+Next at 2020-01-01 00:00:00
+0 0 1 */2 * /var/springboot/app/renewCert.sh >> /var/springboot/app/renewCert.log
