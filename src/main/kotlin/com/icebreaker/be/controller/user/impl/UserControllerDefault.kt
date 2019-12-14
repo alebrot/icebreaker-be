@@ -260,7 +260,7 @@ class UserControllerDefault(val authService: AuthService,
 
         val mapped = usersCloseToUser.map {
             UserWithDistanceDto(it.distance, it.user.toDto(imageProperties.host, hashids))
-        }
+        }.shuffled()
 
         return GetUserMeUsersResponse(mapped.size, mapped)
     }
