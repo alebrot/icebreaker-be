@@ -16,6 +16,7 @@ const val POST_USER_ME = "/users/me"
 const val DELETE_USER_ME = "/users/me"
 const val GET_PRODUCTS = "/users/me/products"
 const val UPLOAD_USER_IMAGE = "/users/me/images/{imageId}"
+const val DELETE_USER_IMAGE = "/users/me/images/{imageId}"
 const val SWAP_USER_IMAGE = "/users/me/images/from/{imageId1}/to/{imageId2}"
 const val UPLOAD_USER_PROFILE_IMAGE = "/users/me/image"
 const val GET_USER_ME_USERS = "/users/me/users"
@@ -79,4 +80,8 @@ interface UserController {
 
     @PostMapping(POST_LOGOUT)
     fun logout(principal: OAuth2Authentication): BaseResponse
+
+    @DeleteMapping(DELETE_USER_IMAGE)
+    fun deleteUserImage(@PathVariable imageId: Int): BaseResponse
+
 }

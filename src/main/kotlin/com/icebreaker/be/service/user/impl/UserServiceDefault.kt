@@ -23,7 +23,6 @@ import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.min
@@ -107,13 +106,17 @@ class UserServiceDefault(val userRepository: UserRepository,
         return userImageRepository.findByUserIdAndPosition(user.id, position)?.imageName
     }
 
+    override fun deleteImageByPosition(user: User, position: Int) {
+        return userImageRepository.deleteByUserIdAndPosition(user.id, position)
+    }
+
     override fun getUserProfileImageName(user: User): String? {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         return userEntity.imgUrl
     }
 
 
-    override fun updateUserProfilePhoto(user: User, imageName: String) {
+    override fun updateUserProfilePhoto(user: User, imageName: String?) {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         userEntity.imgUrl = imageName
         user.imgUrl = imageName

@@ -16,4 +16,6 @@ interface UserFacade {
     fun updateUserImages(userOrFail: User, imageIds: List<Int>): List<String>
     fun deleteAllUserImages(user: User)
     fun updateUserLastSeenForFakeUsers()
+    fun deleteUserImage(user: User, imageId: Int)
+    fun deleteProfileImage(user: User)
 }

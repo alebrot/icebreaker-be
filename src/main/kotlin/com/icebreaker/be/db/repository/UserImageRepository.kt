@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository
 interface UserImageRepository : CrudRepository<AkUserImageEntity, Int> {
     fun findByUserIdOrderByPosition(userId: Int): List<AkUserImageEntity>
     fun findByUserIdAndPosition(userId: Int, position: Int): AkUserImageEntity?
+    fun deleteByUserIdAndPosition(userId: Int, position: Int)
 }
 

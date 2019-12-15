@@ -117,6 +117,18 @@ class UserControllerDefault(val authService: AuthService,
         return BaseResponse()
     }
 
+    override fun deleteUserImage(imageId: Int): BaseResponse {
+        validateImageId(imageId)
+        val user = authService.getUserOrFail()
+        userFacade.deleteUserImage(user, imageId)
+
+        if (imageId == 1) {
+            userFacade.deleteProfileImage(user)
+        }
+
+        return BaseResponse()
+    }
+
     override fun updateUser(request: UpdateUserRequest): GetUserMeResponse {
         val userOrFail = authService.getUserOrFail()
         val bio = request.bio

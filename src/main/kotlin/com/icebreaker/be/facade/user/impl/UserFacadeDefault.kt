@@ -196,11 +196,24 @@ class UserFacadeDefault(val userService: UserService,
         }
 
         for (position in 1..3) {
-            val imageNameToDeleteFromDisc = userService.getImageNameByPosition(user, position)
-            if (imageNameToDeleteFromDisc != null) {
-                fileFacade.deleteImageIfExistsAsync(imageNameToDeleteFromDisc)
-            }
+            deleteUserImage(user, position)
         }
     }
 
+    override fun deleteUserImage(user: User, imageId: Int) {
+        val imageNameToDeleteFromDisc = userService.getImageNameByPosition(user, imageId)
+        if (imageNameToDeleteFromDisc != null) {
+            userService.deleteImageByPosition(user, imageId)
+            fileFacade.deleteImageIfExistsAsync(imageNameToDeleteFromDisc)
+        }
+    }
+
+
+    override fun deleteProfileImage(user: User) {
+        val userProfileImageNameToDeleteFromDisc = userService.getUserProfileImageName(user)
+        if (userProfileImageNameToDeleteFromDisc != null) {
+            userService.updateUserProfilePhoto(user, null)
+            fileFacade.deleteImageIfExistsAsync(userProfileImageNameToDeleteFromDisc)
+        }
+    }
 }

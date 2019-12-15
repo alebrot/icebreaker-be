@@ -14,7 +14,7 @@ interface UserService {
     fun getUsersCloseToUser(user: User, distanceInMeters: Int, limit: Int, offset: Int): List<UserWithDistance>
     fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal, limit: Int, offset: Int): List<UserWithDistance>
     fun updateUserPosition(user: User, latitude: BigDecimal, longitude: BigDecimal)
-    fun updateUserProfilePhoto(user: User, imageName: String)
+    fun updateUserProfilePhoto(user: User, imageName: String?)
     fun updateUser(user: User): User
     fun getImages(user: User): List<String>
     fun getUserById(userId: Int): User
@@ -29,4 +29,5 @@ interface UserService {
     fun deleteUser(user: User, reason: String?)
     fun getRealUsersOnlineCount(): Int
     fun getFakeUsers(limit: Int, offset: Int): List<User>
+    fun deleteImageByPosition(user: User, position: Int)
 }
