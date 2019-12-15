@@ -169,10 +169,10 @@ class UserFacadeDefault(val userService: UserService,
         val fakeFemaleUser = userService.getFakeUsersByGender(Gender.FEMALE, 100, 4).shuffled().firstOrNull()
 
         for (user in users) {
-            val fakeUser: User? = if (user.gender == Gender.MALE) {
-                fakeFemaleUser
-            } else {
+            val fakeUser: User? = if (user.gender == Gender.FEMALE) {
                 fakeMaleUser
+            } else {
+                fakeFemaleUser
             }
             if (fakeUser != null) {
                 val chat = chatService.findOrCreateChat(fakeUser, listOf(user.id)).first
