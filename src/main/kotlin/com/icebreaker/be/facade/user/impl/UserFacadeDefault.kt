@@ -226,6 +226,7 @@ class UserFacadeDefault(val userService: UserService,
         }
     }
 
+
     override fun deleteUserImage(user: User, imageId: Int) {
         val imageNameToDeleteFromDisc = userService.getImageNameByPosition(user, imageId)
         if (imageNameToDeleteFromDisc != null) {
@@ -233,7 +234,6 @@ class UserFacadeDefault(val userService: UserService,
             fileFacade.deleteImageIfExistsAsync(imageNameToDeleteFromDisc)
         }
     }
-
 
     override fun deleteProfileImage(user: User) {
         val userProfileImageNameToDeleteFromDisc = userService.getUserProfileImageName(user)

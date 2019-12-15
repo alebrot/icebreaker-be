@@ -148,6 +148,7 @@ class UserServiceDefault(val userRepository: UserRepository,
         return userImageRepository.findByUserIdAndPosition(user.id, position)?.imageName
     }
 
+    @Transactional
     override fun deleteImageByPosition(user: User, position: Int) {
         return userImageRepository.deleteByUserIdAndPosition(user.id, position)
     }

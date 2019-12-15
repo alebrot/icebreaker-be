@@ -32,15 +32,8 @@ interface UserService {
     fun getRealUsersOnlineCount(): Int
     fun getFakeUsers(limit: Int, offset: Int): List<User>
     fun deleteImageByPosition(user: User, position: Int)
-    @Transactional
     fun getRealUsersOnline(): List<User>
-
-    @Transactional
     fun getRealUsersOnlineWithLimitedAmountOfCreditsAndNoChatsWithFakeUsers(): List<User>
-
-    @Transactional
     fun getFakeUsersByGender(gender: Gender, limit: Int, offset: Int): List<User>
-
-    @Transactional
     fun getRealUsersOnlineAndNoChatsWithFakeUsers(): List<User>
 }
