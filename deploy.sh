@@ -14,6 +14,6 @@ ssh $MACHINE /bin/bash << HERE
   chmod 500 $TO_FILE_PATH
   echo "Restarting service"
   systemctl restart be
-  sleep 20
+  sleep 40
   systemctl status be | tail -5
 HERE
