@@ -15,7 +15,9 @@ data class UserDto(val id: String,
                    val bio: String?,
                    val gender: Gender?,
                    val credit: CreditDto?,
-                   val invitedBy: String?)
+                   val invitedBy: String?) {
+    val online: Boolean = LocalDateTime.now().minusMinutes(15).isBefore(lastSeen)
+}
 
 data class AdmobCreditDto(val count: Int,
                           val countMax: Int,
