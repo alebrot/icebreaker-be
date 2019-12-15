@@ -261,7 +261,7 @@ class UserControllerDefault(val authService: AuthService,
                                 limit: Int?,
                                 offset: Int?): GetUserMeUsersResponse {
 
-        val defaultLimit = 6;
+        val defaultLimit = 10;
         val defaultOffset = 0;
 
         val limitSafe: Int = if ((limit ?: defaultLimit) !in 0..defaultLimit) defaultLimit else (limit ?: defaultLimit)
