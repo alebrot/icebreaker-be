@@ -13,6 +13,6 @@ interface FileService {
     fun loadFileAsPath(fileName: String): Path?
     fun deleteFile(path: Path)
     fun storeImage(path: Path, maxWidth: Int, maxHeight: Int): String
-    fun blur(sourceImage: BufferedImage): BufferedImage
+    fun blur(bufferedImage: BufferedImage): BufferedImage
     fun toByteArrayOutputStream(fileName: String, image: BufferedImage): ByteArrayOutputStream
 }

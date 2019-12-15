@@ -5,16 +5,12 @@ import com.icebreaker.be.exception.FileNotFoundException
 import com.icebreaker.be.ext.toInputStream
 import com.icebreaker.be.service.file.FileService
 import net.coobird.thumbnailator.Thumbnails
-import org.imgscalr.Scalr
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
-import java.awt.Image
 import java.awt.image.BufferedImage
-import java.awt.image.ConvolveOp
-import java.awt.image.Kernel
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -99,7 +95,6 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
             }
         } catch (ex: MalformedURLException) {
             throw FileNotFoundException("File not found $fileName")
-//            throw IllegalStateException("File not found $fileName", ex)
         }
     }
 
@@ -120,21 +115,6 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
         return UUID.randomUUID().toString()
     }
 
-    private fun scaleOld(img: BufferedImage, width: Int, height: Int): BufferedImage {
-        val tmp = img.getScaledInstance(width, height, Image.SCALE_DEFAULT)
-        val scaled = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-        val g2d = scaled.createGraphics()
-        g2d.drawImage(tmp, 0, 0, null)
-        g2d.dispose()
-        return scaled
-    }
-
-
-    private fun scale1(img: BufferedImage, width: Int, height: Int): BufferedImage {
-        return Scalr.resize(img, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
-                width, height, Scalr.OP_ANTIALIAS)
-    }
-
     private fun scale(img: BufferedImage, width: Int, height: Int): BufferedImage {
         return Thumbnails.of(img).size(width, height).asBufferedImage()
     }
@@ -145,19 +125,10 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
         return scaled.toInputStream(ext)
     }
 
-    private fun blur1() {
-        var bufferedImage = BufferedImage(200, 200,
-                BufferedImage.TYPE_BYTE_INDEXED)
-
-        val kernel = Kernel(3, 3, floatArrayOf(1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f))
-        val op = ConvolveOp(kernel)
-        bufferedImage = op.filter(bufferedImage, null)
-    }
-
-    override fun blur(source: BufferedImage): BufferedImage {
-        val origWidth = source.width
-        val origHeight = source.height
-        val sourceImage = scale(source, 5, 5)
-        return scale(sourceImage, origWidth, origHeight)
+    override fun blur(bufferedImage: BufferedImage): BufferedImage {
+        val origWidth = bufferedImage.width
+        val origHeight = bufferedImage.height
+        val image = scale(bufferedImage, 5, 5)
+        return scale(image, origWidth, origHeight)
     }
 }

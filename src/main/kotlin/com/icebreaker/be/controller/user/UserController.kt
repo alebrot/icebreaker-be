@@ -82,6 +82,6 @@ interface UserController {
     fun logout(principal: OAuth2Authentication): BaseResponse
 
     @DeleteMapping(DELETE_USER_IMAGE)
-    fun deleteUserImage(@PathVariable imageId: Int): BaseResponse
+    fun deleteUserImage(@PathVariable imageId: Int): GetUserMeResponse
 
 }
