@@ -2,6 +2,7 @@ package com.icebreaker.be.service.user
 
 import com.icebreaker.be.service.model.Gender
 import com.icebreaker.be.service.model.User
+import com.icebreaker.be.service.model.UserImage
 import com.icebreaker.be.service.model.UserWithDistance
 import com.icebreaker.be.service.social.impl.SocialUser
 import org.springframework.security.core.userdetails.UserDetails
@@ -18,7 +19,7 @@ interface UserService {
     fun updateUserPosition(user: User, latitude: BigDecimal, longitude: BigDecimal)
     fun updateUserProfilePhoto(user: User, imageName: String?)
     fun updateUser(user: User): User
-    fun getImages(user: User): List<String>
+    fun getImages(user: User): List<UserImage>
     fun getUserById(userId: Int): User
     fun updateImageForUser(user: User, position: Int, imageName: String)
     fun getDistanceBetweenUsers(user1: User, user2: User): Int?

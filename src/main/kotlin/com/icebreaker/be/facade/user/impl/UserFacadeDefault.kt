@@ -9,6 +9,7 @@ import com.icebreaker.be.service.file.FileFacade
 import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.service.model.Gender
 import com.icebreaker.be.service.model.User
+import com.icebreaker.be.service.model.UserImage
 import com.icebreaker.be.service.social.impl.SocialUser
 import com.icebreaker.be.service.user.UserService
 import org.slf4j.Logger
@@ -35,7 +36,7 @@ class UserFacadeDefault(val userService: UserService,
     val positionOfFirstPhoto = 1
 
     @Transactional
-    override fun updateUserImages(userOrFail: User, imageIds: List<Int>): List<String> {
+    override fun updateUserImages(userOrFail: User, imageIds: List<Int>): List<UserImage> {
 
         if (imageIds.isEmpty() || imageIds.size > 3 || imageIds.toSet().size != imageIds.size) {
             throw IllegalArgumentException("not valid imageIds")
@@ -71,7 +72,7 @@ class UserFacadeDefault(val userService: UserService,
     }
 
     @Transactional
-    override fun swapUserImage(userOrFail: User, imageId1: Int, imageId2: Int): List<String> {
+    override fun swapUserImage(userOrFail: User, imageId1: Int, imageId2: Int): List<UserImage> {
 
         val imageName1 = userService.getImageNameByPosition(userOrFail, imageId1)
         val imageName2 = userService.getImageNameByPosition(userOrFail, imageId2)

@@ -9,7 +9,6 @@ import com.icebreaker.be.db.repository.*
 import com.icebreaker.be.ext.getIntInRange
 import com.icebreaker.be.ext.toBoolean
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
-import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.model.*
 import com.icebreaker.be.service.social.impl.SocialUser
 import com.icebreaker.be.service.user.UserService
@@ -134,13 +133,20 @@ class UserServiceDefault(val userRepository: UserRepository,
         }
     }
 
-    override fun getImages(user: User): List<String> {
+    override fun getImages(user: User): List<UserImage> {
         val images = userImageRepository.findByUserIdOrderByPosition(user.id)
-        return images.mapNotNull { it.imageName }.map {
-            ServletUriComponentsBuilder.fromHttpUrl(imageProperties.host)
-                    .path(GET_IMAGE_PATH)
-                    .path(it)
-                    .toUriString()
+        return images.mapNotNull {
+            val position = it.position
+            val imageName = it.imageName
+            if (imageName != null) {
+                val url = ServletUriComponentsBuilder.fromHttpUrl(imageProperties.host)
+                        .path(GET_IMAGE_PATH)
+                        .path(imageName)
+                        .toUriString()
+                UserImage(position, url)
+            } else {
+                null
+            }
         }
     }
 

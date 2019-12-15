@@ -107,7 +107,7 @@ class UserControllerDefault(val authService: AuthService,
         //get fresh user with updated thumbnail
         val userById = userService.getUserById(userOrFail.id)
         val authorities = userById.authorities.map { it.toDto() }
-        val completeUserDto = CompleteUserDto(userById.toDto(imageProperties.host, hashids), authorities, images)
+        val completeUserDto = CompleteUserDto(userById.toDto(imageProperties.host, hashids), authorities, images.map { it.toDto() })
         return GetUserMeResponse(UserContextDto(completeUserDto))
     }
 
@@ -156,7 +156,7 @@ class UserControllerDefault(val authService: AuthService,
         //get fresh user with updated thumbnail
         val userById = userService.getUserById(userOrFail.id)
         val authorities = userById.authorities.map { it.toDto() }
-        val completeUserDto = CompleteUserDto(userById.toDto(imageProperties.host, hashids), authorities, images)
+        val completeUserDto = CompleteUserDto(userById.toDto(imageProperties.host, hashids), authorities, images.map { it.toDto() })
 
         return GetUserMeResponse(UserContextDto(completeUserDto))
     }
@@ -298,7 +298,7 @@ class UserControllerDefault(val authService: AuthService,
         val authorities = user.authorities.map { it.toDto() }
         val images = userService.getImages(user)
         val distanceBetweenUsers = userService.getDistanceBetweenUsers(userOrFail, user)
-        val completeUserDto = CompleteUserDtoWithDistance(user.toDto(imageProperties.host, hashids), authorities, images, distanceBetweenUsers)
+        val completeUserDto = CompleteUserDtoWithDistance(user.toDto(imageProperties.host, hashids), authorities, images.map { it.toDto() }, distanceBetweenUsers)
         return GetUserByIdResponse(completeUserDto)
 
     }
@@ -322,7 +322,7 @@ class UserControllerDefault(val authService: AuthService,
         val availableCredits = creditService.getAvailableCredits(user)
         user.credits = availableCredits
 
-        val completeUserDto = CompleteUserDto(user.toDto(imageProperties.host, hashids), authorities, images)
+        val completeUserDto = CompleteUserDto(user.toDto(imageProperties.host, hashids), authorities, images.map { it.toDto() })
 
         return GetUserMeResponse(UserContextDto(completeUserDto))
     }

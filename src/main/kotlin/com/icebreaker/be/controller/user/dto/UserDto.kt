@@ -28,11 +28,13 @@ data class LastSeenCreditDto(val rewardCredits: Int,
                              val rewardDuration: Duration,
                              val creditsUpdatedAt: LocalDateTime)
 
+data class ImageDto(val id: Int, val url: String)
+
 data class CreditDto(val credits: Int, val lastSeenCredit: LastSeenCreditDto, val inviteCredit: InviteCreditDto, val admobCredit: AdmobCreditDto)
 
 
-data class CompleteUserDto(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<String>)
+data class CompleteUserDto(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<ImageDto>)
 
-data class CompleteUserDtoWithDistance(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<String>, val distance: Int?)
+data class CompleteUserDtoWithDistance(val user: UserDto, val authorities: List<AuthorityDto>, val images: List<ImageDto>, val distance: Int?)
 
 data class ProductDto(val id: Int, val productId: String, val name: String, val description: String?)
