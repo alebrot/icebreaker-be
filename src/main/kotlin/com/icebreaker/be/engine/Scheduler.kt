@@ -28,8 +28,8 @@ class Scheduler(val userFacade: UserFacade,
 
         val realUsersOnlineAndNoChatsWithFakeUsers = userService.getRealUsersOnlineAndNoChatsWithFakeUsers()
 
-        if (users.isNotEmpty()) {
-            logger.info("online users with now chats found, size: {}", users.size)
+        if (realUsersOnlineAndNoChatsWithFakeUsers.isNotEmpty()) {
+            logger.info("online users with now chats found, size: {}", realUsersOnlineAndNoChatsWithFakeUsers.size)
             userFacade.sendInvitationTo(realUsersOnlineAndNoChatsWithFakeUsers)
         }
     }

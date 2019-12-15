@@ -207,7 +207,7 @@ class UserServiceDefault(val userRepository: UserRepository,
 
     @Transactional
     override fun getFakeUsersByGender(gender: Gender, limit: Int, offset: Int): List<User> {
-        return userRepository.findAllByEmailContainingAndGender(fakeEmailDomain, gender, limit, offset).map {
+        return userRepository.findAllByEmailContainingAndGender(fakeEmailDomain, gender.ordinal, limit, offset).map {
             User.fromEntity(it)
         }
     }
