@@ -9,6 +9,7 @@ import com.icebreaker.be.db.repository.*
 import com.icebreaker.be.ext.getIntInRange
 import com.icebreaker.be.ext.toBoolean
 import com.icebreaker.be.ext.toKotlinNotOptionalOrFail
+import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.model.*
 import com.icebreaker.be.service.social.impl.SocialUser
 import com.icebreaker.be.service.user.UserService
@@ -39,12 +40,53 @@ class UserServiceDefault(val userRepository: UserRepository,
                          val coreProperties: CoreProperties) : UserService {
 
     private val fakeEmailDomain = "@email.com"
+    private val creditsLimit = 5
+    private val onlineSinceInMinutes = 1L
 
 
     override fun getRealUsersOnlineCount(): Int {
-        val now = LocalDateTime.now().minusMinutes(1)
+        val now = LocalDateTime.now().minusMinutes(onlineSinceInMinutes)
         return userRepository.countAllByEmailNotContainingAndLastSeenAfter(fakeEmailDomain, Timestamp.valueOf(now))
     }
+
+    @Transactional
+    override fun getRealUsersOnline(): List<User> {
+        val now = LocalDateTime.now().minusMinutes(onlineSinceInMinutes)
+        val allByEmailNotContainingAndLastSeenAfter = userRepository.getAllByEmailNotContainingAndLastSeenAfter(fakeEmailDomain, Timestamp.valueOf(now))
+        val predicate = { akUserEntity: AkUserEntity -> akUserEntity.credits < creditsLimit }
+        return allByEmailNotContainingAndLastSeenAfter
+                .filter(predicate)
+                .map { User.fromEntity(it) }
+    }
+
+
+    @Transactional
+    override fun getRealUsersOnlineWithLimitedAmountOfCreditsAndNoChatsWithFakeUsers(): List<User> {
+        val now = LocalDateTime.now().minusMinutes(onlineSinceInMinutes)
+        val realUsers = userRepository.getAllByEmailNotContainingAndLastSeenAfterAndCreditsLessThan(fakeEmailDomain, Timestamp.valueOf(now), creditsLimit)
+        return filterUsers(realUsers).map { User.fromEntity(it) }
+    }
+
+    @Transactional
+    override fun getRealUsersOnlineAndNoChatsWithFakeUsers(): List<User> {
+        val now = LocalDateTime.now().minusMinutes(onlineSinceInMinutes)
+        val realUsers = userRepository.getAllByEmailNotContainingAndLastSeenAfter(fakeEmailDomain, Timestamp.valueOf(now))
+        return filterUsers(realUsers).map { User.fromEntity(it) }
+    }
+
+    private fun filterUsers(realUsers: List<AkUserEntity>): List<AkUserEntity> {
+        val fakeIds = userRepository.findAllByEmailContaining(fakeEmailDomain, Int.MAX_VALUE, 4).map { it.id }.toSet()
+        return realUsers
+                .filter {
+                    val chats = it.chats
+                    val allUsersFromUserChats = chats
+                            .flatMap { akChatEntity -> akChatEntity.users }
+                            .map { akUserEntity -> akUserEntity.id }
+                            .toSet()
+                    fakeIds.intersect(allUsersFromUserChats).isEmpty()
+                }
+    }
+
 
     @Transactional
     override fun updateUser(user: User): User {
@@ -161,6 +203,13 @@ class UserServiceDefault(val userRepository: UserRepository,
             userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), limit, offset)
         }
         return findUsersCloseToUser.map(mapper)
+    }
+
+    @Transactional
+    override fun getFakeUsersByGender(gender: Gender, limit: Int, offset: Int): List<User> {
+        return userRepository.findAllByEmailContainingAndGender(fakeEmailDomain, gender, limit, offset).map {
+            User.fromEntity(it)
+        }
     }
 
     @Transactional

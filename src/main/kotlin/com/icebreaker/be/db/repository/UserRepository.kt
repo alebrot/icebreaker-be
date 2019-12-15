@@ -1,6 +1,7 @@
 package com.icebreaker.be.db.repository
 
 import com.icebreaker.be.db.entity.AkUserEntity
+import com.icebreaker.be.service.model.Gender
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
@@ -13,10 +14,16 @@ interface UserRepository : CrudRepository<AkUserEntity, Int> {
     fun countAllByEmailContaining(@Param("email") email: String, @Param("limit") limit: Int, @Param("offset") offset: Int): List<AkUserEntity>
 
     fun countAllByEmailNotContainingAndLastSeenAfter(email: String, lastSeen: Timestamp): Int
+
     fun getAllByEmailNotContainingAndLastSeenAfter(email: String, lastSeen: Timestamp): List<AkUserEntity>
+
+    fun getAllByEmailNotContainingAndLastSeenAfterAndCreditsLessThan(email: String, lastSeen: Timestamp, credits: Int): List<AkUserEntity>
 
     @Query(value = "SELECT *FROM AK_USER WHERE EMAIL LIKE CONCAT('%',:email,'%') LIMIT :limit OFFSET :offset", nativeQuery = true)
     fun findAllByEmailContaining(@Param("email") email: String, @Param("limit") limit: Int, @Param("offset") offset: Int): List<AkUserEntity>
+
+    @Query(value = "SELECT *FROM AK_USER WHERE EMAIL LIKE CONCAT('%',:email,'%') AND GENDER = :gender LIMIT :limit OFFSET :offset", nativeQuery = true)
+    fun findAllByEmailContainingAndGender(@Param("email") email: String, @Param("gender") gender: Gender, @Param("limit") limit: Int, @Param("offset") offset: Int): List<AkUserEntity>
 
     @Query(value = "SELECT * FROM (SELECT (6371 * acos( cos(radians(LAT)) * cos(radians(LAT_ORIGINAL)) * cos(radians(LON_ORIGINAL) - radians(LON)) + sin(radians(LAT)) * sin(radians(LAT_ORIGINAL)) )) * 1000 as distance, A.* FROM (SELECT LAT AS LAT_ORIGINAL, LON AS LON_ORIGINAL FROM AK_POSITION INNER JOIN AK_USER AU on AK_POSITION.ID = AU.POSITION_ID WHERE AU.ID = :userId) as LOLO INNER JOIN AK_POSITION INNER JOIN AK_USER A on AK_POSITION.ID = A.POSITION_ID WHERE A.ID != :userId) as `d*` WHERE distance < :distanceInMeters LIMIT :limit OFFSET :offset", nativeQuery = true)
     fun findUsersCloseToUser(@Param("userId") userId: Int, @Param("distanceInMeters") distanceInMeters: Int, @Param("limit") limit: Int, @Param("offset") offset: Int): List<Map<String, Any>>

@@ -3,8 +3,11 @@ package com.icebreaker.be.facade.user.impl
 import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.auth.UserDetailsDefault
 import com.icebreaker.be.facade.user.UserFacade
+import com.icebreaker.be.service.chat.ChatService
+import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.file.FileFacade
 import com.icebreaker.be.service.file.FileService
+import com.icebreaker.be.service.model.Gender
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.social.impl.SocialUser
 import com.icebreaker.be.service.user.UserService
@@ -22,7 +25,8 @@ import kotlin.math.min
 class UserFacadeDefault(val userService: UserService,
                         val fileService: FileService,
                         val imageProperties: ImageProperties,
-                        val fileFacade: FileFacade) : UserFacade {
+                        val fileFacade: FileFacade,
+                        val chatService: ChatService) : UserFacade {
 
 
     val logger: Logger = LoggerFactory.getLogger(UserFacadeDefault::class.java)
@@ -153,9 +157,31 @@ class UserFacadeDefault(val userService: UserService,
             for (user in subList) {
                 updateUserLastSeen(user)
             }
-            logger.info("LastSeen updated for users, count {}", subList.size)
+            val ids = subList.map { it.id }.toSet()
+
+            logger.info("LastSeen updated for users {}, count {}", ids, ids.size)
         }
     }
+
+
+    override fun sendInvitationTo(users: List<User>) {
+        val fakeMaleUser = userService.getFakeUsersByGender(Gender.MALE, 40, 4).shuffled().firstOrNull()
+        val fakeFemaleUser = userService.getFakeUsersByGender(Gender.FEMALE, 100, 4).shuffled().firstOrNull()
+
+        for (user in users) {
+            val fakeUser: User? = if (user.gender == Gender.MALE) {
+                fakeFemaleUser
+            } else {
+                fakeMaleUser
+            }
+            if (fakeUser != null) {
+                val chat = chatService.findOrCreateChat(fakeUser, listOf(user.id)).first
+                chatService.sendMessage(fakeUser, chat.id, "", MessageType.INVITATION)
+                logger.info("invitation send to {} from {}", user.id, fakeUser.id)
+            }
+        }
+    }
+
 
     override fun updateFirstUserPhotoIfNecessary(file: MultipartFile, user: User) {
         val image = userService.getImageNameByPosition(user, positionOfFirstPhoto)

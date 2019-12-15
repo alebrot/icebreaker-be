@@ -18,4 +18,5 @@ interface UserFacade {
     fun updateUserLastSeenForFakeUsers()
     fun deleteUserImage(user: User, imageId: Int)
     fun deleteProfileImage(user: User)
+    fun sendInvitationTo(users: List<User>)
 }
