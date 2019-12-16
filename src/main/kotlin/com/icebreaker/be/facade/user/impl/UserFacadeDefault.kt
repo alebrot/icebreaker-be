@@ -153,14 +153,17 @@ class UserFacadeDefault(val userService: UserService,
 
     override fun updateUserLastSeenForFakeUsers() {
         if (userService.getRealUsersOnlineCount() > 0) {
-            val fakeUsers = userService.getFakeUsers(50, 0)
-            val subList = fakeUsers.shuffled().subList(0, min(fakeUsers.count(), 20))
-            for (user in subList) {
-                updateUserLastSeen(user)
-            }
-            val ids = subList.map { it.id }.toSet()
+            val fakeUsers = userService.getFakeUsers(Int.MAX_VALUE, 0)
+            val onlineFakeUsers = fakeUsers.filter { it.online }
+            if (onlineFakeUsers.isEmpty()) {
+                val subList = fakeUsers.shuffled().subList(0, min(fakeUsers.count(), 40))
+                for (user in subList) {
+                    updateUserLastSeen(user)
+                }
+                val ids = subList.map { it.id }.toSet()
 
-            logger.info("LastSeen updated for users {}, count {}", ids, ids.size)
+                logger.info("LastSeen updated for users {}, count {}", ids, ids.size)
+            }
         }
     }
 

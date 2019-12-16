@@ -32,6 +32,7 @@ data class User(val id: Int,
     companion object
 
     val fullName: String = "$firstName $lastName"
+    val online: Boolean = LocalDateTime.now().minusMinutes(15).isBefore(lastSeen)
 }
 
 data class UserWithDistance(val distance: Int, val user: User)
@@ -49,7 +50,7 @@ fun User.toDto(imageHost: String, hashids: Hashids): UserDto {
 
     val invitedBy: String? = if (this.invitedBy != null) hashids.encode(this.invitedBy.toLong()) else null
 
-    return UserDto(hashids.encode(this.id.toLong()), this.firstName, this.lastName, image, this.birthday, this.lastSeen, this.createdAt, this.bio, this.gender, this.credits?.toDto(), invitedBy)
+    return UserDto(hashids.encode(this.id.toLong()), this.firstName, this.lastName, image, this.birthday, this.lastSeen, this.createdAt, this.bio, this.gender, this.credits?.toDto(), invitedBy, this.online)
 }
 
 fun User.Companion.fromEntity(userEntity: AkUserEntity): User {
