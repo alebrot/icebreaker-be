@@ -16,12 +16,16 @@ import org.springframework.http.client.BufferingClientHttpRequestFactory
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.EnableScheduling
+import org.springframework.scheduling.annotation.SchedulingConfigurer
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
+import org.springframework.scheduling.config.ScheduledTaskRegistrar
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.web.client.RestTemplate
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -56,6 +60,11 @@ class BeApplication(val coreProperties: CoreProperties, val authService: AuthSer
     @Bean
     fun taskExecutor(): Executor {
         return Executors.newFixedThreadPool(10);
+    }
+
+    @Bean
+    fun scheduledExecutorService(): ScheduledExecutorService {
+        return Executors.newScheduledThreadPool(1)
     }
 
 }
@@ -179,4 +188,15 @@ class CoreProperties {
     lateinit var mobileAppName: String
     lateinit var mobileAppPackage: String
     lateinit var iosInAppPurchaseValidationUrl: String
+}
+
+@Configuration
+class SchedulerConfig : SchedulingConfigurer {
+    override fun configureTasks(taskRegistrar: ScheduledTaskRegistrar) {
+        val threadPoolTaskScheduler = ThreadPoolTaskScheduler()
+        threadPoolTaskScheduler.poolSize = 2
+        threadPoolTaskScheduler.setThreadNamePrefix("ScheduledTask-")
+        threadPoolTaskScheduler.initialize()
+        taskRegistrar.setTaskScheduler(threadPoolTaskScheduler)
+    }
 }
