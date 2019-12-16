@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 const val GET_USER_ME_CHATS = "/users/me/chats"
+const val GET_UNREAD_CHATS_COUNT = "/users/me/chats/unread/count"
 const val GET_CHAT_LINES = "/chats/{chatId}/lines"
 const val POST_CHAT_LINES = "/chats/{chatId}/lines"
 const val FIND_OR_CREATE_CHAT = "/chats"
@@ -39,4 +40,6 @@ interface ChatController {
     @PostMapping(POST_NOTIFY_MESSAGE_RECEIVED)
     fun notifyMessageReceived(@RequestBody request: NotifyMessageReceivedRequest): BaseResponse
 
+    @GetMapping(GET_UNREAD_CHATS_COUNT)
+    fun getUnreadChatsCount(): GetUnreadChatsCountResponse
 }

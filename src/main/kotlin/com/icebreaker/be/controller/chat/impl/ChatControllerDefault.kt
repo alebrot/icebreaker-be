@@ -39,6 +39,16 @@ class ChatControllerDefault(val authService: AuthService,
         return BaseResponse()
     }
 
+    override fun getUnreadChatsCount(): GetUnreadChatsCountResponse {
+        val userOrFail = authService.getUserOrFail()
+        val chats = chatService.getChatsByUser(userOrFail, true)
+        val count = chats.count { chat ->
+            val lastMessage = chat.lastMessage
+            lastMessage != null && !lastMessage.readBy.contains(userOrFail.id)
+        }
+        return GetUnreadChatsCountResponse(count)
+    }
+
     @Transactional
     override fun createInvitation(request: CreateInvitationRequest, @RequestHeader(HEADER_PLATFORMS) platforms: String): CreateInvitationResponse {
         val userOrFail = authService.getUserOrFail()
