@@ -1,5 +1,7 @@
 package com.icebreaker.be.service.user.impl
 
+import com.github.benmanes.caffeine.cache.Cache
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.icebreaker.be.CoreProperties
 import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.auth.UserDetailsDefault
@@ -25,7 +27,9 @@ import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 import kotlin.math.min
 
 @Service
@@ -43,6 +47,11 @@ class UserServiceDefault(val userRepository: UserRepository,
     private val creditsLimit = 5
     private val onlineSinceInMinutes = 1L
 
+    private val cache: Cache<String, Set<Int>> = Caffeine.newBuilder()
+            .expireAfterWrite(onlineIntervalInMinutes.toLong(), TimeUnit.MINUTES)
+            .build()
+
+    private val cacheKey = "cacheKey"
 
     override fun getRealUsersOnlineCount(): Int {
         val now = LocalDateTime.now().minusMinutes(onlineSinceInMinutes)
@@ -75,7 +84,15 @@ class UserServiceDefault(val userRepository: UserRepository,
     }
 
     private fun filterUsers(realUsers: List<AkUserEntity>): List<AkUserEntity> {
-        val fakeIds = userRepository.findAllByEmailContaining(fakeEmailDomain, Int.MAX_VALUE, 4).map { it.id }.toSet()
+
+        val fakeIds: Set<Int> = cache.get(cacheKey) { t ->
+            if (t == cacheKey) {
+                userRepository.findAllByEmailContaining(fakeEmailDomain, Int.MAX_VALUE, 4).map { it.id }.toSet()
+            } else {
+                HashSet()
+            }
+        } ?: HashSet()
+
         return realUsers
                 .filter {
                     val chats = it.chats

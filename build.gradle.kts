@@ -48,6 +48,8 @@ dependencies {
     implementation("net.coobird:thumbnailator:0.4.8")
     implementation("org.hashids:hashids:1.0.3")
     implementation("com.google.apis:google-api-services-androidpublisher:v3-rev103-1.25.0")
+    implementation("com.github.ben-manes.caffeine:caffeine:2.8.0")
+
 //    implementation("com.google.api-client:google-api-client:1.30.2")
     implementation("com.google.auth:google-auth-library-oauth2-http:0.17.1")
 }
