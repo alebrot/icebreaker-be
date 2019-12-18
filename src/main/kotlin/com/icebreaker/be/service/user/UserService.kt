@@ -13,8 +13,8 @@ interface UserService {
     fun createUserDetails(username: String?): UserDetails
     fun createUser(email: String, password: String, firstName: String, lastName: String, birthday: LocalDate): User
     fun createUserDetails(socialUser: SocialUser): Pair<UserDetails, Boolean>
-    fun getUsersCloseToUser(user: User, distanceInMeters: Int, gender: Gender?, limit: Int, offset: Int): List<UserWithDistance>
-    fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal, gender: Gender?, limit: Int, offset: Int): List<UserWithDistance>
+    fun getUsersCloseToUser(user: User, distanceInMeters: Int, gender: Gender?, online: Boolean?, limit: Int, offset: Int): List<UserWithDistance>
+    fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal, gender: Gender?, online: Boolean?, limit: Int, offset: Int): List<UserWithDistance>
     fun updateUserPosition(user: User, latitude: BigDecimal, longitude: BigDecimal)
     fun updateUserProfilePhoto(user: User, imageName: String?)
     fun updateUser(user: User): User

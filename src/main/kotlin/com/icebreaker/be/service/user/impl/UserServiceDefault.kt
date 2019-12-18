@@ -193,22 +193,48 @@ class UserServiceDefault(val userRepository: UserRepository,
     }
 
     @Transactional
-    override fun getUsersCloseToUser(user: User, distanceInMeters: Int, gender: Gender?, limit: Int, offset: Int): List<UserWithDistance> {
+    override fun getUsersCloseToUser(user: User, distanceInMeters: Int, gender: Gender?, online: Boolean?, limit: Int, offset: Int): List<UserWithDistance> {
         val distance = min(distanceInMeters, coreProperties.maxDistance)
+
+        val interval = when {
+            online == null -> {
+                null
+            }
+            online -> {
+                onlineIntervalInMinutes
+            }
+            else -> {
+                onlineIntervalInMinutes
+            }
+        }
+
         val findUsersCloseToUser = if (coreProperties.fake) {
-            userRepository.findUsersCloseToUserWithFakeUsers(user.id, distance, gender?.ordinal, limit, offset)
+            userRepository.findUsersCloseToUserWithFakeUsers(user.id, distance, gender?.ordinal, interval, limit, offset)
         } else {
-            userRepository.findUsersCloseToUser(user.id, distance, gender?.ordinal, limit, offset)
+            userRepository.findUsersCloseToUser(user.id, distance, gender?.ordinal, interval, limit, offset)
         }
         return findUsersCloseToUser.map(mapper)
     }
 
     @Transactional
-    override fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal, gender: Gender?, limit: Int, offset: Int): List<UserWithDistance> {
+    override fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal, gender: Gender?, online: Boolean?, limit: Int, offset: Int): List<UserWithDistance> {
+
+        val interval = when {
+            online == null -> {
+                null
+            }
+            online -> {
+                onlineIntervalInMinutes
+            }
+            else -> {
+                onlineIntervalInMinutes
+            }
+        }
+
         val findUsersCloseToUser = if (coreProperties.fake) {
-            userRepository.findUsersCloseToUserPositionWithFakeUsers(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), gender?.ordinal, limit, offset)
+            userRepository.findUsersCloseToUserPositionWithFakeUsers(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), gender?.ordinal, interval, limit, offset)
         } else {
-            userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), gender?.ordinal, limit, offset)
+            userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), gender?.ordinal, interval, limit, offset)
         }
         return findUsersCloseToUser.map(mapper)
     }

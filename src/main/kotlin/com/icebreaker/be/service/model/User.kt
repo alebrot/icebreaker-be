@@ -1,7 +1,6 @@
 package com.icebreaker.be.service.model
 
 import com.icebreaker.be.controller.user.GET_IMAGE_PATH
-import com.icebreaker.be.controller.user.dto.CreditDto
 import com.icebreaker.be.controller.user.dto.UserDto
 import com.icebreaker.be.db.entity.AkUserEntity
 import org.hashids.Hashids
@@ -9,6 +8,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
+
+const val onlineIntervalInMinutes = 15
 
 data class User(val id: Int,
                 val email: String,
@@ -32,7 +33,7 @@ data class User(val id: Int,
     companion object
 
     val fullName: String = "$firstName $lastName"
-    val online: Boolean = LocalDateTime.now().minusMinutes(15).isBefore(lastSeen)
+    val online: Boolean = LocalDateTime.now().minusMinutes(onlineIntervalInMinutes.toLong()).isBefore(lastSeen)
 }
 
 data class UserWithDistance(val distance: Int, val user: User)

@@ -259,9 +259,9 @@ class UserControllerDefault(val authService: AuthService,
                                 latitude: BigDecimal?,
                                 longitude: BigDecimal?,
                                 gender: Gender?,
+                                online: Boolean?,
                                 limit: Int?,
                                 offset: Int?): GetUserMeUsersResponse {
-
 
         val defaultLimit = 10;
         val defaultOffset = 0;
@@ -272,9 +272,9 @@ class UserControllerDefault(val authService: AuthService,
         val userOrFail = authService.getUserOrFail()
 
         val usersCloseToUser: List<UserWithDistance> = if (latitude != null && longitude != null) {
-            userService.getUsersCloseToUserPosition(userOrFail, distance, latitude, longitude, gender, limitSafe, offsetSafe)
+            userService.getUsersCloseToUserPosition(userOrFail, distance, latitude, longitude, gender, online, limitSafe, offsetSafe)
         } else {
-            userService.getUsersCloseToUser(userOrFail, distance, gender, limitSafe, offsetSafe)
+            userService.getUsersCloseToUser(userOrFail, distance, gender, online, limitSafe, offsetSafe)
         }
 
         val mapped = usersCloseToUser.map {
