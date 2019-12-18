@@ -3,6 +3,7 @@ package com.icebreaker.be.controller.user
 import com.icebreaker.be.controller.chat.HEADER_PLATFORMS
 import com.icebreaker.be.controller.core.dto.BaseResponse
 import com.icebreaker.be.controller.user.dto.*
+import com.icebreaker.be.service.model.Gender
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -66,6 +67,7 @@ interface UserController {
     fun getUserMeUsers(@RequestParam("distance") distance: Int,
                        @RequestParam("latitude") latitude: BigDecimal?,
                        @RequestParam("longitude") longitude: BigDecimal?,
+                       @RequestParam("gender") gender: Gender?,
                        limit: Int?,
                        offset: Int?): GetUserMeUsersResponse
 

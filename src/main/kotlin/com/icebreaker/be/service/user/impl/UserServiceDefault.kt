@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -192,22 +193,22 @@ class UserServiceDefault(val userRepository: UserRepository,
     }
 
     @Transactional
-    override fun getUsersCloseToUser(user: User, distanceInMeters: Int, limit: Int, offset: Int): List<UserWithDistance> {
+    override fun getUsersCloseToUser(user: User, distanceInMeters: Int, gender: Gender?, limit: Int, offset: Int): List<UserWithDistance> {
         val distance = min(distanceInMeters, coreProperties.maxDistance)
         val findUsersCloseToUser = if (coreProperties.fake) {
-            userRepository.findUsersCloseToUserWithFakeUsers(user.id, distance, limit, offset)
+            userRepository.findUsersCloseToUserWithFakeUsers(user.id, distance, gender?.ordinal, limit, offset)
         } else {
-            userRepository.findUsersCloseToUser(user.id, distance, limit, offset)
+            userRepository.findUsersCloseToUser(user.id, distance, gender?.ordinal, limit, offset)
         }
         return findUsersCloseToUser.map(mapper)
     }
 
     @Transactional
-    override fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal, limit: Int, offset: Int): List<UserWithDistance> {
+    override fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal, gender: Gender?, limit: Int, offset: Int): List<UserWithDistance> {
         val findUsersCloseToUser = if (coreProperties.fake) {
-            userRepository.findUsersCloseToUserPositionWithFakeUsers(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), limit, offset)
+            userRepository.findUsersCloseToUserPositionWithFakeUsers(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), gender?.ordinal, limit, offset)
         } else {
-            userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), limit, offset)
+            userRepository.findUsersCloseToUserPosition(user.id, distanceInMeters, latitude.toDouble(), longitude.toDouble(), gender?.ordinal, limit, offset)
         }
         return findUsersCloseToUser.map(mapper)
     }
@@ -362,7 +363,7 @@ class UserServiceDefault(val userRepository: UserRepository,
         val accountLocked: Int = findUsersCloseToUser["ACCOUNT_LOCKED"] as Int
         val credentialsExpired: Int = findUsersCloseToUser["CREDENTIALS_EXPIRED"] as Int
         val enabled: Int = findUsersCloseToUser["ENABLED"] as Int
-        val genderInt: Int? = findUsersCloseToUser["GENDER"] as? Int
+        val genderInt: BigInteger? = findUsersCloseToUser["GENDER"] as? BigInteger?
 
         val lastSeen: Timestamp = findUsersCloseToUser["LAST_SEEN"] as Timestamp
 
