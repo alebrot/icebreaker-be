@@ -69,6 +69,8 @@ interface UserController {
                        @RequestParam("longitude") longitude: BigDecimal?,
                        @RequestParam("gender") gender: Gender?,
                        @RequestParam("online") online: Boolean?,
+                       @RequestParam("ageMin") ageMin: Int?,
+                       @RequestParam("ageMax") ageMax: Int?,
                        limit: Int?,
                        offset: Int?): GetUserMeUsersResponse
 

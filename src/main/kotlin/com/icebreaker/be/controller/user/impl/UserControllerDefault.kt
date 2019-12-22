@@ -14,6 +14,7 @@ import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.service.model.*
 import com.icebreaker.be.service.user.UserService
 import org.hashids.Hashids
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJava
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
@@ -23,10 +24,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.io.IOException
@@ -260,8 +258,12 @@ class UserControllerDefault(val authService: AuthService,
                                 longitude: BigDecimal?,
                                 gender: Gender?,
                                 online: Boolean?,
+                                ageMin: Int?,
+                                ageMax: Int?,
                                 limit: Int?,
                                 offset: Int?): GetUserMeUsersResponse {
+
+        val age = IntRange(ageMin ?: 18, ageMax ?: 122)
 
         val defaultLimit = 10;
         val defaultOffset = 0;
@@ -272,9 +274,9 @@ class UserControllerDefault(val authService: AuthService,
         val userOrFail = authService.getUserOrFail()
 
         val usersCloseToUser: List<UserWithDistance> = if (latitude != null && longitude != null) {
-            userService.getUsersCloseToUserPosition(userOrFail, distance, latitude, longitude, gender, online, limitSafe, offsetSafe)
+            userService.getUsersCloseToUserPosition(userOrFail, distance, latitude, longitude, age,  gender, online, limitSafe, offsetSafe)
         } else {
-            userService.getUsersCloseToUser(userOrFail, distance, gender, online, limitSafe, offsetSafe)
+            userService.getUsersCloseToUser(userOrFail, distance, age, gender, online, limitSafe, offsetSafe)
         }
 
         val mapped = usersCloseToUser.map {
