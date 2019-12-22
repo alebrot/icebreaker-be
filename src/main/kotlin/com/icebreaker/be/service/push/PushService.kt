@@ -95,7 +95,7 @@ class NotificationServiceDefault(val userRepository: UserRepository,
             }
 
         } else {
-            logger.error("failed to send notification to user ${user.id} not subscribed")
+            logger.info("failed to send notification to user ${user.id} not subscribed")
         }
         return false
     }
