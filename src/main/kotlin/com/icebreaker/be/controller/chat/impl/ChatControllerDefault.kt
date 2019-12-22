@@ -12,8 +12,10 @@ import com.icebreaker.be.service.auth.AuthService
 import com.icebreaker.be.service.chat.ChatService
 import com.icebreaker.be.service.chat.model.MessageType
 import com.icebreaker.be.service.chat.model.toDto
+import com.icebreaker.be.service.credit.CreditService
 import com.icebreaker.be.service.model.Store
 import com.icebreaker.be.service.model.User
+import com.icebreaker.be.service.model.toDto
 import com.icebreaker.be.service.push.PushService
 import com.icebreaker.be.service.user.UserService
 import org.hashids.Hashids
@@ -29,7 +31,8 @@ class ChatControllerDefault(val authService: AuthService,
                             val hashids: Hashids,
                             val creditFacade: CreditFacade,
                             val userService: UserService,
-                            val coreProperties: CoreProperties) : ChatController {
+                            val coreProperties: CoreProperties,
+                            val creditService: CreditService) : ChatController {
 
     override fun notifyMessageReceived(request: NotifyMessageReceivedRequest): BaseResponse {
         val lineIds = request.lineIds
@@ -134,7 +137,10 @@ class ChatControllerDefault(val authService: AuthService,
         val findChat = chatService.findChatOrFail(chatId, userOrFail.id)
 
         val chat = creditFacade.handleCreditsForDiscoveringChatRequest(userOrFail, findChat, Store.fromHeader(platforms))
-        return ChatResponse(chat.toDto(imageProperties.host, hashids))
+
+        val credit = creditService.getAvailableCredits(userOrFail)
+
+        return ChatResponse(chat.toDto(imageProperties.host, hashids), credit.toDto())
     }
 
 

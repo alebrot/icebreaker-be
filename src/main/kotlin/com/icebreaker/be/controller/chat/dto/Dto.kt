@@ -2,6 +2,7 @@ package com.icebreaker.be.controller.chat.dto
 
 import com.icebreaker.be.controller.core.dto.BaseRequest
 import com.icebreaker.be.controller.core.dto.BaseResponse
+import com.icebreaker.be.controller.user.dto.CreditDto
 import com.icebreaker.be.controller.user.dto.UserDto
 import com.icebreaker.be.service.chat.model.MessageType
 import java.time.LocalDateTime
@@ -18,7 +19,7 @@ data class NotifyMessageReceivedRequest(@NotNull val lineIds: List<Int>) : BaseR
 data class SendMessageRequest(val content: String) : BaseResponse()
 data class FindOrCreateChatRequest(@NotNull val userIds: List<String>) : BaseRequest()
 data class FindOrCreateChatResponse(val chat: ChatDto) : BaseResponse()
-data class ChatResponse(val chat: ChatDto) : BaseResponse()
+data class ChatResponse(val chat: ChatDto, val credit: CreditDto) : BaseResponse()
 
 data class CreateInvitationRequest(@NotNull val userIds: List<String>, val content: String = "") : BaseRequest()
 data class CreateInvitationResponse(val chat: ChatDto) : BaseResponse()
