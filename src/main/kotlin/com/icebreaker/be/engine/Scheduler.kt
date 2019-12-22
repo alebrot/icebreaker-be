@@ -19,10 +19,9 @@ class Scheduler(val userFacade: UserFacade,
     @Scheduled(fixedRate = 30000)
     fun reportCurrentTime() {
         userFacade.updateUserLastSeenForFakeUsers()
-        logger.info(Thread.currentThread().name)
         val users = userService.getRealUsersOnlineWithLimitedAmountOfCreditsAndNoChatsWithFakeUsers()
         if (users.isNotEmpty()) {
-            logger.info("online users with limited amount of credits and now chats found, size: {}", users.size)
+            logger.info("online users with limited amount of credits and no chats found, size: {}", users.size)
             userFacade.sendInvitationTo(users)
         }
 
