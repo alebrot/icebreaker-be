@@ -23,6 +23,9 @@ docker push khlebtsov/kofify-db:v1
  docker system prune -a
  docker volume prune
  docker volume rm icebreaker-be_kofify-db
+ #remove volume created by docker compose
+ docker-compose down --volumes
+
 
 
 
