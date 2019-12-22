@@ -84,7 +84,7 @@ core:
   admob-max: 3
   admob-reward-duration: 5
   reward-amount-for-invitation: 5
-  android-in-app-purchase-account-file-path: "../api-5777316785406961495-557788-779e6d379e75.json"
+  android-in-app-purchase-account-file-path: "/var/springboot/app/api-5777316785406961495-557788-779e6d379e75.json"
   mobile-app-name: Kofify
   mobile-app-package: com.aklc.kofify
   ios-in-app-purchase-validation-url: https://buy.itunes.apple.com/verifyReceipt
