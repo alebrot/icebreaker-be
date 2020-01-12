@@ -78,8 +78,8 @@ core:
   fake: true
   watch-user-email: email1@gmail.com
   max-distance: 10000
-  reward-amount: 5
-  reward-duration: 5
+  reward-amount: 1
+  reward-duration: 1440
   admob-reward-amount: 1
   admob-max: 3
   admob-reward-duration: 5

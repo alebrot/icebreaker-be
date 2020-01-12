@@ -265,6 +265,7 @@ class CreditServiceDefault(val userRepository: UserRepository,
 
     @Transactional
     override fun rewardCredits(user: User): Credit {
+        val threshold = 5
 
         val rewardDuration = Duration.ofMinutes(coreProperties.rewardDuration.toLong())
         val rewardAmount = coreProperties.rewardAmount
@@ -274,7 +275,7 @@ class CreditServiceDefault(val userRepository: UserRepository,
         val toLocalDateTime = userEntity.creditsUpdatedAt.toLocalDateTime()
         val localDateTimeToGetReward = toLocalDateTime.plus(rewardDuration)
 
-        if (localDateTimeToGetReward.isBefore(LocalDateTime.now())) {//get reward
+        if (userEntity.credits < threshold && localDateTimeToGetReward.isBefore(LocalDateTime.now())) {//get reward
             userEntity.credits = userEntity.credits + rewardAmount
             userEntity.creditsUpdatedAt = Timestamp.valueOf(LocalDateTime.now())
             logCredits(userEntity, rewardAmount, CreditType.LAST_SEEN, CreditOperation.ADD, null, "rewarded $rewardAmount credits", null)
