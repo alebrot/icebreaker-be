@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter
 class FacebookServiceDefault : SocialService {
     override fun getUser(token: String): SocialUser {
         val restTemplate = RestTemplate()
-        val url = "https://graph.facebook.com/v3.3/me?fields=id,first_name,birthday,gender,last_name,email,picture.width(250).height(250)&access_token=$token"
+        val url = "https://graph.facebook.com/v3.3/me?fields=id,first_name,birthday,gender,last_name,email,picture.width(1080).height(1080)&access_token=$token"
         val response = restTemplate.getForEntity(URI(url), String::class.java)
         val mapper = ObjectMapper()
         val root = mapper.readTree(response.body)

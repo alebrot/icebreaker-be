@@ -30,6 +30,7 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
 
     lateinit var storageLocation: Path
     val fileExtensionRegex = Regex("(?<=\\.)[a-zA-Z]+\$")
+    val defaultExt = "jpg"
 
     @PostConstruct
     fun init() {
@@ -39,14 +40,14 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
     }
 
     override fun toByteArrayOutputStream(fileName: String, image: BufferedImage): ByteArrayOutputStream {
-        val ext = fileExtensionRegex.find(fileName)?.value ?: "jpeg"
+        val ext = fileExtensionRegex.find(fileName)?.value ?: defaultExt
         val bao = ByteArrayOutputStream()
         ImageIO.write(image, ext, bao)
         return bao
     }
 
     override fun storeImage(path: Path, maxWidth: Int, maxHeight: Int): String {
-        val ext = fileExtensionRegex.find(path.toString())?.value ?: "jpeg"
+        val ext = fileExtensionRegex.find(path.toString())?.value ?: defaultExt
         val urlImage = ImageIO.read(path.toFile())
         val toInputStream = scale(urlImage, maxWidth, maxHeight).toInputStream(ext)
         return generateNameAndStore(ext, toInputStream)
@@ -54,7 +55,7 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
 
     override fun storeImage(url: String, maxWidth: Int, maxHeight: Int): String {
         val urlInput = URL(url)
-        val ext = fileExtensionRegex.find(url)?.value ?: "jpeg"
+        val ext = fileExtensionRegex.find(url)?.value ?: defaultExt
         val urlImage = ImageIO.read(urlInput)
         val toInputStream = scale(urlImage, maxWidth, maxHeight).toInputStream(ext)
         return generateNameAndStore(ext, toInputStream)
@@ -67,7 +68,7 @@ class FileServiceDefault(val fileStorageProperties: FileStorageProperties) : Fil
 
         val inputStreamOrig = file.inputStream
 
-        val ext = fileExtensionRegex.find(fileNameCleaned)?.value ?: "jpeg"
+        val ext = fileExtensionRegex.find(fileNameCleaned)?.value ?: defaultExt
         val inputStream = scale(inputStreamOrig, ext, maxWidth, maxHeight)
 
         return generateNameAndStore(ext, inputStream)

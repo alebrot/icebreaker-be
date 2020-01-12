@@ -39,24 +39,4 @@ open class SocialTokenGranter(private val socialService: SocialService,
         socialAuthentication.isAuthenticated = true
         return OAuth2Authentication(storedOAuth2Request, socialAuthentication)
     }
-
-
-//    override protected fun getOAuth2Authentication(clientToken: AuthorizationRequest): OAuth2Authentication {
-//
-//        Map<String, String> parameters = clientToken . getAuthorizationParameters ();
-//        String cardNumber = parameters . get ("cardNumber");
-//
-//        Authentication userAuth = new StudentCardAuthenticationToken(cardNumber);
-//        try {
-//            userAuth = authenticationManager.authenticate(userAuth);
-//        } catch (BadCredentialsException e) {
-//            // If the username/password are wrong the spec says we should send 400/bad grant
-//            throw new InvalidGrantException (e.getMessage());
-//        }
-//        if (userAuth == null || !userAuth.isAuthenticated()) {
-//            throw new InvalidGrantException ("Could not authenticate student: " + cardNumber);
-//        }
-//
-//        return new OAuth2Authentication (clientToken, userAuth);
-//    }
 }
