@@ -1,6 +1,7 @@
 package com.icebreaker.be.service.social.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.icebreaker.be.ImageProperties
 import com.icebreaker.be.service.auth.social.SocialType
 import com.icebreaker.be.service.model.Gender
 import com.icebreaker.be.service.social.SocialService
@@ -12,10 +13,10 @@ import java.time.format.DateTimeFormatter
 
 
 @Service("facebookSocialService")
-class FacebookServiceDefault : SocialService {
+class FacebookServiceDefault(val imageProperties : ImageProperties) : SocialService {
     override fun getUser(token: String): SocialUser {
         val restTemplate = RestTemplate()
-        val url = "https://graph.facebook.com/v3.3/me?fields=id,first_name,birthday,gender,last_name,email,picture.width(1080).height(1080)&access_token=$token"
+        val url = "https://graph.facebook.com/v3.3/me?fields=id,first_name,birthday,gender,last_name,email,picture.width(${imageProperties.maxWidth}).height(${imageProperties.maxHeight})&access_token=$token"
         val response = restTemplate.getForEntity(URI(url), String::class.java)
         val mapper = ObjectMapper()
         val root = mapper.readTree(response.body)
