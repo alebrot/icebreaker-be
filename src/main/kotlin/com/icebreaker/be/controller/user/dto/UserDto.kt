@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 data class UserDto(val id: String,
                    val firstName: String,
-                   val lastName: String,
+                   val lastName: String?,
                    val imageUrl: String?,
                    val birthday: LocalDate,
                    val lastSeen: LocalDateTime,

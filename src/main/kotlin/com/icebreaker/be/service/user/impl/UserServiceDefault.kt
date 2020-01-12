@@ -288,7 +288,7 @@ class UserServiceDefault(val userRepository: UserRepository,
     }
 
     @Transactional
-    override fun createUser(email: String, password: String, firstName: String, lastName: String, birthday: LocalDate): User {
+    override fun createUser(email: String, password: String, firstName: String, lastName: String?, birthday: LocalDate): User {
         val passwordHash = passwordEncoder.encode(password)
         val defaultAuthorityOpt = authorityRepository.findById(1)
         val defaultAuthority = if (defaultAuthorityOpt.isPresent) defaultAuthorityOpt.get() else throw IllegalArgumentException("defaultAuthority not found")

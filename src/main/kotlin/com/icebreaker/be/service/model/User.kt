@@ -15,7 +15,7 @@ data class User(val id: Int,
                 val email: String,
                 val passwordHash: String?,
                 val firstName: String,
-                val lastName: String,
+                val lastName: String?,
                 var imgUrl: String?,
                 val authorities: List<Authority>,
                 val accountExpired: Boolean,
@@ -31,8 +31,6 @@ data class User(val id: Int,
                 val invitedBy: Int?
 ) : Serializable {
     companion object
-
-    val fullName: String = "$firstName $lastName"
     val online: Boolean = LocalDateTime.now().minusMinutes(onlineIntervalInMinutes.toLong()).isBefore(lastSeen)
 }
 

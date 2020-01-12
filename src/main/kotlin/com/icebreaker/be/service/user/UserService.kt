@@ -11,7 +11,7 @@ import java.time.LocalDate
 
 interface UserService {
     fun createUserDetails(username: String?): UserDetails
-    fun createUser(email: String, password: String, firstName: String, lastName: String, birthday: LocalDate): User
+    fun createUser(email: String, password: String, firstName: String, lastName: String?, birthday: LocalDate): User
     fun createUserDetails(socialUser: SocialUser): Pair<UserDetails, Boolean>
     fun getUsersCloseToUser(user: User, distanceInMeters: Int, age: IntRange, gender: Gender?, online: Boolean?, limit: Int, offset: Int): List<UserWithDistance>
     fun getUsersCloseToUserPosition(user: User, distanceInMeters: Int, latitude: BigDecimal, longitude: BigDecimal, age: IntRange, gender: Gender?, online: Boolean?, limit: Int, offset: Int): List<UserWithDistance>

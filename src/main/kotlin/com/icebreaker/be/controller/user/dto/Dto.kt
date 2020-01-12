@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull
 
 data class CreateUserRequest(@Email val email: String,
                              @NotEmpty val firstName: String,
-                             @NotEmpty val lastName: String,
+                             @NotEmpty val lastName: String?,
                              @NotEmpty val password: String,
                              @NotNull val birthday: LocalDate) : BaseRequest()
 

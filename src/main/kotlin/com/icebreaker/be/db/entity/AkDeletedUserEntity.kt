@@ -21,7 +21,7 @@ class AkDeletedUserEntity {
     lateinit var firstName: String
     @get:Basic
     @get:Column(name = "LAST_NAME")
-    lateinit var lastName: String
+    var lastName: String? = null
     @get:Basic
     @get:Column(name = "EMAIL")
     lateinit var email: String
