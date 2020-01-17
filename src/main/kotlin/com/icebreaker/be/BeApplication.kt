@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.client.BufferingClientHttpRequestFactory
@@ -29,7 +30,7 @@ import java.util.concurrent.ScheduledExecutorService
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-
+@EnableAspectJAutoProxy
 @EnableScheduling
 @EnableAsync
 @SpringBootApplication
