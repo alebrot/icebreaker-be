@@ -17,15 +17,13 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestTemplate
-import java.lang.IllegalStateException
-import java.net.URI
 import java.text.MessageFormat
 
 
 interface PushService {
     fun subscribe(user: User, id: String, pushToken: String)
 
-    fun send(user: User, message: String, type: MessageType = MessageType.DEFAULT): Boolean
+    fun send(fromUser: User, toUser: User, message: String, type: MessageType = MessageType.DEFAULT): Boolean
 }
 
 @Service
@@ -37,9 +35,9 @@ class NotificationServiceDefault(val userRepository: UserRepository,
     val logger: Logger = LoggerFactory.getLogger(NotificationServiceDefault::class.java)
 
 
-    override fun send(user: User, message: String, type: MessageType): Boolean {
+    override fun send(fromUser: User, toUser: User, message: String, type: MessageType): Boolean {
 
-        val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
+        val userEntity = userRepository.findById(toUser.id).toKotlinNotOptionalOrFail()
         val userId = userEntity.push?.userId
 
         if (userId != null) {
@@ -53,9 +51,9 @@ class NotificationServiceDefault(val userRepository: UserRepository,
 
             val contents = if (message.isBlank() && type == MessageType.INVITATION) {
                 val contentEn = pushProperties.enInvitationContent
-                val contentEnFormatted = MessageFormat.format(contentEn, user.firstName)
+                val contentEnFormatted = MessageFormat.format(contentEn, fromUser.firstName)
                 val contentIt = pushProperties.itInvitationContent
-                val contentItFormatted = MessageFormat.format(contentIt, user.firstName)
+                val contentItFormatted = MessageFormat.format(contentIt, fromUser.firstName)
 
                 Contents(contentEnFormatted, contentItFormatted)
             } else {
@@ -88,14 +86,14 @@ class NotificationServiceDefault(val userRepository: UserRepository,
                 if (response.statusCode == HttpStatus.OK) {
                     return true
                 } else {
-                    logger.error("failed to send notification to user ${user.id}")
+                    logger.error("failed to send notification to user ${toUser.id}")
                 }
             } catch (e: Exception) {
-                logger.error("failed to send notification to user ${user.id}")
+                logger.error("failed to send notification to user ${toUser.id}")
             }
 
         } else {
-            logger.info("failed to send notification to user ${user.id} not subscribed")
+            logger.info("failed to send notification to user ${toUser.id} not subscribed")
         }
         return false
     }

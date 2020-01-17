@@ -65,7 +65,7 @@ class ChatControllerDefault(val authService: AuthService,
         chat.lastMessage = sendMessage
 
         chat.users.filter { it.id != userOrFail.id }.forEach {
-            pushService.send(it, request.content, MessageType.INVITATION)
+            pushService.send(userOrFail, it, request.content, MessageType.INVITATION)
             pushWatchUser(userOrFail, it, request.content, MessageType.INVITATION)
         }
 
@@ -77,7 +77,7 @@ class ChatControllerDefault(val authService: AuthService,
         val chat = chatService.findChatOrFail(chatId)
         chatService.sendMessage(userOrFail, chatId, request.content, MessageType.DEFAULT)
         chat.users.filter { it.id != userOrFail.id }.forEach {
-            pushService.send(it, request.content, MessageType.DEFAULT)
+            pushService.send(userOrFail, it, request.content, MessageType.DEFAULT)
             pushWatchUser(userOrFail, it, request.content, MessageType.DEFAULT)
         }
     }
@@ -85,7 +85,7 @@ class ChatControllerDefault(val authService: AuthService,
     private fun pushWatchUser(from: User, to: User, content: String, messageType: MessageType) {
         val watchUser: User = userService.getUserByEmailOrFail(coreProperties.watchUserEmail)
         if (userService.isFakeUser(to)) {
-            pushService.send(watchUser, "from ${from.email} to ${to.email} $content", messageType)
+            pushService.send(from, watchUser, "from ${from.email} to ${to.email} $content", messageType)
         }
     }
 

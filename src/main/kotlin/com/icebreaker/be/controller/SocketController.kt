@@ -37,7 +37,7 @@ class SocketController(val authService: AuthService,
         chat.users.forEach {
             simpMessagingTemplate.convertAndSendToUser(it.email, "/chat/$chatId", chatLine.toDto(imageProperties.host, hashids))
         }
-        chat.users.filter { it.id != userOrFail.id }.forEach { pushService.send(it, message.content) }
+        chat.users.filter { it.id != userOrFail.id }.forEach { pushService.send(userOrFail, it, message.content) }
     }
 }
 
