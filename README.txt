@@ -204,3 +204,25 @@ https://crontab.guru/#0_0_1_2/2_*
 At 00:00 on day-of-month 1 in every 2nd month.
 Next at 2020-01-01 00:00:00
 0 0 1 */2 * /var/springboot/app/renewCert.sh >> /var/springboot/app/renewCert.log
+
+
+
+#firewall
+1) allow everything
+sudo ufw default allow
+
+2) enable firewall
+sudo ufw enable
+
+3) enable ssh
+sudo ufw allow 22/tcp
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow 3306/tcp
+
+
+4) deny all except specified by "allow"
+sudo ufw default deny
+
+5)status
+sudo ufw status numbered
