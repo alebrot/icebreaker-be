@@ -39,7 +39,7 @@ class UserFacadeDefault(val userService: UserService,
     override fun updateUserImages(userOrFail: User, imageIds: List<Int>): List<UserImage> {
 
         if (imageIds.isEmpty() || imageIds.size > 3 || imageIds.toSet().size != imageIds.size) {
-            throw IllegalArgumentException("not valid imageIds")
+            throw IllegalArgumentException("not valid imageIds: $imageIds")
         } else {
 
             val imageNames = imageIds.mapNotNull {
