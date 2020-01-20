@@ -145,7 +145,7 @@ class UserFacadeDefault(val userService: UserService,
         userService.updateImageForUser(user, positionOfFirstPhoto, storeImage)
     }
 
-    @Async
+    @Async("taskExecutor")
     override fun updateUserLastSeen(user: User) {
         user.lastSeen = LocalDateTime.now()
         userService.updateUser(user)
@@ -196,7 +196,8 @@ class UserFacadeDefault(val userService: UserService,
     }
 
     override fun updateUserProfilePhotoIfNecessary(file: MultipartFile, user: User) {
-        if (user.imgUrl.isNullOrBlank()) {//update profile image as well
+        val oldUserProfileImage = userService.getUserProfileImageName(user)
+        if (oldUserProfileImage == null || oldUserProfileImage.isNullOrBlank()) {//update profile image as well
             val profileImageName = fileService.storeImage(file, imageProperties.profileMaxWidth, imageProperties.profileMaxHeight)
             userService.updateUserProfilePhoto(user, profileImageName)
         }
@@ -245,5 +246,10 @@ class UserFacadeDefault(val userService: UserService,
             userService.updateUserProfilePhoto(user, null)
             fileFacade.deleteImageIfExistsAsync(userProfileImageNameToDeleteFromDisc)
         }
+    }
+
+    private fun updateUserProfilePhotoAndDeleteOldUserProfile(user: User, userProfileImageNameToDeleteFromDisc: String, imageName: String) {
+        fileFacade.deleteImageIfExistsAsync(userProfileImageNameToDeleteFromDisc)
+        userService.updateUserProfilePhoto(user, imageName)
     }
 }
