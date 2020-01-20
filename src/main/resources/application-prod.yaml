@@ -53,7 +53,7 @@ file:
   upload-dir: /var/springboot/app/imgs
 image:
   maxWidth: 1080
-  maxHeight: 1226
+  maxHeight: 1080
   profileMaxWidth: 500
   profileMaxHeight: 500
   host: "http://kofify.com"
