@@ -23,6 +23,7 @@ const val UPLOAD_USER_PROFILE_IMAGE = "/users/me/image"
 const val GET_USER_ME_USERS = "/users/me/users"
 const val CREATE_USER_POSITION = "/users/position"
 const val BUY_REWARD = "/users/me/buy"
+const val GET_CREDIT = "/users/me/credit"
 const val ADMOB_REWARD = "/users/me/admob"
 const val INVITE_REWARD = "/users/me/invite/{code}"
 const val CREATE_USER = "/public/users"
@@ -41,6 +42,9 @@ interface UserController {
 
     @PostMapping(ADMOB_REWARD)
     fun admobReward(): CreditResponse
+
+    @GetMapping(GET_CREDIT)
+    fun getCredit(): CreditResponse
 
     @PostMapping(INVITE_REWARD)
     fun inviteReward(@PathVariable code: String): CreditResponse

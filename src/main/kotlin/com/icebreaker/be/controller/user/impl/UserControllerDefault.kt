@@ -93,6 +93,12 @@ class UserControllerDefault(val authService: AuthService,
         return CreditResponse(rewardCreditsForInvitedPerson.toDto())
     }
 
+    override fun getCredit(): CreditResponse {
+        val userOrFail = authService.getUserOrFail()
+        val credits = creditService.getAvailableCredits(userOrFail)
+        return CreditResponse(credits.toDto())
+    }
+
     override fun admobReward(): CreditResponse {
         val userOrFail = authService.getUserOrFail()
         val rewardAdmobCredits = creditService.rewardAdmobCredits(userOrFail)
@@ -276,7 +282,7 @@ class UserControllerDefault(val authService: AuthService,
         val userOrFail = authService.getUserOrFail()
 
         val usersCloseToUser: List<UserWithDistance> = if (latitude != null && longitude != null) {
-            userService.getUsersCloseToUserPosition(userOrFail, distance, latitude, longitude, age,  gender, online, limitSafe, offsetSafe)
+            userService.getUsersCloseToUserPosition(userOrFail, distance, latitude, longitude, age, gender, online, limitSafe, offsetSafe)
         } else {
             userService.getUsersCloseToUser(userOrFail, distance, age, gender, online, limitSafe, offsetSafe)
         }
