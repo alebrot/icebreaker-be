@@ -56,7 +56,7 @@ image:
   maxHeight: 1080
   profileMaxWidth: 500
   profileMaxHeight: 500
-  host: "http://kofify.com"
+  host: "https://kofify.com"
 
 push:
   secret: MWFhMDUyMDUtMjE5Ny00MWI1LTg2MmUtNjE1Y2E3MzY2YmRl
