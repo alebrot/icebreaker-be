@@ -13,108 +13,108 @@ import kotlin.collections.ArrayList
 @Entity
 @Table(name = "AK_USER", schema = "kofify")
 class AkUserEntity {
-    @get:Id
-    @get:GeneratedValue(strategy = GenerationType.IDENTITY)
-    @get:Column(name = "ID")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     var id: Int = 0
-    @get:Basic
-    @get:Column(name = "FIRST_NAME")
+    @Basic
+    @Column(name = "FIRST_NAME")
     lateinit var firstName: String
-    @get:Basic
-    @get:Column(name = "LAST_NAME")
+    @Basic
+    @Column(name = "LAST_NAME")
     var lastName: String? = null
-    @get:Basic
-    @get:Column(name = "EMAIL")
+    @Basic
+    @Column(name = "EMAIL")
     lateinit var email: String
 
-    @get:Enumerated(EnumType.ORDINAL)
-    @get:Basic
-    @get:Column(name = "GENDER")
+    @Enumerated(EnumType.ORDINAL)
+    @Basic
+    @Column(name = "GENDER")
     var gender: Gender? = null
 
-    @get:Basic
-    @get:Column(name = "BIRTHDAY")
+    @Basic
+    @Column(name = "BIRTHDAY")
     lateinit var birthday: Date
 
-    @get:Basic
-    @get:Column(name = "BIO")
+    @Basic
+    @Column(name = "BIO")
     var bio: String? = null
 
-    @get:Basic
-    @get:Column(name = "IMG_URL")
+    @Basic
+    @Column(name = "IMG_URL")
     var imgUrl: String? = null
 
-    @get:Basic
-    @get:Column(name = "PASSWORD_HASH")
+    @Basic
+    @Column(name = "PASSWORD_HASH")
     var passwordHash: String? = null
 
-    @get:Basic
-    @get:Column(name = "ACCOUNT_EXPIRED")
+    @Basic
+    @Column(name = "ACCOUNT_EXPIRED")
     var accountExpired: Boolean = false
 
-    @get:Basic
-    @get:Column(name = "ACCOUNT_LOCKED")
+    @Basic
+    @Column(name = "ACCOUNT_LOCKED")
     var accountLocked: Boolean = false
 
-    @get:Basic
-    @get:Column(name = "CREDENTIALS_EXPIRED")
+    @Basic
+    @Column(name = "CREDENTIALS_EXPIRED")
     var credentialsExpired: Boolean = false
 
-    @get:Basic
-    @get:Column(name = "ENABLED")
+    @Basic
+    @Column(name = "ENABLED")
     var enabled: Boolean = true
 
-    @get:Basic
-    @get:CreationTimestamp
-    @get:Column(name = "CREATED_AT")
+    @Basic
+    @CreationTimestamp
+    @Column(name = "CREATED_AT")
     var createdAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
-    @get:Basic
-    @get:UpdateTimestamp
-    @get:Column(name = "UPDATED_AT")
+    @Basic
+    @UpdateTimestamp
+    @Column(name = "UPDATED_AT")
     var updatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
-    @get:Basic
-    @get:Column(name = "LAST_SEEN")
+    @Basic
+    @Column(name = "LAST_SEEN")
     var lastSeen: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
-    @get:Basic
-    @get:Column(name = "CREDITS")
+    @Basic
+    @Column(name = "CREDITS")
     var credits: Int = 5
 
-    @get:Basic
-    @get:Column(name = "CREDITS_UPDATED_AT")
+    @Basic
+    @Column(name = "CREDITS_UPDATED_AT")
     var creditsUpdatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
-    @get:Basic
-    @get:Column(name = "ADMOB_COUNT")
+    @Basic
+    @Column(name = "ADMOB_COUNT")
     var admobCount: Int = 0
 
-    @get:Basic
-    @get:Column(name = "ADMOB_UPDATED_AT")
+    @Basic
+    @Column(name = "ADMOB_UPDATED_AT")
     var admobUpdatedAt: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 
-    @get:ManyToMany(fetch = FetchType.LAZY)
-    @get:JoinTable(name = "AK_USER_AUTHORITY", joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "ID")], inverseJoinColumns = [JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")])
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "AK_USER_AUTHORITY", joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "ID")], inverseJoinColumns = [JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")])
     var authorities: Collection<AkAuthorityEntity> = ArrayList()
 
-    @get:ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
     var chats: Collection<AkChatEntity> = ArrayList()
 
-    @get:OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     var images: Collection<AkUserImageEntity> = ArrayList()
 
-    @get:OneToOne(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "POSITION_ID", referencedColumnName = "ID", nullable = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "POSITION_ID", referencedColumnName = "ID", nullable = true)
     var position: AkUserPositionEntity? = null
 
 
-    @get:OneToOne(fetch = FetchType.LAZY)
-    @get:JoinColumn(name = "PUSH_ID", referencedColumnName = "ID", nullable = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PUSH_ID", referencedColumnName = "ID", nullable = true)
     var push: AkPushEntity? = null
 
-    @get:Basic
-    @get:Column(name = "INVITED_BY")
+    @Basic
+    @Column(name = "INVITED_BY")
     var invitedBy: Int? = null
 
     override fun equals(other: Any?): Boolean {
