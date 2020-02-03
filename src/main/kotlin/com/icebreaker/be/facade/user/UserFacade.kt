@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile
 interface UserFacade {
     fun createUserDetailsAndUploadPhoto(socialUser: SocialUser): UserDetails
     fun updateUserLastSeen(user: User)
+    fun updateUserLastSeenSync(user: User)
     fun updateImageForUserAndDeleteOldImage(user: User, position: Int, imageName: String)
     fun updateUserProfilePhotoAndDeleteOldUserProfile(user: User, imageName: String)
     fun updateFirstUserPhotoIfNecessary(file: MultipartFile, user: User)

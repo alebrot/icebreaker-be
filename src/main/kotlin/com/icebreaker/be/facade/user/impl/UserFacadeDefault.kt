@@ -151,6 +151,10 @@ class UserFacadeDefault(val userService: UserService,
         userService.updateUser(user)
     }
 
+    override fun updateUserLastSeenSync(user: User) {
+        userService.updateLastSeen(user)
+    }
+
     override fun updateUserLastSeenForFakeUsers() {
         if (userService.getRealUsersOnlineCount() > 0) {
             val fakeUsers = userService.getFakeUsers(Int.MAX_VALUE, 0)

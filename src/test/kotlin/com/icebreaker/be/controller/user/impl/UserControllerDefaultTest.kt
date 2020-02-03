@@ -9,6 +9,7 @@ import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.service.chat.impl.ChatServiceDefault
 import com.icebreaker.be.service.credit.CreditServiceDefault
 import com.icebreaker.be.service.user.impl.UserServiceDefault
+import org.apache.commons.lang3.StringUtils
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
@@ -16,10 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
+
 @Ignore
-internal class UserControllerDefaultTest : BeApplicationTests() {
+open class UserControllerDefaultTest : BeApplicationTests() {
     @Ignore
     @Test
     fun getUserById() {
@@ -36,16 +39,30 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
         Assert.assertNotNull(response.body)
         Assert.assertNotNull(response.body!!.user)
     }
-
     @Ignore
     @Test
     fun getUserMe() {
-        authenticate("email2@email.com", "password")
-        val response = testRestTemplate.getForEntity(GET_USER_ME, GetUserMeResponse::class.java)
-        Assert.assertNotNull(response)
-        Assert.assertEquals(response.statusCode, HttpStatus.OK)
-        Assert.assertNotNull(response.body)
-        Assert.assertNotNull(response.body!!.context)
+        authenticate("email2@gmail.com", "password")
+
+        val bio = "new Bio"
+        val exchange = testRestTemplate.exchange(POST_USER_ME, HttpMethod.POST, HttpEntity(UpdateUserRequest(bio, null, null)), GetUserMeResponse::class.java)
+        assert(exchange.statusCode == HttpStatus.OK)
+        Assert.assertNotNull(exchange.body)
+        Assert.assertNotNull(exchange.body!!.context)
+        log.info("updateUserMe: ${exchange.body!!.context.user.user.bio}")
+        Assert.assertEquals(bio, exchange.body!!.context.user.user.bio)
+
+        for (i in 1..10) {
+            val response = testRestTemplate.getForEntity(GET_USER_ME, GetUserMeResponse::class.java)
+            Assert.assertNotNull(response)
+            Assert.assertEquals(response.statusCode, HttpStatus.OK)
+            Assert.assertNotNull(response.body)
+            Assert.assertNotNull(response.body!!.context)
+            log.info("getUserMe: ${response.body!!.context.user.user.bio}")
+            Assert.assertEquals(bio, response.body!!.context.user.user.bio)
+        }
+
+//        Thread.sleep(100000)
     }
 
     @Ignore
@@ -106,13 +123,30 @@ internal class UserControllerDefaultTest : BeApplicationTests() {
     @Autowired
     lateinit var chatServiceDefault: ChatServiceDefault
 
-    //    @Test
+
+//    @Test
 //    fun fdfdyf() {
-//        ssdsfsd()
-////        findByUserId.u
+//
+//        for (i in 1..5) {
+//            val userEntity = userRepository.findById(1)
+//            Assert.assertTrue(userEntity.isPresent)
+//            Assert.assertTrue(StringUtils.isNoneBlank(userEntity.get().bio))
+//        }
+//
 //    }
 //
 //    @Transactional
+//    @Test
+//    open fun fdfdyfserice() {
+//
+//        for (i in 1..5) {
+//            val userEntity = userServiceDefault.getUserById(1)
+//            Assert.assertTrue(StringUtils.isNoneBlank(userEntity.bio))
+//        }
+//
+//    }
+
+    //    @Transactional
 //    fun ssdsfsd() {
 ////        val findUsersCloseToUser = userRepository.findUsersCloseToUser(1, 1000)
 //

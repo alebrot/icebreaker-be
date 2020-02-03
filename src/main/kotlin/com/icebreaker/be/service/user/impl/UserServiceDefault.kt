@@ -182,6 +182,11 @@ class UserServiceDefault(val userRepository: UserRepository,
         return userEntity.imgUrl
     }
 
+    @Transactional
+    override fun updateLastSeen(user: User) {
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+        userRepository.updateLastSeenWhereUserIdEqual(timestamp, user.id)
+    }
 
     override fun updateUserProfilePhoto(user: User, imageName: String?) {
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()

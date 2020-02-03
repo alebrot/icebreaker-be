@@ -18,7 +18,7 @@ class WebMvcConfig(val authService: AuthService, val userFacade: UserFacade) : W
                 if (request.method == "GET") {
                     val user = authService.getUser()
                     if (user != null) {
-                        userFacade.updateUserLastSeen(user)
+                        userFacade.updateUserLastSeenSync(user)
                     }
                 }
 

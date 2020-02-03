@@ -1,25 +1,12 @@
-server.port: 8080
-#logging:
-#  level:
-#    org:
-#      apache:
-#        http: debug
-#      springframework:
-#        web: debug
-#    logging.level.org.apache.http=trace
-#    logging.level.org.apache.http.wire=trace
-#    logging.level.org.springframework.web=trace
-## MULTIPART (MultipartProperties)
-# Enable multipart uploads
-
-# Threshold after which files are written to disk.
+server:
+  port: 8080
 spring:
   datasource:
     testOnBorrow: true
     validationQuery: "SELECT 1"
-    url: "jdbc:mysql://localhost:2345/kofify"
+    url: "jdbc:mysql://0.0.0.0:3306/kofify"
     username: root
-    password: "password"
+    password: "sMzqfjyPQJU6tU45"
   jpa:
     open-in-view: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -46,7 +33,7 @@ file:
   upload-dir: /Users/alexey/IdeaProjects/imgs
 image:
   maxWidth: 1080
-  maxHeight: 1226
+  maxHeight: 1080
   profileMaxWidth: 500
   profileMaxHeight: 500
   host: "http://172.20.10.4:8080"
@@ -59,11 +46,17 @@ push:
   it-invitation-content: "{0} ti ha invitato a prendere un caffè"
   en-invitation-content: "{0} has invited you for a cup of coffee"
 
+websocket:
+  relay-host: 127.0.0.1
+  relay-port: 61613
+  client-login: admin
+  client-passcode: password
+
 core:
   id-salt: "21312lkmcmslkacasdchuasoimk1l23"
   id-min-length: 12
   fake: true
-  watch-user-email: email1@email.com
+  watch-user-email: email1@gmail.com
   max-distance: 10000
   reward-amount: 5
   reward-duration: 5

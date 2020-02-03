@@ -1,6 +1,7 @@
 package com.icebreaker.be.db.repository
 
 import com.icebreaker.be.db.entity.AkUserEntity
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
@@ -8,6 +9,10 @@ import java.sql.Timestamp
 
 interface UserRepository : CrudRepository<AkUserEntity, Int> {
     fun findByEmail(email: String): AkUserEntity?
+
+    @Modifying
+    @Query("UPDATE AK_USER SET LAST_SEEN = :lastSeen WHERE ID = :userId", nativeQuery = true)
+    fun updateLastSeenWhereUserIdEqual(@Param("lastSeen") lastSeen: Timestamp, @Param("userId") userId: Int)
 
     @Query(value = "SELECT *FROM AK_USER WHERE EMAIL LIKE CONCAT('%',:email,'%') LIMIT :limit OFFSET :offset", nativeQuery = true)
     fun countAllByEmailContaining(@Param("email") email: String, @Param("limit") limit: Int, @Param("offset") offset: Int): List<AkUserEntity>

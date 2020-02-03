@@ -1,31 +1,34 @@
 package com.icebreaker.be
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.icebreaker.be.extra.LoggingRequestInterceptor
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.client.ClientHttpRequestInterceptor
-import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+
 
 @Ignore
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = [Config::class])
 class BeApplicationTests {
+
+    val log: Logger = LoggerFactory.getLogger(BeApplicationTests::class.java)
 
     @Autowired
     lateinit var testRestTemplate: TestRestTemplate
@@ -41,6 +44,7 @@ class BeApplicationTests {
 
     private fun setBearer(token: GetTokenResponse) {
         val arrayList = ArrayList<ClientHttpRequestInterceptor>()
+//        arrayList.add(LoggingRequestInterceptor())
         arrayList.add(ClientHttpRequestInterceptor { request, body, execution ->
             request.headers.add("Authorization", "Bearer ${token.accessToken}")
             execution.execute(request, body)
@@ -72,6 +76,8 @@ class BeApplicationTests {
 
         val request = HttpEntity<MultiValueMap<String, String>>(map, headers)
         val restTemplateWithBasic = testRestTemplate.withBasicAuth("spring-security-oauth2-read-write-client", "spring-security-oauth2-read-write-client-password1234")
+
+        restTemplateWithBasic.restTemplate.interceptors.add(LoggingRequestInterceptor())
         val result = restTemplateWithBasic.postForEntity("/oauth/token", request, GetTokenResponse::class.java)
         Assert.assertNotNull(result)
         Assert.assertEquals(result.statusCode, HttpStatus.OK)
@@ -94,6 +100,9 @@ class BeApplicationTests {
         val request = HttpEntity<MultiValueMap<String, String>>(map, headers)
 
         val restTemplateWithBasic = testRestTemplate.withBasicAuth("spring-security-oauth2-read-write-client", "spring-security-oauth2-read-write-client-password1234")
+
+//        restTemplateWithBasic.restTemplate.interceptors.add(LoggingRequestInterceptor())
+
         val result = restTemplateWithBasic.postForEntity("/oauth/token", request, GetTokenResponse::class.java)
         Assert.assertNotNull(result)
         Assert.assertEquals(result.statusCode, HttpStatus.OK)
