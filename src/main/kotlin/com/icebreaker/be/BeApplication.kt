@@ -195,7 +195,7 @@ class CoreProperties {
 class SchedulerConfig : SchedulingConfigurer {
     override fun configureTasks(taskRegistrar: ScheduledTaskRegistrar) {
         val threadPoolTaskScheduler = ThreadPoolTaskScheduler()
-        threadPoolTaskScheduler.poolSize = 2
+        threadPoolTaskScheduler.poolSize = 3
         threadPoolTaskScheduler.setThreadNamePrefix("ScheduledTask-")
         threadPoolTaskScheduler.initialize()
         taskRegistrar.setTaskScheduler(threadPoolTaskScheduler)
