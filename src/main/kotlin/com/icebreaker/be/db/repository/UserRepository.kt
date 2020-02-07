@@ -23,6 +23,9 @@ interface UserRepository : CrudRepository<AkUserEntity, Int> {
 
     fun getAllByEmailNotContainingAndLastSeenAfterAndCreditsLessThan(email: String, lastSeen: Timestamp, credits: Int): List<AkUserEntity>
 
+    @Query(value = "SELECT * FROM AK_USER WHERE ID > :fromId ORDER BY ID LIMIT :limit OFFSET :offset", nativeQuery = true)
+    fun getUsersFromIdOrderByIdDesc(@Param("fromId") fromId: Int, @Param("limit") limit: Int, @Param("offset") offset: Int): List<AkUserEntity>
+
     @Query(value = "SELECT *FROM AK_USER WHERE EMAIL LIKE CONCAT('%',:email,'%') LIMIT :limit OFFSET :offset", nativeQuery = true)
     fun findAllByEmailContaining(@Param("email") email: String, @Param("limit") limit: Int, @Param("offset") offset: Int): List<AkUserEntity>
 

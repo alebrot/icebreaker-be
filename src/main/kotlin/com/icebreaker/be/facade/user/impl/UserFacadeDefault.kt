@@ -147,8 +147,7 @@ class UserFacadeDefault(val userService: UserService,
 
     @Async("taskExecutor")
     override fun updateUserLastSeen(user: User) {
-        user.lastSeen = LocalDateTime.now()
-        userService.updateUser(user)
+        userService.updateLastSeen(user)
     }
 
     override fun updateUserLastSeenSync(user: User) {

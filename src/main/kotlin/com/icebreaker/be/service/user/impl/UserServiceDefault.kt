@@ -46,6 +46,7 @@ class UserServiceDefault(val userRepository: UserRepository,
     private val fakeEmailDomain = "@email.com"
     private val creditsLimit = 5
     private val onlineSinceInMinutes = 1L
+    private val chatsWithFakeUsers = 1;
 
     private val cache: Cache<String, Set<Int>> = Caffeine.newBuilder()
             .expireAfterWrite(onlineIntervalInMinutes.toLong(), TimeUnit.MINUTES)
@@ -68,22 +69,35 @@ class UserServiceDefault(val userRepository: UserRepository,
                 .map { User.fromEntity(it) }
     }
 
-
     @Transactional
-    override fun getRealUsersOnlineWithLimitedAmountOfCreditsAndNoChatsWithFakeUsers(): List<User> {
+    override fun getRealUsersOfflineToSendInvitations(): List<User> {
+        val users = userRepository.getUsersFromIdOrderByIdDesc(123, 10, 0)
+        return filterUsers(users, chatsWithFakeUsers * 5)
+                .map { User.fromEntity(it) }
+    }
+
+    /**
+     * users to send more invitations (limited number of credits, already exceeded [chatsWithFakeUsers] of chats with fake users)
+     */
+    @Transactional
+    override fun getRealUsersOnlineToSendMoreInvitations(): List<User> {
         val now = LocalDateTime.now().minusMinutes(onlineSinceInMinutes)
         val realUsers = userRepository.getAllByEmailNotContainingAndLastSeenAfterAndCreditsLessThan(fakeEmailDomain, Timestamp.valueOf(now), creditsLimit)
-        return filterUsers(realUsers).map { User.fromEntity(it) }
+        return filterUsers(realUsers, chatsWithFakeUsers * 2)
+                .map { User.fromEntity(it) }
     }
 
+    /**
+     * users to send invitations(not yet exceeded number [chatsWithFakeUsers] of chats with fake users)
+     */
     @Transactional
-    override fun getRealUsersOnlineAndNoChatsWithFakeUsers(): List<User> {
+    override fun getRealUsersOnlineToSendInvitations(): List<User> {
         val now = LocalDateTime.now().minusMinutes(onlineSinceInMinutes)
         val realUsers = userRepository.getAllByEmailNotContainingAndLastSeenAfter(fakeEmailDomain, Timestamp.valueOf(now))
-        return filterUsers(realUsers).map { User.fromEntity(it) }
+        return filterUsers(realUsers, chatsWithFakeUsers).map { User.fromEntity(it) }
     }
 
-    private fun filterUsers(realUsers: List<AkUserEntity>): List<AkUserEntity> {
+    private fun filterUsers(realUsers: List<AkUserEntity>, chatsLessThan: Int): List<AkUserEntity> {
 
         val fakeIds: Set<Int> = cache.get(cacheKey) { t ->
             if (t == cacheKey) {
@@ -100,7 +114,7 @@ class UserServiceDefault(val userRepository: UserRepository,
                             .flatMap { akChatEntity -> akChatEntity.users }
                             .map { akUserEntity -> akUserEntity.id }
                             .toSet()
-                    fakeIds.intersect(allUsersFromUserChats).isEmpty()
+                    fakeIds.intersect(allUsersFromUserChats).size < chatsLessThan
                 }
     }
 

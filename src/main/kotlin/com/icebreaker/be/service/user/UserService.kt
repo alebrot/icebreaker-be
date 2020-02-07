@@ -6,6 +6,7 @@ import com.icebreaker.be.service.model.UserImage
 import com.icebreaker.be.service.model.UserWithDistance
 import com.icebreaker.be.service.social.impl.SocialUser
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -34,7 +35,8 @@ interface UserService {
     fun getFakeUsers(limit: Int, offset: Int): List<User>
     fun deleteImageByPosition(user: User, position: Int)
     fun getRealUsersOnline(): List<User>
-    fun getRealUsersOnlineWithLimitedAmountOfCreditsAndNoChatsWithFakeUsers(): List<User>
+    fun getRealUsersOnlineToSendMoreInvitations(): List<User>
     fun getFakeUsersByGender(gender: Gender, limit: Int, offset: Int): List<User>
-    fun getRealUsersOnlineAndNoChatsWithFakeUsers(): List<User>
+    fun getRealUsersOnlineToSendInvitations(): List<User>
+    fun getRealUsersOfflineToSendInvitations(): List<User>
 }
