@@ -89,7 +89,7 @@ class NotificationServiceDefault(val userRepository: UserRepository,
                     logger.error("failed to send notification to user ${toUser.id}")
                 }
             } catch (e: Exception) {
-                logger.error("failed to send notification to user ${toUser.id}")
+                logger.error("failed to send notification to user ${toUser.id}, Exception: ${e.localizedMessage}")
             }
 
         } else {
