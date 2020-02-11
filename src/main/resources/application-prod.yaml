@@ -22,7 +22,7 @@ server:
 # Threshold after which files are written to disk.
 spring:
   resources:
-    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:/var/springboot/app/landing/
+    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:/var/springboot/app/landing
   datasource:
     tomcat:
       testOnBorrow: true
