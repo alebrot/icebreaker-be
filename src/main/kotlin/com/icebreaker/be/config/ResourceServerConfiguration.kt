@@ -31,13 +31,23 @@ class ResourceServerConfiguration : ResourceServerConfigurerAdapter() {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/actuator/**").access(securedActuatorScope)
-                .antMatchers("/public/**").permitAll()
-                .antMatchers("/webjars/**").permitAll()
+                .antMatchers(HttpMethod.GET,
+                        "/",
+                        "/public/**",
+                        "/webjars/**",
+                        "/*.html",
+                        "/**/*.js",
+                        "/**/*.css",
+                        "/**/*.png",
+                        "/**/*.svg",
+                        "/**/*.jpg",
+                        "/**/*.jpeg",
+                        "/**/*.ico",
+                        "/**/*.woff2",
+                        "/**/*.ttf"
+                )
+                .permitAll()
 
-                .antMatchers("/").permitAll()
-                .antMatchers("/index.*").permitAll()
-                .antMatchers("/*.js").permitAll()
-                .antMatchers("/*.css").permitAll()
 
                 .antMatchers(HttpMethod.POST, securedPattern).access(securedWriteScope)
                 .antMatchers(HttpMethod.PUT, securedPattern).access(securedWriteScope)
