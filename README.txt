@@ -128,6 +128,10 @@ mv certbot-auto /usr/local/bin/certbot-auto
 sudo chown root /usr/local/bin/certbot-auto
 sudo chmod 0755 /usr/local/bin/certbot-auto
 sudo /usr/local/bin/certbot-auto certonly --standalone
+sudo /usr/local/bin/certbot-auto --standalone -d kofify.com,www.kofify.com
+
+#list certificates
+ sudo /usr/local/bin/certbot-auto certificates
 
 #renew
 /usr/local/bin/certbot-auto renew --dry-run
