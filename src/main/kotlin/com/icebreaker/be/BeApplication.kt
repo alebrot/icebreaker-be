@@ -174,6 +174,7 @@ class PushProperties {
 @Configuration
 @ConfigurationProperties(prefix = "core")
 class CoreProperties {
+    var rewriteRules: String? = null
     lateinit var idSalt: String
     var idMinLength: Int = 8
     var fake: Boolean = false

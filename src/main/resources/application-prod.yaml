@@ -76,6 +76,13 @@ websocket:
   client-passcode: password
 
 core:
+  rewriteRules: 'RewriteCond %{HTTP_HOST} ^kofify.com [NC]
+
+                 RewriteRule ^(.*)$ https://www.kofify.com$1 [R=301,L]
+
+                 RewriteCond %{HTTPS} !=on
+
+                 RewriteRule ^(.*)$ https://www.kofify.com$1 [R=301,L]'
   id-salt: "21312lkmcmslkacasdchuasoimk1l23"
   id-min-length: 12
   fake: true
