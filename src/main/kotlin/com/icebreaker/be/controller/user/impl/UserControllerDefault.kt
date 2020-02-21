@@ -14,6 +14,8 @@ import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.service.model.*
 import com.icebreaker.be.service.user.UserService
 import org.hashids.Hashids
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
@@ -49,6 +51,9 @@ class UserControllerDefault(val authService: AuthService,
                             val creditService: CreditService
 ) : UserController {
 
+    val log: Logger = LoggerFactory.getLogger(UserControllerDefault::class.java)
+
+
     override fun deleteUser(request: DeleteUserRequest): BaseResponse {
         val userOrFail = authService.getUserOrFail()
         userFacade.deleteAllUserImages(userOrFail)
@@ -64,20 +69,24 @@ class UserControllerDefault(val authService: AuthService,
     }
 
     override fun buyReward(request: CreditRequest, platforms: String): CreditResponse {
+        log.info("buyReward $request")
         val userOrFail = authService.getUserOrFail()
         val store = Store.fromHeader(platforms)
+
+        val receipt = request.receipt ?: throw IllegalArgumentException("receipt must not be null")
+
+
         val credit: Credit = when (store) {
             Store.ANDROID -> {
                 val token = request.signature ?: throw IllegalArgumentException("signature must not be null")
-                val productId = request.transactionId
+                val transactionId = request.transactionId
                         ?: throw IllegalArgumentException("transactionId must not be null")
-                creditService.purchaseAndroid(userOrFail, productId, token)
+
+                creditService.purchaseAndroid(userOrFail, transactionId, token, receipt)
 
             }
             Store.IOS -> {
-                val receipt = request.receipt ?: throw IllegalArgumentException("receipt must not be null")
                 creditService.purchaseIos(userOrFail, receipt)
-
             }
         }
 

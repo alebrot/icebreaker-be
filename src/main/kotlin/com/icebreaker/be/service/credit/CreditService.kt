@@ -44,7 +44,7 @@ interface CreditService {
     fun getProducts(store: Store): List<Product>
     fun removeCreditsForChatCreation(credits: Int, user: User, store: Store): Credit
     fun removeCreditsForChatDiscovery(credits: Int, user: User, store: Store): Credit
-    fun purchaseAndroid(user: User, productId: String, userPurchaseToken: String): Credit
+    fun purchaseAndroid(user: User, transactionId: String, userPurchaseToken: String, receipt: String): Credit
     fun purchaseIos(user: User, receiptData: String): Credit
 }
 
@@ -104,9 +104,18 @@ class CreditServiceDefault(val userRepository: UserRepository,
     }
 
     @Transactional
-    override fun purchaseAndroid(user: User, productId: String, userPurchaseToken: String): Credit {
+    override fun purchaseAndroid(user: User, transactionId: String, userPurchaseToken: String, receipt: String): Credit {
+
+        log.info("purchaseAndroid $transactionId, $userPurchaseToken, $receipt")
+
+        data class Receipt(val orderId: String, val packageName: String, val productId: String, val purchaseTime: Long, val purchaseState: Int, val purchaseToken: String)
+
+        val receiptParsed: Receipt = objectMapper.readValue(receipt, Receipt::class.java)
+
+        val productId = receiptParsed.productId
         val product = productRepository.findByProductId(productId)
                 ?: throw IllegalArgumentException("Invalid product Id $productId")
+
         val amount = product.credits//get from product
         val applicationName: String = coreProperties.mobileAppName
         val packageName: String = coreProperties.mobileAppPackage
@@ -135,7 +144,7 @@ class CreditServiceDefault(val userRepository: UserRepository,
             log.info("Found google purchase item {}", purchase.toPrettyString())
             //https://developers.google.com/android-publisher/api-ref/purchases/products?authuser=1
 
-            val payload = Pair(productId, userPurchaseToken)
+            val payload = Pair(transactionId, userPurchaseToken)
             val writeValueAsString = objectMapper.writeValueAsString(payload)
             return addCredits(amount, user, Store.ANDROID, writeValueAsString)
         } catch (exc: Exception) {

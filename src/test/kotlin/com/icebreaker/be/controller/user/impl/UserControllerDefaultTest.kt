@@ -9,7 +9,6 @@ import com.icebreaker.be.db.repository.UserRepository
 import com.icebreaker.be.service.chat.impl.ChatServiceDefault
 import com.icebreaker.be.service.credit.CreditServiceDefault
 import com.icebreaker.be.service.user.impl.UserServiceDefault
-import org.apache.commons.lang3.StringUtils
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -169,7 +167,7 @@ open class UserControllerDefaultTest : BeApplicationTests() {
     @Test
     fun purchaseAndroid() {
         val user = userServiceDefault.getUserById(1)
-        val purchaseAndroid = creditServiceDefault.purchaseAndroid(user, "android.test.purchased", "xzczxczxc")
+        val purchaseAndroid = creditServiceDefault.purchaseAndroid(user, "android.test.purchased", "xzczxczxc", "receipt")
     }
 
     @Ignore
