@@ -166,8 +166,15 @@ open class UserControllerDefaultTest : BeApplicationTests() {
     @Ignore
     @Test
     fun purchaseAndroid() {
-        val user = userServiceDefault.getUserById(1)
-        val purchaseAndroid = creditServiceDefault.purchaseAndroid(user, "android.test.purchased", "xzczxczxc", "receipt")
+        val user = userServiceDefault.getUserById(2)
+        val purchaseAndroid = creditServiceDefault.purchaseAndroid(user, "lncgkiogomblghlepgoedjgm.AO-J1OzePEMwuZH184-in_KQZHwfMY5HNTQQXjmElFLu9k8W3yDc5zS_0fA0WmRk2UsxUN1GvhWgcHxqvDyvKIaNrgH7o45xtyaVt3kwQ29Ga31DsoyNGwg", "p+sdUERWv5osP2T8z052U5HxyiKf/3DkzvPMy8JGlkgac/qngtaRWbh+Lbm9SIDjN5VKCUIh3pUvrBKc0kG1UpQ84Iutx3BTie0wBmcPGcrvE6Sk3m/HK9HQYCGSA+DW5HBsNtqRs2vNH9jl+jm9NUT+9JrUT6Np5OkZnJBqCVKUhUt7DlfqicUjnq/+/Uod4pELi8BeDZGKu0GpAOeD1FKs14D31mbBB78j9Wt/Bv1TI/rgaoL2ZawsnYza6dCy3IXJIFZnrKmYHcDj6RydppZH+SRX5yeA38wGOH3QdsDnSgl6t2W00ejl3v2U9LcsM7ZxzlFCQEOgdYj9+rXDSw==", "{\n" +
+                "  \"orderId\": \"GPA.3315-5898-0242-12464\",\n" +
+                "  \"packageName\": \"com.aklc.kofify\",\n" +
+                "  \"productId\": \"credits50\",\n" +
+                "  \"purchaseTime\": 1582063953139,\n" +
+                "  \"purchaseState\": 0,\n" +
+                "  \"purchaseToken\": \"lncgkiogomblghlepgoedjgm.AO-J1OzePEMwuZH184-in_KQZHwfMY5HNTQQXjmElFLu9k8W3yDc5zS_0fA0WmRk2UsxUN1GvhWgcHxqvDyvKIaNrgH7o45xtyaVt3kwQ29Ga31DsoyNGwg\"\n" +
+                "}")
     }
 
     @Ignore
