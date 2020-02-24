@@ -108,8 +108,6 @@ class CreditServiceDefault(val userRepository: UserRepository,
 
         log.info("purchaseAndroid $transactionId, $userPurchaseToken, $receipt")
 
-        data class Receipt(val orderId: String, val packageName: String, val productId: String, val purchaseTime: Long, val purchaseState: Int, val purchaseToken: String)
-
         val receiptParsed: Receipt = objectMapper.readValue(receipt, Receipt::class.java)
 
         val productId = receiptParsed.productId
@@ -126,28 +124,23 @@ class CreditServiceDefault(val userRepository: UserRepository,
                     .fromStream(FileInputStream(serviceAccountKeyFilePath))
                     .createScoped(Collections.singleton(AndroidPublisherScopes.ANDROIDPUBLISHER));
 
-//            val credential = GoogleCredential().setAccessToken(accessToken)
-//            val plus = Plus.builder(NetHttpTransport(),
-//                    JacksonFactory.getDefaultInstance(),
-//                    credential)
-//                    .setApplicationName("Google-PlusSample/1.0")
-//                    .build()
-
             val pub: AndroidPublisher = AndroidPublisher.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), credentials)
                     .setApplicationName(applicationName)
                     .build();
             val get: AndroidPublisher.Purchases.Products.Get =
                     pub.purchases()
                             .products()
-                            .get(packageName, productId, userPurchaseToken);
+                            .get(packageName, productId, transactionId);
             val purchase: ProductPurchase = get.execute();
             log.info("Found google purchase item {}", purchase.toPrettyString())
             //https://developers.google.com/android-publisher/api-ref/purchases/products?authuser=1
 
-            val payload = Pair(transactionId, userPurchaseToken)
+            val payload = Triple(transactionId, userPurchaseToken, receipt)
             val writeValueAsString = objectMapper.writeValueAsString(payload)
+            log.info("Payload data length: {}", writeValueAsString.length)
             return addCredits(amount, user, Store.ANDROID, writeValueAsString)
         } catch (exc: Exception) {
+            log.error("Unexpected exception: {}", exc.message, exc)
             throw IllegalArgumentException("Android Purchase failed for user ${user.id}")
         }
 
