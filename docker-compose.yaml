@@ -1,7 +1,7 @@
 version: '3.3'
 services:
   ls:
-    image: khlebtsov/kofify-db:v9
+    image: khlebtsov/kofify-db:v10
     container_name: kofify-db
     restart: always
     environment:
