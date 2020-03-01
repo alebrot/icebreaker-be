@@ -24,7 +24,7 @@ HERE
 
 echo "${FROM_FILE_PATH} -> ${TO_FILE_PATH}"
 scp "$FROM_FILE_PATH/index.html" $MACHINE:"$TO_FILE_PATH/index.html"
-scp "$FROM_FILE_PATH/privacy.html" $MACHINE:"$TO_FILE_PATH/privacy.html"
+scp "$FROM_FILE_PATH/policy.html" $MACHINE:"$TO_FILE_PATH/policy.html"
 scp "$FROM_FILE_PATH/terms.html" $MACHINE:"$TO_FILE_PATH/terms.html"
 scp "$FROM_FILE_PATH/vendor/bootstrap/css/bootstrap.min.css" $MACHINE:"$TO_FILE_PATH/vendor/bootstrap/css/bootstrap.min.css"
 scp -rp "$FROM_FILE_PATH/vendor/fontawesome-free" $MACHINE:"$TO_FILE_PATH/vendor"
