@@ -10,6 +10,7 @@ import com.icebreaker.be.service.file.FileService
 import com.icebreaker.be.service.model.Gender
 import com.icebreaker.be.service.model.User
 import com.icebreaker.be.service.model.UserImage
+import com.icebreaker.be.service.push.PushService
 import com.icebreaker.be.service.social.impl.SocialUser
 import com.icebreaker.be.service.user.UserService
 import org.slf4j.Logger
@@ -19,7 +20,6 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDateTime
 import kotlin.math.min
 
 @Service
@@ -27,7 +27,8 @@ class UserFacadeDefault(val userService: UserService,
                         val fileService: FileService,
                         val imageProperties: ImageProperties,
                         val fileFacade: FileFacade,
-                        val chatService: ChatService) : UserFacade {
+                        val chatService: ChatService,
+                        val pushService: PushService) : UserFacade {
 
 
     val logger: Logger = LoggerFactory.getLogger(UserFacadeDefault::class.java)
@@ -184,6 +185,7 @@ class UserFacadeDefault(val userService: UserService,
             if (fakeUser != null) {
                 val chat = chatService.findOrCreateChat(fakeUser, listOf(user.id)).first
                 chatService.sendMessage(fakeUser, chat.id, "", MessageType.INVITATION)
+                pushService.send(fakeUser, user, "", MessageType.INVITATION)
                 logger.info("invitation send to {} from {}", user.id, fakeUser.id)
             }
         }
