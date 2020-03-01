@@ -102,7 +102,14 @@ class NotificationServiceDefault(val userRepository: UserRepository,
 
     @Transactional
     override fun subscribe(user: User, id: String, pushToken: String) {
+        //unsubscribe other user with the same user id
+        val deleted = pushRepository.deleteByUserId(id)
+        if (deleted.isNotEmpty()) {
+            val userIds = deleted.joinToString(",") { it.userId }
+            logger.info("subscription with the same userId: {} already exists. removing subscription", userIds)
+        }
 
+        logger.info("subscribing user: {} with userId: {}", user.id, id)
         val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         var push = userEntity.push
         if (push != null) {
@@ -118,6 +125,7 @@ class NotificationServiceDefault(val userRepository: UserRepository,
             userEntity.push = push
             userRepository.save(userEntity)
         }
+
     }
 
 
