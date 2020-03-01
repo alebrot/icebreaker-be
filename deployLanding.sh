@@ -21,9 +21,11 @@ ssh $MACHINE /bin/bash <<HERE
    mkdir -p  "$TO_FILE_PATH/js"
    mkdir -p  "$TO_FILE_PATH/img"
 HERE
-fontawesome-free
+
 echo "${FROM_FILE_PATH} -> ${TO_FILE_PATH}"
 scp "$FROM_FILE_PATH/index.html" $MACHINE:"$TO_FILE_PATH/index.html"
+scp "$FROM_FILE_PATH/privacy.html" $MACHINE:"$TO_FILE_PATH/privacy.html"
+scp "$FROM_FILE_PATH/terms.html" $MACHINE:"$TO_FILE_PATH/terms.html"
 scp "$FROM_FILE_PATH/vendor/bootstrap/css/bootstrap.min.css" $MACHINE:"$TO_FILE_PATH/vendor/bootstrap/css/bootstrap.min.css"
 scp -rp "$FROM_FILE_PATH/vendor/fontawesome-free" $MACHINE:"$TO_FILE_PATH/vendor"
 scp "$FROM_FILE_PATH/vendor/simple-line-icons/css/simple-line-icons.css" $MACHINE:"$TO_FILE_PATH/vendor/simple-line-icons/css/simple-line-icons.css"
