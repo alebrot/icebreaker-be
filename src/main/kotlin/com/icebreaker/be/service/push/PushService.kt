@@ -102,26 +102,33 @@ class NotificationServiceDefault(val userRepository: UserRepository,
 
     @Transactional
     override fun subscribe(user: User, id: String, pushToken: String) {
+
+        val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
+
         //unsubscribe other user with the same user id
-        val deleted = pushRepository.deleteByUserId(id)
-        if (deleted.isNotEmpty()) {
-            val userIds = deleted.joinToString(",") { it.userId }
-            logger.info("subscription with the same userId: {} already exists. removing subscription", userIds)
+        val toDelete = pushRepository.findPushUserIdForAnotherUsers(id, userEntity.id)
+        if (toDelete.isNotEmpty()) {
+            for (akPushEntity in toDelete) {
+                logger.info("subscription with the same userId: {} already exists and will be removed", akPushEntity.userId)
+                pushRepository.delete(akPushEntity)
+            }
         }
 
-        logger.info("subscribing user: {} with userId: {}", user.id, id)
-        val userEntity = userRepository.findById(user.id).toKotlinNotOptionalOrFail()
         var push = userEntity.push
         if (push != null) {
+            logger.info("push entity found, subscribing user: {} with userId: {}", user.id, id)
             push.userId = id
             push.pushToken = pushToken
             pushRepository.save(push)
         } else {
+            logger.info("push entity not found, subscribing user: {} with userId: {}", user.id, id)
+
             push = AkPushEntity()
             push.userId = id
             push.pushToken = pushToken
             pushRepository.save(push)
 
+            logger.info("updating user with push entity")
             userEntity.push = push
             userRepository.save(userEntity)
         }
