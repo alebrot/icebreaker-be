@@ -2,8 +2,8 @@
 systemctl restart docker
 
 # Build image:
-docker build -t khlebtsov/kofify-db:v1 .
-docker push khlebtsov/kofify-db:v1
+docker build -t khlebtsov/kofify-db:v11 .
+docker push khlebtsov/kofify-db:v11
 
 /apache-activemq-5.15.9/bin ./activemq start
 /apache-activemq-5.15.9/bin ./activemq stop
