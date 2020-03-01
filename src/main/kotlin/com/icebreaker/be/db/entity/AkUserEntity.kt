@@ -108,7 +108,7 @@ class AkUserEntity {
     @JoinColumn(name = "POSITION_ID", referencedColumnName = "ID", nullable = true)
     var position: AkUserPositionEntity? = null
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PUSH_ID", referencedColumnName = "ID", nullable = true)
     var push: AkPushEntity? = null
 
