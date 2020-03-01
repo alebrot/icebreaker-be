@@ -57,7 +57,8 @@ class NotificationServiceDefault(val userRepository: UserRepository,
 
                 Contents(contentEnFormatted, contentItFormatted)
             } else {
-                Contents(message, message)
+                val content = "${fromUser.firstName}: $message"
+                Contents(content, content)
             }
 
             data class Data(val fee: String, val foo: String)
