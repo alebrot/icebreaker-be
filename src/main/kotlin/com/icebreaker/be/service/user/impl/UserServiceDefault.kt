@@ -46,7 +46,7 @@ class UserServiceDefault(val userRepository: UserRepository,
     private val fakeEmailDomain = "@email.com"
     private val creditsLimit = 5
     private val onlineSinceInMinutes = 1L
-    private val chatsWithFakeUsers = 1;
+    private val chatsWithFakeUsers = 5;
 
     private val cache: Cache<String, Set<Int>> = Caffeine.newBuilder()
             .expireAfterWrite(onlineIntervalInMinutes.toLong(), TimeUnit.MINUTES)
@@ -72,7 +72,7 @@ class UserServiceDefault(val userRepository: UserRepository,
     @Transactional
     override fun getRealUsersOfflineToSendInvitations(): List<User> {
         val users = userRepository.getUsersFromIdOrderByIdDesc(123, 10, 0)
-        return filterUsers(users, chatsWithFakeUsers * 5)
+        return filterUsers(users, chatsWithFakeUsers * 10)
                 .map { User.fromEntity(it) }
     }
 
