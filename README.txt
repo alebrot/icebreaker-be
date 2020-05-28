@@ -230,3 +230,14 @@ sudo ufw default deny
 
 5)status
 sudo ufw status numbered
+
+
+
+###Mysql User Grants Setup
+
+
+#SHOW GRANTS FOR 'user' ;
+#REVOKE ALL PRIVILEGES ON `kofify`.* FROM `user`@`%`;
+## to add to main script to docker db init
+REVOKE ALL PRIVILEGES ON *.* FROM `user`@`%`;
+GRANT SELECT, INSERT, UPDATE, DELETE ON `kofify`.* TO `user`@`%`;
