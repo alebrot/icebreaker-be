@@ -9,9 +9,9 @@ services:
       # So you don't have to use root, but you can if you like
       MYSQL_USER: 'user'
       # You can use whatever password you like
-      MYSQL_PASSWORD: 'password'
+      MYSQL_PASSWORD: 'hidden'
       # Password for root access
-      MYSQL_ROOT_PASSWORD: 'sMzqfjyPQJU6tU45'
+      MYSQL_ROOT_PASSWORD: 'hidden'
     ports:
       # <Port exposed> : < MySQL Port running inside container>
       - '3306:3306'

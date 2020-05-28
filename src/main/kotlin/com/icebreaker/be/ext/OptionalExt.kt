@@ -9,3 +9,6 @@ fun <T> Optional<T>.toKotlinNotOptionalOrFail(): T {
 fun <T> Optional<T>.toKotlinOptional(): T? {
     return if (this.isPresent) this.get() else null
 }
+
+inline fun <reified T> T?.orFail(msg: String? = null): T = this
+        ?: throw IllegalStateException(msg ?: "object is null of type ${T::class.simpleName}")
