@@ -1,0 +1,2 @@
+REVOKE ALL PRIVILEGES ON *.* FROM `user`@`%`;
+GRANT SELECT, INSERT, UPDATE, DELETE ON `kofify`.* TO `user`@`%`;
